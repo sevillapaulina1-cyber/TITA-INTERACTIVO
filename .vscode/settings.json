@@ -60,13 +60,13 @@
         "*.asset": "yaml",
         "*.meta": "yaml",
         "*.prefab": "yaml",
-        "*.unity": "yaml",
+        "*.unity": "yaml"
     },
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Simulador educativo beta.slnx",
+    "dotnet.defaultSolution": "PROYECTO INTERACTIVO.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }
