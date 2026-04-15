@@ -67,6 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "PROYECTO INTERACTIVO.slnx",
+    "dotnet.defaultSolution": "TITA-INTERACTIVO.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }
