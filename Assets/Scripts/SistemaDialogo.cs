@@ -19,6 +19,7 @@ public class SistemaDialogo : MonoBehaviour
     // UI
     public GameObject TalkPanel;
     public GameObject ChoicePack;
+    public GameObject TalkText;
     public Text SubText;
 
     string holder;
@@ -67,12 +68,13 @@ public class SistemaDialogo : MonoBehaviour
         Cursor.visible = true;
 
         TalkPanel.SetActive(true);
+        TalkText.SetActive(true);
 
-        yield return TypeText("Yo: ", "¡Hola!");
+        yield return TypeText("Yo:", "¡Hola!");
         yield return MousePress();
 
 
-        yield return TypeText("Kid:", "Hola... ¿tu tambien estas jugando solo?");
+        yield return TypeText("Kid:","Hola... ¿tu tambien estas jugando solo?");
 
         yield return new WaitForSeconds(1f);
         ChoicePack.SetActive(true);         // Activa el panel con las 3 opciones
@@ -97,7 +99,7 @@ public class SistemaDialogo : MonoBehaviour
     IEnumerator Choice1CO()
     {
         ChoicePack.SetActive(false);
-        yield return TypeText("a) ", "Si, ¿Quieres jugar juntos?");
+        yield return TypeText("Yo:", "Si, ¿Quieres jugar juntos?");
         yield return new WaitForSeconds(3f);
         StartCoroutine(FinalCO());
     }
@@ -105,15 +107,15 @@ public class SistemaDialogo : MonoBehaviour
     IEnumerator Choice2CO()
     {
         ChoicePack.SetActive(false);
-        yield return TypeText("b) ", "¿Que nivel eres?");
+        yield return TypeText("Yo:", "¿Que nivel eres?");
         yield return new WaitForSeconds(3f);
         StartCoroutine(FinalCO());
     }
 
-    IEnumerator Choice3CO()                                     // ← Opción nueva
+    IEnumerator Choice3CO()                                     
     {
         ChoicePack.SetActive(false);
-        yield return TypeText("b) ", "¿Cuantos años tienes?");
+        yield return TypeText("Yo:", "¿Cuantos años tienes?");
         yield return new WaitForSeconds(3f);
         StartCoroutine(FinalCO());
     }
@@ -124,6 +126,7 @@ public class SistemaDialogo : MonoBehaviour
     {
         TalkPanel.SetActive(false);
         ChoicePack.SetActive(false);
+        TalkText.SetActive(false);
         SubText.text = "";
 
 
