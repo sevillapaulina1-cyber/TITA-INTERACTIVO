@@ -18,7 +18,7 @@ public class TransicionDia : MonoBehaviour
 {
     [Header("── UI ──────────────────────────────────")]
     public Image panelNegro;
-    public Text  textoDia;
+    public Text textoDia;
 
     [Header("── NPCs (uno por día, en orden) ─────────")]
     [Tooltip("4 NPCs duplicados. Índice 0 = Día 1, 1 = Día 2, etc.")]
@@ -29,7 +29,7 @@ public class TransicionDia : MonoBehaviour
     public Transform[] spawnsPorDia;
 
     [Header("── Referencia al jugador ───────────────")]
-    public Transform     playerTransform;
+    public Transform playerTransform;
     public MonoBehaviour firstPersonController;
 
     [Header("── Fechas de transición ───────────────")]
@@ -41,8 +41,8 @@ public class TransicionDia : MonoBehaviour
     };
 
     [Header("── Tiempos ─────────────────────────────")]
-    public float duracionFadeIn  = 1.0f;
-    public float duracionTexto   = 2.0f;
+    public float duracionFadeIn = 1.0f;
+    public float duracionTexto = 2.0f;
     public float duracionFadeOut = 1.0f;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -57,10 +57,17 @@ public class TransicionDia : MonoBehaviour
                 npcsPorDia[i].SetActive(i == 0);
     }
 
-    void OnEnable()
+    void Start()
     {
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.OnFinDia += OnFinDia;
+            Debug.Log("[TransicionDia] Suscrito a OnFinDia correctamente.");
+        }
+        else
+        {
+            Debug.LogError("[TransicionDia] GameManager.Instance es null en Start. Verifica el orden de ejecución.");
+        }
     }
 
     void OnDisable()
@@ -106,7 +113,7 @@ public class TransicionDia : MonoBehaviour
             string fecha = (indice >= 0 && indice < fechas.Length)
                 ? fechas[indice]
                 : $"Día {diaQueTermino + 1}";
-            textoDia.text    = fecha;
+            textoDia.text = fecha;
             textoDia.enabled = true;
         }
 
@@ -153,3 +160,4 @@ public class TransicionDia : MonoBehaviour
         panelNegro.color = c;
     }
 }
+

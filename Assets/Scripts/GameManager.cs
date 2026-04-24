@@ -25,17 +25,17 @@ public class GameManager : MonoBehaviour
 
     // ── Puntos ────────────────────────────────────────────────────────────
     public int PuntosConfianza { get; private set; } = 0;
-    public int PuntosRiesgo    { get; private set; } = 0;
-    public int PuntosNeutros   { get; private set; } = 0;
+    public int PuntosRiesgo { get; private set; } = 0;
+    public int PuntosNeutros { get; private set; } = 0;
 
     // ── Contadores ────────────────────────────────────────────────────────
-    public int MomentoActual         { get; private set; } = 0;  // 0–12
-    public int DiaActual             { get; private set; } = 1;  // 1–4
-    public int DecisionesEnEsteDia   { get; private set; } = 0;  // 0–3
+    public int MomentoActual { get; private set; } = 0;  // 0–12
+    public int DiaActual { get; private set; } = 1;  // 1–4
+    public int DecisionesEnEsteDia { get; private set; } = 0;  // 0–3
 
-    public const int TOTAL_MOMENTOS          = 12;
-    public const int DECISIONES_POR_DIA      = 3;
-    public const int TOTAL_DIAS              = 4;
+    public const int TOTAL_MOMENTOS = 12;
+    public const int DECISIONES_POR_DIA = 3;
+    public const int TOTAL_DIAS = 4;
 
     // ── Escenas de final ──────────────────────────────────────────────────
     [Header("Escenas de final (ajusta los nombres en el Inspector)")]
@@ -43,13 +43,13 @@ public class GameManager : MonoBehaviour
     public string escenaFinal2 = "Final2_Policia";
 
     // ── Retroalimentación ─────────────────────────────────────────────────
-    public int EleccionesVerdes  { get; private set; } = 0;
-    public int EleccionesRojas   { get; private set; } = 0;
+    public int EleccionesVerdes { get; private set; } = 0;
+    public int EleccionesRojas { get; private set; } = 0;
     public int EleccionesNeutras { get; private set; } = 0;
 
     // ── Evento: fin de día (TransicionDia se suscribe aquí) ───────────────
     public event System.Action<int> OnFinDia;   // parámetro = día que acaba de terminar
-    public event System.Action      OnJuegoCompleto;
+    public event System.Action OnJuegoCompleto;
 
     // ─────────────────────────────────────────────────────────────────────
     void Awake()
@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour
                 break;
             case TipoEleccion.Neutro:
                 PuntosConfianza += 1;
-                PuntosNeutros   += 1;
+                PuntosNeutros += 1;
                 EleccionesNeutras++;
                 break;
             case TipoEleccion.Rojo:
@@ -95,6 +95,7 @@ public class GameManager : MonoBehaviour
             if (MomentoActual >= TOTAL_MOMENTOS)
             {
                 // Último día completado → ir al final
+                Debug.Log("[GM] Juego completo, cargando final...");
                 OnJuegoCompleto?.Invoke();
                 EvaluarFinal();
             }
@@ -104,6 +105,7 @@ public class GameManager : MonoBehaviour
                 int diaQueTermina = DiaActual;
                 DiaActual++;
                 DecisionesEnEsteDia = 0;
+                Debug.Log($"[GM] Fin día {diaQueTermina} → disparando OnFinDia. Suscriptores: {OnFinDia?.GetInvocationList().Length ?? 0}");
                 OnFinDia?.Invoke(diaQueTermina);
             }
         }
@@ -136,14 +138,18 @@ public class GameManager : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     public void Reiniciar()
     {
-        PuntosConfianza     = 0;
-        PuntosRiesgo        = 0;
-        PuntosNeutros       = 0;
-        MomentoActual       = 0;
-        DiaActual           = 1;
+        PuntosConfianza = 0;
+        PuntosRiesgo = 0;
+        PuntosNeutros = 0;
+        MomentoActual = 0;
+        DiaActual = 1;
         DecisionesEnEsteDia = 0;
-        EleccionesVerdes    = 0;
-        EleccionesRojas     = 0;
-        EleccionesNeutras   = 0;
+        EleccionesVerdes = 0;
+        EleccionesRojas = 0;
+        EleccionesNeutras = 0;
+
+        // Restaurar FOV de la cámara principal al reiniciar
+        if (Camera.main != null)
+            Camera.main.fieldOfView = 60f;
     }
 }
