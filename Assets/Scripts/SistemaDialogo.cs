@@ -1,146 +1,214 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
-
+/// <summary>
+/// Sistema de diálogo reutilizable para los 12 momentos.
+/// Configurable completamente desde el Inspector.
+/// </summary>
 public class SistemaDialogo : MonoBehaviour
 {
+    [Header("── Identificación ──────────────────────")]
+    [Tooltip("Número de este momento (1 al 12)")]
+    public int momentoIndex = 1;
 
-    public Text InteractionText;
+    [Header("── Referencia al jugador ───────────────")]
+    public Transform jugador;
+    public MonoBehaviour firstPersonController;
+    public float distanciaInteraccion = 5f;
 
-    private float InteractDistance = 5f;
+    [Header("── NPC ─────────────────────────────────")]
+    public Transform npcTransform;
+    public Transform posicionNPCEsteDia;
 
-    public bool CanInteract = true;
+    [Header("── UI global ───────────────────────────")]
+    public Text interactionText;
+    public GameObject talkPanel;
+    public GameObject choicePack;
+    public GameObject talkText;
+    public Text subText;
 
-    // Controlador FPS (asigna tu script de movimiento aquí)
-    public MonoBehaviour FirstPersonController;
+    [Header("── Botones de opciones ────────────────")]
+    public Text textoBoton1;
+    public Text textoBoton2;
+    public Text textoBoton3;
 
-    // UI
-    public GameObject TalkPanel;
-    public GameObject ChoicePack;
-    public GameObject TalkText;
-    public Text SubText;
+    [Header("── Contenido del diálogo ──────────────")]
+    [TextArea] public string textoYo = "¡Hola!";
+    [TextArea] public string textoNPC = "...";
 
-    string holder;
-    float time = 0.05f;
+    [Header("── Opción 1 (Verde) ───────────────────")]
+    [TextArea] public string textoChoice1 = "Opción 1";
+    public TipoEleccion tipoChoice1 = TipoEleccion.Verde;
+    [TextArea] public string respuestaNPCChoice1 = "";  // lo que responde el NPC tras elegir esta opción
 
-    void Start() { }
+    [Header("── Opción 2 (Neutro) ──────────────────")]
+    [TextArea] public string textoChoice2 = "Opción 2";
+    public TipoEleccion tipoChoice2 = TipoEleccion.Neutro;
+    [TextArea] public string respuestaNPCChoice2 = "";
 
+    [Header("── Opción 3 (Rojo) ────────────────────")]
+    [TextArea] public string textoChoice3 = "Opción 3";
+    public TipoEleccion tipoChoice3 = TipoEleccion.Rojo;
+    [TextArea] public string respuestaNPCChoice3 = "";
+
+    [Header("── Zoom Out (solo activar en Momento 8) ─")]
+    public bool hacerZoomOut = false;
+    public Camera camara;
+    public float fovInicial = 60f;
+    public float fovFinal = 90f;
+    public float duracionZoom = 2.0f;
+    public float esperaZoom = 1.5f;
+
+    // ── Estado interno ────────────────────────────────────────────────────
+    bool _puedeInteractuar = true;
+    float _time = 0.05f;
+
+    // ─────────────────────────────────────────────────────────────────────
+    void Start()
+    {
+        if (npcTransform != null && posicionNPCEsteDia != null)
+            npcTransform.position = posicionNPCEsteDia.position;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
     void Update()
     {
-        if (!CanInteract) return;
+        if (!_puedeInteractuar) return;
+        if (GameManager.Instance == null) return;
+        if (GameManager.Instance.MomentoActual + 1 != momentoIndex) return;
 
-        Ray ray1 = new Ray(transform.position, transform.forward);
-
-        if (Physics.Raycast(ray1, out RaycastHit hit1, InteractDistance))
+        Ray ray = new Ray(jugador.position, jugador.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, distanciaInteraccion))
         {
-            if (hit1.collider.CompareTag("Npc"))      // ← Tag cambiado a "Npc"
+            if (hit.collider.CompareTag("Npc"))
             {
-                InteractionText.text = "Habla con el";
+                if (interactionText != null)
+                    interactionText.text = "Presiona E para hablar";
 
                 if (Keyboard.current.eKey.wasPressedThisFrame)
                 {
-                    CanInteract = false;
-                    StartCoroutine(TalkToNpcCO());
+                    _puedeInteractuar = false;
+                    StartCoroutine(DialogoCO());
                 }
             }
             else
             {
-                InteractionText.text = "";
+                if (interactionText != null) interactionText.text = "";
             }
         }
         else
         {
-            InteractionText.text = "";
+            if (interactionText != null) interactionText.text = "";
         }
     }
 
-    IEnumerator TalkToNpcCO()
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator DialogoCO()
     {
-        InteractionText.text = "";
-        FirstPersonController.enabled = false;
+        if (interactionText != null) interactionText.text = "";
+        firstPersonController.enabled = false;
 
-
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        TalkPanel.SetActive(true);
-        TalkText.SetActive(true);
+        talkPanel.SetActive(true);
+        talkText.SetActive(true);
 
-        yield return TypeText("Yo:", "¡Hola!");
-        yield return MousePress();
+        if (textoBoton1 != null) textoBoton1.text = textoChoice1;
+        if (textoBoton2 != null) textoBoton2.text = textoChoice2;
+        if (textoBoton3 != null) textoBoton3.text = textoChoice3;
 
+        yield return EscribirTexto("Yo: ", textoYo);
+        yield return PresionarMouse();
+        yield return EscribirTexto("Kid: ", textoNPC);
 
-        yield return TypeText("Kid:","Hola... ¿tu tambien estas jugando solo?");
+        yield return new WaitForSeconds(0.8f);
 
-        yield return new WaitForSeconds(1f);
-        ChoicePack.SetActive(true);         // Activa el panel con las 3 opciones
-    }
-
-    IEnumerator TypeText(string speaker, string message)
-    {
-        SubText.text = speaker;
-        foreach (char c in message)
+        if (hacerZoomOut && camara != null)
         {
-            SubText.text += c;
-            yield return new WaitForSeconds(time);
+            yield return ZoomOutCO();
+            yield return new WaitForSeconds(esperaZoom);
         }
+
+        choicePack.SetActive(true);
     }
 
-    // ─── Opciones del jugador ────────────────────────────────────────────
+    // ─── Botones ──────────────────────────────────────────────────────────
+    public void Choice1Void() => StartCoroutine(EleccionCO(tipoChoice1, textoChoice1, respuestaNPCChoice1));
+    public void Choice2Void() => StartCoroutine(EleccionCO(tipoChoice2, textoChoice2, respuestaNPCChoice2));
+    public void Choice3Void() => StartCoroutine(EleccionCO(tipoChoice3, textoChoice3, respuestaNPCChoice3));
 
-    public void Choice1Void() => StartCoroutine(Choice1CO());   // Responder Si
-    public void Choice2Void() => StartCoroutine(Choice2CO());   // Preguntar nivel
-    public void Choice3Void() => StartCoroutine(Choice3CO());   // Preguntar edad
-
-    IEnumerator Choice1CO()
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator EleccionCO(TipoEleccion tipo, string textoRespuesta, string respuestaNPC)
     {
-        ChoicePack.SetActive(false);
-        yield return TypeText("Yo:", "Si, ¿Quieres jugar juntos?");
-        yield return new WaitForSeconds(3f);
-        StartCoroutine(FinalCO());
-    }
+        choicePack.SetActive(false);
 
-    IEnumerator Choice2CO()
-    {
-        ChoicePack.SetActive(false);
-        yield return TypeText("Yo:", "¿Que nivel eres?");
-        yield return new WaitForSeconds(3f);
-        StartCoroutine(FinalCO());
-    }
+        // El jugador responde
+        yield return EscribirTexto("Yo: ", textoRespuesta);
+        yield return new WaitForSeconds(0.5f);
 
-    IEnumerator Choice3CO()                                     
-    {
-        ChoicePack.SetActive(false);
-        yield return TypeText("Yo:", "¿Cuantos años tienes?");
-        yield return new WaitForSeconds(3f);
-        StartCoroutine(FinalCO());
-    }
+        // El NPC responde (solo si hay texto asignado)
+        if (!string.IsNullOrEmpty(respuestaNPC))
+        {
+            yield return PresionarMouse();
+            yield return EscribirTexto("Kid: ", respuestaNPC);
+            yield return new WaitForSeconds(1f);
+        }
+        else
+        {
+            yield return new WaitForSeconds(2f);
+        }
 
-    // ─── Final ───────────────────────────────────────────────────────────
+        // Cerrar UI
+        talkPanel.SetActive(false);
+        talkText.SetActive(false);
+        subText.text = "";
 
-    IEnumerator FinalCO()
-    {
-        TalkPanel.SetActive(false);
-        ChoicePack.SetActive(false);
-        TalkText.SetActive(false);
-        SubText.text = "";
+        // Registrar elección
+        GameManager.Instance.RegistrarEleccion(tipo);
 
+        bool esUltimoMomento = GameManager.Instance.MomentoActual >= GameManager.TOTAL_MOMENTOS;
+        if (!esUltimoMomento)
+        {
+            firstPersonController.enabled = true;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
 
-        FirstPersonController.enabled = true;
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        CanInteract = true;
-
+        this.enabled = false;
         yield return null;
     }
 
-    IEnumerator MousePress()
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator ZoomOutCO()
+    {
+        float t = 0f;
+        camara.fieldOfView = fovInicial;
+        while (t < duracionZoom)
+        {
+            t += Time.deltaTime;
+            camara.fieldOfView = Mathf.Lerp(fovInicial, fovFinal, t / duracionZoom);
+            yield return null;
+        }
+        camara.fieldOfView = fovFinal;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator EscribirTexto(string hablante, string mensaje)
+    {
+        subText.text = hablante;
+        foreach (char c in mensaje)
+        {
+            subText.text += c;
+            yield return new WaitForSeconds(_time);
+        }
+    }
+
+    IEnumerator PresionarMouse()
     {
         while (!Mouse.current.leftButton.wasPressedThisFrame)
             yield return null;
