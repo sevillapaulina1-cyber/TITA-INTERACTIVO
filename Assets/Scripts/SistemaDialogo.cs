@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 /// <summary>
 /// Sistema de diálogo reutilizable para los 12 momentos.
@@ -30,6 +31,9 @@ public class SistemaDialogo : MonoBehaviour
     public Text subText;
 
     [Header("── Botones de opciones ────────────────")]
+    public Button boton1;
+    public Button boton2;
+    public Button boton3;
     public Text textoBoton1;
     public Text textoBoton2;
     public Text textoBoton3;
@@ -52,6 +56,10 @@ public class SistemaDialogo : MonoBehaviour
     [TextArea] public string textoChoice3 = "Opción 3";
     public TipoEleccion tipoChoice3 = TipoEleccion.Rojo;
     [TextArea] public string respuestaNPCChoice3 = "";
+
+    [Header("── Recolector de monedas (opcional) ───")]
+    [Tooltip("Asigna el RecolectorMonedas que debe completarse ANTES de este diálogo. Solo en momentos 2 y 5.")]
+    public RecolectorMonedas recolectorPrevio;
 
     [Header("── Zoom Out (solo activar en Momento 8) ─")]
     public bool hacerZoomOut = false;
@@ -89,6 +97,14 @@ public class SistemaDialogo : MonoBehaviour
 
                 if (Keyboard.current.eKey.wasPressedThisFrame)
                 {
+                    // Bloquear si hay tarea de monedas pendiente
+                    if (recolectorPrevio != null && recolectorPrevio.TareaPendiente())
+                    {
+                        if (interactionText != null)
+                            interactionText.text = "Recoge todas las monedas primero";
+                        return;
+                    }
+
                     _puedeInteractuar = false;
                     StartCoroutine(DialogoCO());
                 }
@@ -118,9 +134,15 @@ public class SistemaDialogo : MonoBehaviour
         talkPanel.SetActive(true);
         talkText.SetActive(true);
 
+        // Actualizar textos
         if (textoBoton1 != null) textoBoton1.text = textoChoice1;
         if (textoBoton2 != null) textoBoton2.text = textoChoice2;
         if (textoBoton3 != null) textoBoton3.text = textoChoice3;
+
+        // Asignar OnClick dinámicamente — esto reemplaza cualquier asignación del Inspector
+        if (boton1 != null) { boton1.onClick.RemoveAllListeners(); boton1.onClick.AddListener(Choice1Void); }
+        if (boton2 != null) { boton2.onClick.RemoveAllListeners(); boton2.onClick.AddListener(Choice2Void); }
+        if (boton3 != null) { boton3.onClick.RemoveAllListeners(); boton3.onClick.AddListener(Choice3Void); }
 
         yield return EscribirTexto("Yo: ", textoYo);
         yield return PresionarMouse();
@@ -214,4 +236,5 @@ public class SistemaDialogo : MonoBehaviour
             yield return null;
     }
 }
+
 
