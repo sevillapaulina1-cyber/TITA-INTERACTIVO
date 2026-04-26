@@ -86,25 +86,40 @@ public class TransicionDia : MonoBehaviour
     IEnumerator TransicionCO(int diaQueTermino)
     {
         int indiceSiguiente = diaQueTermino; // día 1 termina → activa índice 1
+        Debug.Log($"[TransicionDia] Iniciando transición. diaQueTermino={diaQueTermino} indiceSiguiente={indiceSiguiente}");
 
         // Bloquear jugador
         if (firstPersonController != null)
             firstPersonController.enabled = false;
 
         // 1. Fade a negro
+        Debug.Log("[TransicionDia] Iniciando fade a negro...");
         yield return Fade(0f, 1f, duracionFadeIn);
+        Debug.Log("[TransicionDia] Fade completado.");
 
-        // 2. Teletransportar jugador (invisible para el jugador, pantalla negra)
-        if (playerTransform != null &&
-            indiceSiguiente < spawnsPorDia.Length &&
-            spawnsPorDia[indiceSiguiente] != null)
+        // 2. Teletransportar jugador
+        if (playerTransform == null)
+            Debug.LogError("[TransicionDia] playerTransform es NULL.");
+        else if (indiceSiguiente >= spawnsPorDia.Length)
+            Debug.LogError($"[TransicionDia] indiceSiguiente={indiceSiguiente} fuera de rango. spawnsPorDia.Length={spawnsPorDia.Length}");
+        else if (spawnsPorDia[indiceSiguiente] == null)
+            Debug.LogError($"[TransicionDia] spawnsPorDia[{indiceSiguiente}] es NULL.");
+        else
         {
+            // Desactivar CharacterController temporalmente si existe
+            CharacterController cc = playerTransform.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+
             playerTransform.position = spawnsPorDia[indiceSiguiente].position;
             playerTransform.rotation = spawnsPorDia[indiceSiguiente].rotation;
+
+            if (cc != null) cc.enabled = true;
+            Debug.Log($"[TransicionDia] Jugador teletransportado a {spawnsPorDia[indiceSiguiente].name}");
         }
 
         // 3. Swap de NPC
         SwapNPC(indiceSiguiente);
+        Debug.Log($"[TransicionDia] NPC swapeado a índice {indiceSiguiente}");
 
         // 4. Mostrar fecha
         if (textoDia != null)

@@ -1832,9 +1832,9 @@ MonoBehaviour:
   respuestaNPCChoice3: ...
   recolectorPrevio: {fileID: 0}
   hacerZoomOut: 1
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
+  camara: {fileID: 1309367559}
+  fovInicial: 47
+  fovFinal: 95
   duracionZoom: 2
   esperaZoom: 1.5
 --- !u!1001 &201710250
