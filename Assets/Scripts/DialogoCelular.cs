@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Events;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -40,15 +41,15 @@ public class DialogoCelular : MonoBehaviour
     public int momentoIndex = 11;
 
     [Header("── Referencia al jugador ───────────────")]
-    public Transform     jugador;
+    public Transform jugador;
     public MonoBehaviour firstPersonController;
-    public float         distanciaInteraccion = 5f;
-    public Text          interactionText;
+    public float distanciaInteraccion = 5f;
+    public Text interactionText;
 
     [Header("── UI del celular ──────────────────────")]
     public GameObject panelCelular;          // panel raíz del celular
-    public Text       headerNombre;          // nombre en el header (ej: "Kid")
-    public Transform  contenedorMensajes;    // Content del ScrollRect
+    public Text headerNombre;          // nombre en el header (ej: "Kid")
+    public Transform contenedorMensajes;    // Content del ScrollRect
     public ScrollRect scrollRect;            // para hacer scroll automático
     public GameObject panelOpciones;         // panel con los 3 botones
 
@@ -57,6 +58,9 @@ public class DialogoCelular : MonoBehaviour
     public GameObject prefabBurbujaJugador;  // burbuja derecha (verde/azul)
 
     [Header("── Botones de opciones ────────────────")]
+    public Button boton1;
+    public Button boton2;
+    public Button boton3;
     public Text textoBoton1;
     public Text textoBoton2;
     public Text textoBoton3;
@@ -65,23 +69,23 @@ public class DialogoCelular : MonoBehaviour
     [TextArea] public string mensajeInicial = "No le digo a otros que hablo contigo";
 
     [Header("── Opción 1 (Verde) ───────────────────")]
-    [TextArea] public string textoChoice1         = "No pasa nada";
-    public TipoEleccion      tipoChoice1          = TipoEleccion.Verde;
-    [TextArea] public string respuestaNPCChoice1  = "Sí... igual me alegra poder hablar contigo";
+    [TextArea] public string textoChoice1 = "No pasa nada";
+    public TipoEleccion tipoChoice1 = TipoEleccion.Verde;
+    [TextArea] public string respuestaNPCChoice1 = "Sí... igual me alegra poder hablar contigo";
 
     [Header("── Opción 2 (Neutro) ──────────────────")]
-    [TextArea] public string textoChoice2         = "Es mejor que sea entre nosotros";
-    public TipoEleccion      tipoChoice2          = TipoEleccion.Neutro;
-    [TextArea] public string respuestaNPCChoice2  = "Sí, exacto. Tú me entiendes";
+    [TextArea] public string textoChoice2 = "Es mejor que sea entre nosotros";
+    public TipoEleccion tipoChoice2 = TipoEleccion.Neutro;
+    [TextArea] public string respuestaNPCChoice2 = "Sí, exacto. Tú me entiendes";
 
     [Header("── Opción 3 (Rojo) ────────────────────")]
-    [TextArea] public string textoChoice3         = "Sí, es nuestro secreto";
-    public TipoEleccion      tipoChoice3          = TipoEleccion.Rojo;
-    [TextArea] public string respuestaNPCChoice3  = "Me alegra mucho... eres especial para mí";
+    [TextArea] public string textoChoice3 = "Sí, es nuestro secreto";
+    public TipoEleccion tipoChoice3 = TipoEleccion.Rojo;
+    [TextArea] public string respuestaNPCChoice3 = "Me alegra mucho... eres especial para mí";
 
     // ── Estado interno ────────────────────────────────────────────────────
-    bool  _puedeInteractuar = true;
-    float _tiempoEscritura  = 0.03f;
+    bool _puedeInteractuar = true;
+    float _tiempoEscritura = 0.03f;
 
     // ─────────────────────────────────────────────────────────────────────
     void Start()
@@ -131,7 +135,7 @@ public class DialogoCelular : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
 
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible   = true;
+        Cursor.visible = true;
 
         // Abrir panel del celular
         if (panelCelular != null) panelCelular.SetActive(true);
@@ -151,6 +155,11 @@ public class DialogoCelular : MonoBehaviour
         if (textoBoton1 != null) textoBoton1.text = textoChoice1;
         if (textoBoton2 != null) textoBoton2.text = textoChoice2;
         if (textoBoton3 != null) textoBoton3.text = textoChoice3;
+
+        // Asignar OnClick dinámicamente
+        if (boton1 != null) { boton1.onClick.RemoveAllListeners(); boton1.onClick.AddListener(Choice1Void); }
+        if (boton2 != null) { boton2.onClick.RemoveAllListeners(); boton2.onClick.AddListener(Choice2Void); }
+        if (boton3 != null) { boton3.onClick.RemoveAllListeners(); boton3.onClick.AddListener(Choice3Void); }
 
         if (panelOpciones != null) panelOpciones.SetActive(true);
     }
@@ -187,7 +196,7 @@ public class DialogoCelular : MonoBehaviour
         {
             firstPersonController.enabled = true;
             Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible   = false;
+            Cursor.visible = false;
         }
 
         this.enabled = false;

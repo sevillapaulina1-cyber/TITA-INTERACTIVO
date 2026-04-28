@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -116,6 +117,36 @@ public class GameManager : MonoBehaviour
     {
         string escena = (PuntosConfianza >= PuntosRiesgo) ? escenaFinal1 : escenaFinal2;
         Debug.Log($"[GM] FINAL → {escena} | Confianza:{PuntosConfianza} Riesgo:{PuntosRiesgo}");
+        StartCoroutine(FadeYCargarCO(escena));
+    }
+
+    IEnumerator FadeYCargarCO(string escena)
+    {
+        // Buscar el panel negro del TransicionDia para reutilizarlo
+        TransicionDia transicion = FindAnyObjectByType<TransicionDia>();
+
+        if (transicion != null && transicion.panelNegro != null)
+        {
+            // Fade a negro usando el mismo panel de transición
+            float t = 0f;
+            float duracion = 1.5f;
+            UnityEngine.UI.Image panel = transicion.panelNegro;
+
+            while (t < duracion)
+            {
+                t += Time.deltaTime;
+                Color c = panel.color;
+                c.a = Mathf.Lerp(0f, 1f, t / duracion);
+                panel.color = c;
+                yield return null;
+            }
+        }
+        else
+        {
+            // Si no hay panel, esperar un momento antes de cargar
+            yield return new WaitForSeconds(0.5f);
+        }
+
         SceneManager.LoadScene(escena);
     }
 
