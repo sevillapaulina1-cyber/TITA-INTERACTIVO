@@ -23,7 +23,7 @@ public class UIRetroalimentacion : MonoBehaviour
 {
     [Header("── Video ──────────────────────────────")]
     public VideoPlayer videoPlayer;         // Componente VideoPlayer de la escena
-    public RawImage   videoScreen;          // RawImage que muestra el video (pantalla completa)
+    public RawImage videoScreen;          // RawImage que muestra el video (pantalla completa)
     public GameObject botonSaltar;          // Botón "Saltar" (opcional, puede ser null)
 
     [Header("── Panel de retroalimentación ─────────")]
@@ -120,9 +120,9 @@ public class UIRetroalimentacion : MonoBehaviour
 
         GameManager gm = GameManager.Instance;
 
-        if (textoResumen   != null) textoResumen.text   = gm.ObtenerResumen();
+        if (textoResumen != null) textoResumen.text = gm.ObtenerResumen();
         if (textoConfianza != null) textoConfianza.text = $"Confianza: {gm.PuntosConfianza} pts";
-        if (textoRiesgo    != null) textoRiesgo.text    = $"Riesgo:    {gm.PuntosRiesgo} pts";
+        if (textoRiesgo != null) textoRiesgo.text = $"Riesgo:    {gm.PuntosRiesgo} pts";
 
         if (textoFinal != null)
         {

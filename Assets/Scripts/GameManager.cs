@@ -48,6 +48,9 @@ public class GameManager : MonoBehaviour
     public int EleccionesRojas { get; private set; } = 0;
     public int EleccionesNeutras { get; private set; } = 0;
 
+    // Historial de elecciones por momento (índice 0 = momento 1)
+    public TipoEleccion[] HistorialElecciones { get; private set; } = new TipoEleccion[TOTAL_MOMENTOS];
+
     // ── Evento: fin de día (TransicionDia se suscribe aquí) ───────────────
     public event System.Action<int> OnFinDia;   // parámetro = día que acaba de terminar
     public event System.Action OnJuegoCompleto;
@@ -68,6 +71,9 @@ public class GameManager : MonoBehaviour
     {
         MomentoActual++;
         DecisionesEnEsteDia++;
+
+        // Guardar en historial (MomentoActual ya fue incrementado arriba)
+        HistorialElecciones[MomentoActual - 1] = eleccion;
 
         switch (eleccion)
         {
@@ -178,6 +184,7 @@ public class GameManager : MonoBehaviour
         EleccionesVerdes = 0;
         EleccionesRojas = 0;
         EleccionesNeutras = 0;
+        HistorialElecciones = new TipoEleccion[TOTAL_MOMENTOS];
 
         // Restaurar FOV de la cámara principal al reiniciar
         if (Camera.main != null)
