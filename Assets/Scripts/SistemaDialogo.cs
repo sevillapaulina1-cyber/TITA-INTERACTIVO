@@ -71,6 +71,7 @@ public class SistemaDialogo : MonoBehaviour
 
     // ── Estado interno ────────────────────────────────────────────────────
     bool _puedeInteractuar = true;
+    bool _dialogoAbierto = false;
     float _time = 0.05f;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -86,6 +87,14 @@ public class SistemaDialogo : MonoBehaviour
         if (!_puedeInteractuar) return;
         if (GameManager.Instance == null) return;
         if (GameManager.Instance.MomentoActual + 1 != momentoIndex) return;
+
+        // Mantener cursor visible si el diálogo está abierto
+        if (_dialogoAbierto)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
 
         Ray ray = new Ray(jugador.position, jugador.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, distanciaInteraccion))
@@ -131,6 +140,7 @@ public class SistemaDialogo : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        _dialogoAbierto = true;
         talkPanel.SetActive(true);
         talkText.SetActive(true);
 
@@ -201,6 +211,7 @@ public class SistemaDialogo : MonoBehaviour
             Cursor.visible = false;
         }
 
+        _dialogoAbierto = false;
         this.enabled = false;
         yield return null;
     }

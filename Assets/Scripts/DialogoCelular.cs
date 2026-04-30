@@ -85,6 +85,7 @@ public class DialogoCelular : MonoBehaviour
 
     // ── Estado interno ────────────────────────────────────────────────────
     bool _puedeInteractuar = true;
+    bool _chatAbierto = false;
     float _tiempoEscritura = 0.03f;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -100,6 +101,14 @@ public class DialogoCelular : MonoBehaviour
         if (!_puedeInteractuar) return;
         if (GameManager.Instance == null) return;
         if (GameManager.Instance.MomentoActual + 1 != momentoIndex) return;
+
+        // Mantener cursor visible si el chat está abierto
+        if (_chatAbierto)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
 
         Ray ray = new Ray(jugador.position, jugador.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, distanciaInteraccion))
@@ -136,6 +145,8 @@ public class DialogoCelular : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        _chatAbierto = true;
 
         // Abrir panel del celular
         if (panelCelular != null) panelCelular.SetActive(true);
@@ -185,6 +196,8 @@ public class DialogoCelular : MonoBehaviour
             yield return new WaitForSeconds(1.5f);
         }
 
+        _chatAbierto = false;
+
         // Cerrar chat
         if (panelCelular != null) panelCelular.SetActive(false);
 
@@ -205,11 +218,12 @@ public class DialogoCelular : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     IEnumerator MostrarBurbujaNPC(string mensaje)
     {
-        if (prefabBurbujaNPC == null) yield break;
+        if (prefabBurbujaNPC == null) { Debug.LogError("[Chat] prefabBurbujaNPC es null"); yield break; }
 
         GameObject burbuja = Instantiate(prefabBurbujaNPC, contenedorMensajes);
+        Debug.Log($"[Chat] Burbuja NPC instanciada: {burbuja.name}");
         Text textoUI = burbuja.GetComponentInChildren<Text>();
-        if (textoUI == null) yield break;
+        if (textoUI == null) { Debug.LogError("[Chat] No se encontró Text en BurbujaNPC"); yield break; }
 
         textoUI.text = "";
         ScrollAlFinal();
@@ -256,3 +270,4 @@ public class DialogoCelular : MonoBehaviour
             Destroy(hijo.gameObject);
     }
 }
+
