@@ -43,6 +43,10 @@ public class GameManager : MonoBehaviour
     public string escenaFinal1 = "Final1_Secuestro";
     public string escenaFinal2 = "Final2_Policia";
 
+    [Header("── Debug (solo para pruebas) ────────────")]
+    [Tooltip("Inicia el juego desde este momento. 0 = inicio normal. Pon 11 para probar momento 12.")]
+    public int iniciarDesdeMomento = 0;
+
     // ── Retroalimentación ─────────────────────────────────────────────────
     public int EleccionesVerdes { get; private set; } = 0;
     public int EleccionesRojas { get; private set; } = 0;
@@ -56,11 +60,36 @@ public class GameManager : MonoBehaviour
     public event System.Action OnJuegoCompleto;
 
     // ─────────────────────────────────────────────────────────────────────
+    [Header("── Debug (quitar antes del build final) ──")]
+    public bool debugSaltarAMomento = false;
+    public int debugMomentoInicio = 10;  // cambia al momento que quieras probar
+    public int debugDiaInicio = 4;   // día correspondiente al momento
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // DEBUG: saltar directamente a un momento específico
+        if (debugSaltarAMomento)
+        {
+            MomentoActual = debugMomentoInicio - 1;
+            DiaActual = debugDiaInicio;
+            DecisionesEnEsteDia = (debugMomentoInicio - 1) % DECISIONES_POR_DIA;
+            Debug.Log($"[GM] DEBUG: saltando al momento {debugMomentoInicio}, día {debugDiaInicio}");
+        }
+    }
+
+    void Start()
+    {
+        if (iniciarDesdeMomento > 0)
+        {
+            MomentoActual = iniciarDesdeMomento;
+            DiaActual = Mathf.CeilToInt(iniciarDesdeMomento / (float)DECISIONES_POR_DIA) + 1;
+            DecisionesEnEsteDia = iniciarDesdeMomento % DECISIONES_POR_DIA;
+            Debug.Log($"[GM] DEBUG: Iniciando desde momento {iniciarDesdeMomento + 1} | Día {DiaActual}");
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────
