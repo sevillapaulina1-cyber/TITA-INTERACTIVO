@@ -2,11 +2,25 @@
 
 ## Descripción del Proyecto
 
-El presente proyecto describe el desarrollo y diseño de una experiencia interactiva que sitúa a los usuarios en una recreación de situaciones donde ocurre el **grooming** dentro de la plataforma Roblox, desde la perspectiva del depredador.
+Este proyecto consiste en el desarrollo de una experiencia interactiva en primera persona que recrea situaciones de **grooming** dentro de la plataforma Roblox, desde la perspectiva del depredador.
 
-El objetivo es evidenciar la facilidad con la que operan estos individuos en entornos digitales y exponer cuán vulnerables pueden ser los menores en este tipo de plataformas.
+La propuesta busca evidenciar la facilidad con la que operan estos individuos en entornos digitales y demostrar la vulnerabilidad de los menores en este tipo de plataformas.
 
----
+Se trata de una experiencia narrativa basada en decisiones, diseñada con un enfoque educativo y preventivo dirigido principalmente a padres de familia.
+
+
+
+## Enfoque del Proyecto
+
+El proyecto adopta una perspectiva poco convencional al colocar al usuario en el rol del agresor, con el fin de:
+
+* Exponer las estrategias utilizadas en el grooming digital
+* Generar conciencia sobre los riesgos en plataformas interactivas
+* Promover la prevención a través de la comprensión del problema
+
+Forma parte de una propuesta multimedia que combina investigación, narrativa interactiva y diseño de experiencias.
+
+
 
 ## Tecnologías Utilizadas
 
@@ -14,48 +28,127 @@ El objetivo es evidenciar la facilidad con la que operan estos individuos en ent
 * C#
 * Blender
 
----
 
-## Mecánicas de Uso / Jugabilidad
 
-La experiencia se desarrolla como una narrativa interactiva basada en toma de decisiones, combinada con exploración del entorno.
+## Mecánicas de Juego
 
-**Controles:**
+La experiencia se desarrolla como una narrativa interactiva con exploración y toma de decisiones.
 
-* Movimiento: `W`, `A`, `S`, `D`
-* Salto: `Espacio`
-* Correr: `Shift`
+### Controles
 
-**Interacción:**
+| Acción          | Control         |
+| --------------- | --------------- |
+| Movimiento      | `W` `A` `S` `D` |
+| Mirar           | Mouse           |
+| Saltar          | `Espacio`       |
+| Correr          | `Shift`         |
+| Interactuar     | `E`             |
+| Avanzar diálogo | Clic izquierdo  |
+| Elegir opción   | Clic en botón   |
 
-* El jugador debe interactuar con NPCs específicos para avanzar en la historia.
-* Se incluyen elementos de exploración y recolección de objetos que aportan contexto a la narrativa.
-* Las decisiones del jugador afectan el desarrollo de la experiencia.
 
----
 
-## Enfoque del Proyecto
+## Estructura de la Experiencia
 
-Este proyecto tiene un enfoque educativo y preventivo.
-Busca generar conciencia en padres de familia sobre los riesgos del grooming digital, utilizando una perspectiva poco convencional para evidenciar cómo operan estos depredadores.
+La experiencia se divide en **4 días** con un total de **12 momentos de decisión**.
 
----
+Cada decisión afecta el progreso mediante un sistema de puntos:
+
+| Tipo de decisión | Color    | Puntos       |
+| ---------------- | -------- | ------------ |
+| Vulnerable       | 🟢 Verde | +2 Confianza |
+| Neutra           | ⚪ Gris   | +1 Confianza |
+| Extraña          | 🔴 Rojo  | +2 Riesgo    |
+
+
+
+### Flujo General
+
+
+Menú de inicio
+→ Día 1 (momentos 1–3)
+→ Día 2 (momentos 4–6)
+→ Día 3 (momentos 7–9)
+→ Día 4 (momentos 10–12)
+→ Video final
+→ Pantalla de retroalimentación
+```
+
+Cada día incluye interacciones con NPCs, decisiones y elementos de exploración.
+
+
+## Mecánicas Específicas
+
+### Interacción con NPCs
+
+* El jugador debe interactuar con personajes para avanzar
+* Cada interacción presenta 3 opciones de decisión
+* Las decisiones afectan el resultado final
+
+### Recolección de Monedas
+
+* Ocurre entre momentos específicos (1→2 y 4→5)
+* Se deben recolectar **3 monedas** para continuar
+* Si no se completan, aparece un mensaje de bloqueo
+
+### Transiciones entre Días
+
+* Fundido a negro
+* Aparición de fecha
+* Cambio de escenario y NPC
+* Reubicación del jugador
+
+### Chat de Celular (Momentos 11 y 12)
+
+* Interfaz estilo iMessage
+* Respuestas del jugador y NPC en formato de chat
+* Integrado sobre el entorno 3D
+
+
+## Finales Posibles
+
+| Final               | Condición          |
+| ------------------- | ------------------ |
+| Final 1 — Secuestro | Confianza mayor Riesgo |
+| Final 2 — Policía   | Riesgo mayor Confianza |
+
+El sistema permite diferentes rutas, aunque incluso decisiones ambiguas favorecen la confianza.
+
+
+
+## Escenas del Proyecto
+
+| Escena          | Descripción                    |
+| --------------- | ------------------------------ |
+| MenuInicio      | Pantalla inicial               |
+| EscenaPrincipal | Desarrollo de la experiencia   |
+| Final_1         | Cinemática + retroalimentación |
+| Final_2         | Cinemática + retroalimentación |
+
+
+
+## Scripts Principales
+
+* GameManager.cs → Control general del sistema
+* SistemaDialogo.cs → Diálogos principales
+* DialogoCelular.cs → Sistema de chat
+* TransicionDia.cs → Cambios entre días
+* RecolectorMonedas.cs → Sistema de recolección
+* Moneda.cs → Comportamiento de monedas
+* UIRetroalimentacion.cs → Resultados finales
+* MapaDecisiones.cs → Visualización del recorrido
+* MenuInicio.cs → Menú principal
+
+
+## Estado del Proyecto
+
+En desarrollo — Prototipo 1
+
 
 ## Integrantes
 
 * Stephano Pinto
 * Paulina Sevilla
 
----
 
-## Estado del Proyecto
 
-En desarrollo — Etapa de Prototipo 1
-
----
-
-## Notas Adicionales
-
-Este proyecto forma parte de una propuesta multimedia con fines educativos, que combina investigación, narrativa interactiva y diseño de experiencias para abordar problemáticas actuales en entornos digitales.
-
----
