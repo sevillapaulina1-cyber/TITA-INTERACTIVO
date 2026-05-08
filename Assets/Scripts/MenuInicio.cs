@@ -6,56 +6,52 @@ using System.Collections;
 /// <summary>
 /// Menú principal de la experiencia.
 ///
-/// SETUP EN UNITY:
-///   1. Crea una nueva escena "MenuInicio"
-///   2. Agrégala en Build Settings como la primera escena (índice 0)
-///   3. Crea un Canvas (Screen Space - Overlay) con esta estructura:
+/// CAMBIO RESPECTO A LA VERSIÓN ANTERIOR:
+///   El campo "escenaPrincipal" ahora se llama "escenaCinematica".
+///   En el Inspector asigna "Cinematica" (o el nombre exacto de tu escena de intro).
+///   El flujo queda: MenuInicio → Cinematica → EscenaPrincipal
 ///
+/// SETUP EN UNITY:
 ///   Canvas
 ///     ├── Fondo          ← Image que cubre toda la pantalla
 ///     ├── Titulo         ← Text con el nombre de la experiencia
 ///     ├── Subtitulo      ← Text secundario (opcional)
-///     ├── BotonIniciar   ← Button "Iniciar experiencia"
-///     └── BotonSalir     ← Button "Salir"
-///
-///   4. Crea un GameObject vacío → Add Component → MenuInicio
-///   5. Asigna los campos en el Inspector
-///   6. En cada botón → OnClick → MenuInicio → IniciarExperiencia() / Salir()
+///     ├── BotonIniciar   ← Button → OnClick → MenuInicio.IniciarExperiencia()
+///     ├── BotonSalir     ← Button → OnClick → MenuInicio.Salir()
+///     └── PanelFade      ← Image negra stretch completo, alpha 0 al inicio
 /// </summary>
 public class MenuInicio : MonoBehaviour
 {
-    [Header("── Escena a cargar ──────────────────────")]
-    public string escenaPrincipal = "EscenaPrincipal";  // nombre exacto de tu escena
+    [Header("── Escenas ──────────────────────────────")]
+    [Tooltip("Nombre exacto de tu escena de cinemática de intro")]
+    public string escenaCinematica = "Cinematica";      // ← antes era escenaPrincipal
 
     [Header("── UI ──────────────────────────────────")]
-    public Text   textoTitulo;
-    public Text   textoSubtitulo;
+    public Text textoTitulo;
+    public Text textoSubtitulo;
     public Button botonIniciar;
     public Button botonSalir;
 
     [Header("── Panel negro para fade ───────────────")]
-    public Image panelFade;   // Image negra en stretch completo, alpha 0 al inicio
+    public Image panelFade;
 
     [Header("── Contenido ───────────────────────────")]
-    public string titulo    = "Experiencia Interactiva";
+    public string titulo = "Experiencia Interactiva";
     public string subtitulo = "Una historia sobre grooming";
 
     [Header("── Tiempos ─────────────────────────────")]
-    public float duracionFadeIn  = 0.8f;   // fade al abrir el menú
-    public float duracionFadeOut = 1.0f;   // fade al iniciar la experiencia
+    public float duracionFadeIn = 0.8f;
+    public float duracionFadeOut = 1.0f;
 
     // ─────────────────────────────────────────────────────────────────────
     void Start()
     {
-        // Asignar textos
-        if (textoTitulo    != null) textoTitulo.text    = titulo;
+        if (textoTitulo != null) textoTitulo.text = titulo;
         if (textoSubtitulo != null) textoSubtitulo.text = subtitulo;
 
-        // Asignar OnClick dinámicamente
         if (botonIniciar != null) { botonIniciar.onClick.RemoveAllListeners(); botonIniciar.onClick.AddListener(IniciarExperiencia); }
-        if (botonSalir   != null) { botonSalir.onClick.RemoveAllListeners();   botonSalir.onClick.AddListener(Salir); }
+        if (botonSalir != null) { botonSalir.onClick.RemoveAllListeners(); botonSalir.onClick.AddListener(Salir); }
 
-        // Fade de entrada
         StartCoroutine(FadeEntradaCO());
     }
 
@@ -63,14 +59,11 @@ public class MenuInicio : MonoBehaviour
     IEnumerator FadeEntradaCO()
     {
         if (panelFade == null) yield break;
-
-        // Empezar negro y aclarar
         SetAlpha(1f);
         yield return Fade(1f, 0f, duracionFadeIn);
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>Asigna al BotonIniciar en OnClick o se asigna automáticamente en Start.</summary>
     public void IniciarExperiencia()
     {
         StartCoroutine(IniciarCO());
@@ -78,22 +71,19 @@ public class MenuInicio : MonoBehaviour
 
     IEnumerator IniciarCO()
     {
-        // Desactivar botones para evitar doble clic
         if (botonIniciar != null) botonIniciar.interactable = false;
-        if (botonSalir   != null) botonSalir.interactable   = false;
+        if (botonSalir != null) botonSalir.interactable = false;
 
-        // Fade a negro
         yield return Fade(0f, 1f, duracionFadeOut);
 
-        // Resetear GameManager si existe (por si viene de un reinicio)
+        // Resetear GameManager si viene de un reinicio
         if (GameManager.Instance != null)
             GameManager.Instance.Reiniciar();
 
-        SceneManager.LoadScene(escenaPrincipal);
+        SceneManager.LoadScene(escenaCinematica);   // ← va a Cinematica, no al juego directo
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>Asigna al BotonSalir en OnClick o se asigna automáticamente en Start.</summary>
     public void Salir()
     {
         StartCoroutine(SalirCO());
@@ -102,13 +92,10 @@ public class MenuInicio : MonoBehaviour
     IEnumerator SalirCO()
     {
         if (botonIniciar != null) botonIniciar.interactable = false;
-        if (botonSalir   != null) botonSalir.interactable   = false;
+        if (botonSalir != null) botonSalir.interactable = false;
 
         yield return Fade(0f, 1f, duracionFadeOut);
-
         Application.Quit();
-
-        // En el editor no cierra, solo muestra mensaje
         Debug.Log("[MenuInicio] Salir — funciona en build, no en el editor.");
     }
 
@@ -116,7 +103,6 @@ public class MenuInicio : MonoBehaviour
     IEnumerator Fade(float desde, float hasta, float duracion)
     {
         if (panelFade == null) yield break;
-
         float t = 0f;
         while (t < duracion)
         {

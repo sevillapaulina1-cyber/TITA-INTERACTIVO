@@ -13779,7 +13779,7 @@ MonoBehaviour:
   escenaFinal1: Final_1
   escenaFinal2: Final_2
   iniciarDesdeMomento: 0
-  debugSaltarAMomento: 1
+  debugSaltarAMomento: 0
   debugMomentoInicio: 11
   debugDiaInicio: 4
 --- !u!4 &2030014993
