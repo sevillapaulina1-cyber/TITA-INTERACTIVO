@@ -2,26 +2,34 @@ using UnityEngine;
 
 /// <summary>
 /// Script que va en cada moneda del mundo.
+/// Puede notificar a RecolectorMonedas (tramos normales)
+/// o a PuzzlePalancas (tramo 4→5 con palancas).
+/// Solo uno de los dos debe estar asignado por moneda.
 ///
 /// SETUP:
-///   1. Crea un GameObject con una malla (cilindro, esfera, etc.) y un Collider.
-///   2. Marca el Collider como "Is Trigger" ✓
-///   3. Agrega este script y asigna el RecolectorMonedas correspondiente.
-///   4. Duplica x3 para tener las 3 monedas de cada zona.
+///   Monedas del tramo 1→2:  asignar recolector, dejar gestorPalancas vacío
+///   Monedas del tramo 4→5:  asignar gestorPalancas, dejar recolector vacío
 ///
-/// OPCIONAL:
-///   - Asigna un AudioClip en "sonidoRecolecta" para reproducir al tocar.
-///   - Activa "girar" para que la moneda rote sobre su eje.
+/// INSPECTOR:
+///   recolector       → RecolectorMonedas de esta zona  (tramos normales)
+///   gestorPalancas   → PuzzlePalancas de esta zona     (tramo 4→5)
+///   girar            → true
+///   velocidadGiro    → 90
+///   sonidoRecolecta  → AudioClip opcional
 /// </summary>
 public class Moneda : MonoBehaviour
 {
-    [Header("── Recolector ───────────────────────────")]
-    [Tooltip("Arrastra aquí el RecolectorMonedas de esta zona")]
+    [Header("── Recolector (tramos normales) ────────")]
+    [Tooltip("Asigna esto para los tramos sin palancas")]
     public RecolectorMonedas recolector;
 
+    [Header("── Puzzle palancas (tramo 4→5) ─────────")]
+    [Tooltip("Asigna esto para el tramo con palancas")]
+    public PuzzlePalancas gestorPalancas;
+
     [Header("── Animación ───────────────────────────")]
-    public bool  girar          = true;
-    public float velocidadGiro  = 90f;   // grados por segundo
+    public bool girar = true;
+    public float velocidadGiro = 90f;
 
     [Header("── Audio (opcional) ───────────────────")]
     public AudioClip sonidoRecolecta;
@@ -37,16 +45,16 @@ public class Moneda : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
-        if (recolector == null) return;
 
-        // Reproducir sonido si hay uno asignado
         if (sonidoRecolecta != null)
             AudioSource.PlayClipAtPoint(sonidoRecolecta, transform.position);
 
-        // Notificar al recolector
-        recolector.MonedaRecolectada();
+        // Notificar al gestor correspondiente
+        if (gestorPalancas != null)
+            gestorPalancas.MonedaRecogida();
+        else if (recolector != null)
+            recolector.MonedaRecolectada();
 
-        // Desactivar la moneda
         gameObject.SetActive(false);
     }
 }
