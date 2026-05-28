@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Sistema de diálogo reutilizable para los 12 momentos.
-/// Configurable completamente desde el Inspector.
+/// Los botones se asignan automáticamente por código al abrir el diálogo.
+/// Solo necesitas asignar los 3 Buttons (no los OnClick) en el Inspector.
 /// </summary>
 public class SistemaDialogo : MonoBehaviour
 {
@@ -29,7 +30,10 @@ public class SistemaDialogo : MonoBehaviour
     public GameObject talkText;
     public Text subText;
 
-    [Header("── Botones de opciones ────────────────")]
+    [Header("── Botones (asigna el Button, no el OnClick) ──")]
+    public Button boton1;
+    public Button boton2;
+    public Button boton3;
     public Text textoBoton1;
     public Text textoBoton2;
     public Text textoBoton3;
@@ -41,7 +45,7 @@ public class SistemaDialogo : MonoBehaviour
     [Header("── Opción 1 (Verde) ───────────────────")]
     [TextArea] public string textoChoice1 = "Opción 1";
     public TipoEleccion tipoChoice1 = TipoEleccion.Verde;
-    [TextArea] public string respuestaNPCChoice1 = "";  // lo que responde el NPC tras elegir esta opción
+    [TextArea] public string respuestaNPCChoice1 = "";
 
     [Header("── Opción 2 (Neutro) ──────────────────")]
     [TextArea] public string textoChoice2 = "Opción 2";
@@ -53,15 +57,11 @@ public class SistemaDialogo : MonoBehaviour
     public TipoEleccion tipoChoice3 = TipoEleccion.Rojo;
     [TextArea] public string respuestaNPCChoice3 = "";
 
-    [Header("── Recolector de monedas (opcional) ───")]
-    [Tooltip("Asigna el RecolectorMonedas que debe completarse ANTES de este diálogo. Solo en momentos que usen recolector simple.")]
+    [Header("── Bloqueos previos (opcional) ─────────")]
     public RecolectorMonedas recolectorPrevio;
-
-    [Header("── Puzzle de palancas (opcional) ───────")]
-    [Tooltip("Asigna el PuzzlePalancas que debe completarse ANTES de este diálogo. Usar en momento 5.")]
     public PuzzlePalancas puzzlePrevio;
 
-    [Header("── Zoom Out (solo activar en Momento 8) ─")]
+    [Header("── Zoom Out (solo Momento 8) ───────────")]
     public bool hacerZoomOut = false;
     public Camera camara;
     public float fovInicial = 60f;
@@ -71,6 +71,7 @@ public class SistemaDialogo : MonoBehaviour
 
     // ── Estado interno ────────────────────────────────────────────────────
     bool _puedeInteractuar = true;
+    bool _botonesAsignados = false;
     float _time = 0.05f;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -78,6 +79,33 @@ public class SistemaDialogo : MonoBehaviour
     {
         if (npcTransform != null && posicionNPCEsteDia != null)
             npcTransform.position = posicionNPCEsteDia.position;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Asigna los listeners de los botones a ESTE momento.
+    /// Se llama justo antes de mostrar las opciones.
+    /// Limpia listeners anteriores para evitar acumulación.
+    /// </summary>
+    void AsignarBotones()
+    {
+        if (boton1 != null)
+        {
+            boton1.onClick.RemoveAllListeners();
+            boton1.onClick.AddListener(Choice1Void);
+        }
+        if (boton2 != null)
+        {
+            boton2.onClick.RemoveAllListeners();
+            boton2.onClick.AddListener(Choice2Void);
+        }
+        if (boton3 != null)
+        {
+            boton3.onClick.RemoveAllListeners();
+            boton3.onClick.AddListener(Choice3Void);
+        }
+
+        _botonesAsignados = true;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -97,7 +125,6 @@ public class SistemaDialogo : MonoBehaviour
 
                 if (Keyboard.current.eKey.wasPressedThisFrame)
                 {
-                    // Bloquear si hay tarea de monedas pendiente
                     if (recolectorPrevio != null && recolectorPrevio.TareaPendiente())
                     {
                         if (interactionText != null)
@@ -105,7 +132,6 @@ public class SistemaDialogo : MonoBehaviour
                         return;
                     }
 
-                    // Bloquear si el puzzle de palancas está pendiente
                     if (puzzlePrevio != null && puzzlePrevio.PuzzlePendiente())
                     {
                         if (interactionText != null)
@@ -142,6 +168,7 @@ public class SistemaDialogo : MonoBehaviour
         talkPanel.SetActive(true);
         talkText.SetActive(true);
 
+        // Actualizar textos de botones
         if (textoBoton1 != null) textoBoton1.text = textoChoice1;
         if (textoBoton2 != null) textoBoton2.text = textoChoice2;
         if (textoBoton3 != null) textoBoton3.text = textoChoice3;
@@ -158,6 +185,8 @@ public class SistemaDialogo : MonoBehaviour
             yield return new WaitForSeconds(esperaZoom);
         }
 
+        // Asignar botones a ESTE momento justo antes de mostrarlos
+        AsignarBotones();
         choicePack.SetActive(true);
     }
 
@@ -171,32 +200,28 @@ public class SistemaDialogo : MonoBehaviour
     {
         choicePack.SetActive(false);
 
-        // El jugador responde
         yield return EscribirTexto("Yo: ", textoRespuesta);
         yield return new WaitForSeconds(0.5f);
 
-        // El NPC responde (solo si hay texto asignado)
         if (!string.IsNullOrEmpty(respuestaNPC))
         {
-            yield return PresionarMouse();
+            yield return new WaitForSeconds(0.4f);
             yield return EscribirTexto("Kid: ", respuestaNPC);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.5f);
         }
         else
         {
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1.5f);
         }
 
-        // Cerrar UI
         talkPanel.SetActive(false);
         talkText.SetActive(false);
         subText.text = "";
 
-        // Registrar elección
         GameManager.Instance.RegistrarEleccion(tipo);
 
-        bool esUltimoMomento = GameManager.Instance.MomentoActual >= GameManager.TOTAL_MOMENTOS;
-        if (!esUltimoMomento)
+        bool esUltimo = GameManager.Instance.MomentoActual >= GameManager.TOTAL_MOMENTOS;
+        if (!esUltimo)
         {
             firstPersonController.enabled = true;
             Cursor.lockState = CursorLockMode.Locked;
@@ -238,4 +263,3 @@ public class SistemaDialogo : MonoBehaviour
             yield return null;
     }
 }
-

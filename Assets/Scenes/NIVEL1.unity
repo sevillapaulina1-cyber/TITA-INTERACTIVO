@@ -282,7 +282,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -540,6 +540,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -728,6 +731,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -1905,6 +1911,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -2307,7 +2316,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10.191
+      value: -10.222
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2357,11 +2366,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
   m_PrefabInstance: {fileID: 238541714}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &238541716 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
-  m_PrefabInstance: {fileID: 238541714}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &238541717 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
@@ -2401,7 +2405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Palanca
   gestorPuzzle: {fileID: 689089446}
-  brazoPalanca: {fileID: 238541716}
+  brazoPalanca: {fileID: 238541715}
   anguloActivo: -60
   duracionAnimacion: 0.4
   jugador: {fileID: 550211510}
@@ -2927,6 +2931,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -3004,6 +3011,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -3976,7 +3986,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SistemaDialogo, Assembly-CSharp
-        m_MethodName: Choice1Void
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4585,7 +4595,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1136, y: 97.73419}
+  m_SizeDelta: {x: 1136, y: 84.3845}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &486378373
 MonoBehaviour:
@@ -4600,7 +4610,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.044025064, g: 0.044025064, b: 0.044025064, a: 0.40392157}
+  m_Color: {r: 0.044025064, g: 0.044025064, b: 0.044025064, a: 0.11372549}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5545,6 +5555,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -5592,7 +5605,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -5846,7 +5859,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -11.248962
+      value: -11.274
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5876,6 +5889,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9.551849
+      objectReference: {fileID: 0}
+    - target: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.099
+      objectReference: {fileID: 0}
+    - target: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.203
+      objectReference: {fileID: 0}
+    - target: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5553849
+      objectReference: {fileID: 0}
+    - target: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.8315934
+      objectReference: {fileID: 0}
+    - target: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -112.526
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
       propertyPath: m_Name
       value: palanca1
@@ -5894,11 +5935,6 @@ PrefabInstance:
 --- !u!4 &681383910 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
-  m_PrefabInstance: {fileID: 681383909}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &681383911 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
   m_PrefabInstance: {fileID: 681383909}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &681383912 stripped
@@ -5940,12 +5976,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Palanca
   gestorPuzzle: {fileID: 689089446}
-  brazoPalanca: {fileID: 681383911}
+  brazoPalanca: {fileID: 681383910}
   anguloActivo: -60
   duracionAnimacion: 0.4
   jugador: {fileID: 550211510}
-  distanciaActivar: 3
-  textoInteraccion: {fileID: 2061703930}
+  distanciaActivar: 6
+  textoInteraccion: {fileID: 262110545}
   sonidoPalanca: {fileID: 0}
 --- !u!1 &685886718
 GameObject:
@@ -6077,10 +6113,14 @@ MonoBehaviour:
   - {fileID: 681383914}
   - {fileID: 238541719}
   - {fileID: 1553052562}
-  monedas: []
+  monedas:
+  - {fileID: 1876050261}
+  - {fileID: 2019177409}
+  - {fileID: 665037663}
   totalMonedas: 3
   efectoAparicion: {fileID: 0}
   sonidoMonedas: {fileID: 0}
+  forzarPuzzleActivo: 0
 --- !u!1001 &696381204
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6743,7 +6783,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -9621,6 +9661,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -10180,6 +10223,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -10222,7 +10268,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -10734,8 +10780,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -330.8, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -245.40002, y: 0}
+  m_SizeDelta: {x: 330.8, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1337897519
 MonoBehaviour:
@@ -11417,6 +11463,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -11620,7 +11669,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -12191,7 +12240,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -12215,7 +12264,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 24.014
+      value: 24.023
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12260,11 +12309,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1553052562}
   m_SourcePrefab: {fileID: 100100000, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
---- !u!4 &1553052559 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -3542852092398272455, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
-  m_PrefabInstance: {fileID: 1553052558}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1553052560 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 55aa40533959ca8478ed585cb546c8ea, type: 3}
@@ -12288,7 +12332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Palanca
   gestorPuzzle: {fileID: 689089446}
-  brazoPalanca: {fileID: 1553052559}
+  brazoPalanca: {fileID: 1553052560}
   anguloActivo: -60
   duracionAnimacion: 0.4
   jugador: {fileID: 550211510}
@@ -13166,7 +13210,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -15200,7 +15244,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -15862,7 +15906,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -15923,6 +15967,9 @@ MonoBehaviour:
   choicePack: {fileID: 1659107247}
   talkText: {fileID: 970998176}
   subText: {fileID: 970998178}
+  boton1: {fileID: 468814504}
+  boton2: {fileID: 649342886}
+  boton3: {fileID: 881719971}
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
@@ -17388,7 +17435,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -330}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2061703930
@@ -17404,7 +17451,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -17412,19 +17459,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &2061703931
 CanvasRenderer:
   m_ObjectHideFlags: 0

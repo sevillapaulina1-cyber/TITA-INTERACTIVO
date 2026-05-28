@@ -62,6 +62,10 @@ public class PuzzlePalancas : MonoBehaviour
     [Header("── Audio (opcional) ───────────────────")]
     public AudioClip sonidoMonedas;        // sonido al aparecer las monedas
 
+    [Header("── Debug ────────────────────────────────")]
+    [Tooltip("Activa esto en el Inspector para probar el puzzle sin pasar por el momento 4")]
+    public bool forzarPuzzleActivo = false;
+
     // ── Estado interno ────────────────────────────────────────────────────
     int _palancasActivadas = 0;
     int _monedasRecogidas = 0;
@@ -73,17 +77,29 @@ public class PuzzlePalancas : MonoBehaviour
     void Start()
     {
         ToggleMonedas(false);
+
+        if (forzarPuzzleActivo)
+            IniciarPuzzle();
+        else
+            StartCoroutine(EsperarMomentoCO());
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator EsperarMomentoCO()
+    {
+        // Espera hasta que el GameManager registre el momento correcto
+        yield return new WaitUntil(() =>
+            GameManager.Instance != null &&
+            GameManager.Instance.MomentoActual == momentoQueActiva &&
+            !_completado
+        );
+        IniciarPuzzle();
     }
 
     // ─────────────────────────────────────────────────────────────────────
     void Update()
     {
-        if (_puzzleActivo || _completado) return;
-        if (GameManager.Instance == null) return;
-
-        // Se activa cuando el momento 4 ya fue registrado
-        if (GameManager.Instance.MomentoActual == momentoQueActiva)
-            IniciarPuzzle();
+        // Update vacío — la activación la maneja EsperarMomentoCO
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -173,8 +189,8 @@ public class PuzzlePalancas : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     public bool PuzzlePendiente()
     {
-        if (GameManager.Instance == null) return false;
-        return GameManager.Instance.MomentoActual == momentoQueActiva && !_completado;
+        // Pendiente = el puzzle está activo y no completado
+        return _puzzleActivo && !_completado;
     }
 
     // ─────────────────────────────────────────────────────────────────────
