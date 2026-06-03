@@ -1,31 +1,14 @@
 using UnityEngine;
 
-/// <summary>
-/// Script que va en cada moneda del mundo.
-/// Puede notificar a RecolectorMonedas (tramos normales)
-/// o a PuzzlePalancas (tramo 4→5 con palancas).
-/// Solo uno de los dos debe estar asignado por moneda.
-///
-/// SETUP:
-///   Monedas del tramo 1→2:  asignar recolector, dejar gestorPalancas vacío
-///   Monedas del tramo 4→5:  asignar gestorPalancas, dejar recolector vacío
-///
-/// INSPECTOR:
-///   recolector       → RecolectorMonedas de esta zona  (tramos normales)
-///   gestorPalancas   → PuzzlePalancas de esta zona     (tramo 4→5)
-///   girar            → true
-///   velocidadGiro    → 90
-///   sonidoRecolecta  → AudioClip opcional
-/// </summary>
 public class Moneda : MonoBehaviour
 {
     [Header("── Recolector (tramos normales) ────────")]
-    [Tooltip("Asigna esto para los tramos sin palancas")]
+    [Tooltip("Asigna para tramos sin puzzle de zonas")]
     public RecolectorMonedas recolector;
 
-    [Header("── Puzzle palancas (tramo 4→5) ─────────")]
-    [Tooltip("Asigna esto para el tramo con palancas")]
-    public PuzzlePalancas gestorPalancas;
+    [Header("── Gestor Zonas (tramo 4→5) ─────────────")]
+    [Tooltip("Asigna GestorZonas_4a5 para las monedas del puzzle de zonas")]
+    public GestorZonas gestorZonas;
 
     [Header("── Animación ───────────────────────────")]
     public bool girar = true;
@@ -50,8 +33,8 @@ public class Moneda : MonoBehaviour
             AudioSource.PlayClipAtPoint(sonidoRecolecta, transform.position);
 
         // Notificar al gestor correspondiente
-        if (gestorPalancas != null)
-            gestorPalancas.MonedaRecogida();
+        if (gestorZonas != null)
+            gestorZonas.MonedaRecogida();
         else if (recolector != null)
             recolector.MonedaRecolectada();
 

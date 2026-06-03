@@ -5,10 +5,14 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Sistema de diálogo estilo iMessage para los momentos 11 y 12.
+/// El jugador presiona E para abrir el chat (momento 11).
+/// Al elegir en el 11, el momento 12 llega automáticamente sin cerrar el chat.
+/// Al elegir en el 12, se cierra y el GameManager evalúa el final.
 /// </summary>
 public class DialogoCelular : MonoBehaviour
 {
     [Header("── Identificación ──────────────────────")]
+    [Tooltip("Dejar en 11 — gestiona el 11 y 12 seguidos")]
     public int momentoIndex = 11;
 
     [Header("── Referencia al jugador ───────────────")]
@@ -36,23 +40,45 @@ public class DialogoCelular : MonoBehaviour
     public Text textoBoton2;
     public Text textoBoton3;
 
-    [Header("── Contenido del chat ─────────────────")]
-    [TextArea] public string mensajeInicial = "...";
+    // ══════════════════════════════════════════════════════════════════════
+    // MOMENTO 11
+    // ══════════════════════════════════════════════════════════════════════
+    [Header("── Momento 11 ───────────────────────────")]
+    [TextArea] public string mensajeInicial11 = "No le digo a otros que hablo contigo";
 
-    [Header("── Opción 1 (Verde) ───────────────────")]
-    [TextArea] public string textoChoice1 = "Opción 1";
-    public TipoEleccion tipoChoice1 = TipoEleccion.Verde;
-    [TextArea] public string respuestaNPCChoice1 = "";
+    [TextArea] public string textoChoice11_1 = "No pasa nada";
+    public TipoEleccion tipoChoice11_1 = TipoEleccion.Verde;
+    [TextArea] public string respNPC11_1 = "Sí... igual me alegra poder hablar contigo";
 
-    [Header("── Opción 2 (Neutro) ──────────────────")]
-    [TextArea] public string textoChoice2 = "Opción 2";
-    public TipoEleccion tipoChoice2 = TipoEleccion.Neutro;
-    [TextArea] public string respuestaNPCChoice2 = "";
+    [TextArea] public string textoChoice11_2 = "Es mejor que sea entre nosotros";
+    public TipoEleccion tipoChoice11_2 = TipoEleccion.Neutro;
+    [TextArea] public string respNPC11_2 = "Sí, exacto. Tú me entiendes";
 
-    [Header("── Opción 3 (Rojo) ────────────────────")]
-    [TextArea] public string textoChoice3 = "Opción 3";
-    public TipoEleccion tipoChoice3 = TipoEleccion.Rojo;
-    [TextArea] public string respuestaNPCChoice3 = "";
+    [TextArea] public string textoChoice11_3 = "Sí, es nuestro secreto";
+    public TipoEleccion tipoChoice11_3 = TipoEleccion.Rojo;
+    [TextArea] public string respNPC11_3 = "Me alegra mucho... eres especial para mí";
+
+    // ══════════════════════════════════════════════════════════════════════
+    // MOMENTO 12
+    // ══════════════════════════════════════════════════════════════════════
+    [Header("── Momento 12 ───────────────────────────")]
+    [TextArea] public string mensajeInicial12 = "Oye... ¿podríamos vernos en persona?";
+
+    [TextArea] public string textoChoice12_1 = "No creo que sea buena idea";
+    public TipoEleccion tipoChoice12_1 = TipoEleccion.Verde;
+    [TextArea] public string respNPC12_1 = "...";
+
+    [TextArea] public string textoChoice12_2 = "No sé... tengo que pensar";
+    public TipoEleccion tipoChoice12_2 = TipoEleccion.Neutro;
+    [TextArea] public string respNPC12_2 = "Claro, tómate tu tiempo";
+
+    [TextArea] public string textoChoice12_3 = "Sí, me gustaría conocerte";
+    public TipoEleccion tipoChoice12_3 = TipoEleccion.Rojo;
+    [TextArea] public string respNPC12_3 = "Perfecto... te mando la dirección";
+
+    [Header("── Tiempos ──────────────────────────────")]
+    [Tooltip("Pausa antes de que llegue el mensaje del momento 12")]
+    public float pausaEntreMomentos = 2.0f;
 
     // ── Estado interno ────────────────────────────────────────────────────
     bool _puedeInteractuar = true;
@@ -86,15 +112,9 @@ public class DialogoCelular : MonoBehaviour
                     StartCoroutine(AbrirChatCO());
                 }
             }
-            else
-            {
-                if (interactionText != null) interactionText.text = "";
-            }
+            else { if (interactionText != null) interactionText.text = ""; }
         }
-        else
-        {
-            if (interactionText != null) interactionText.text = "";
-        }
+        else { if (interactionText != null) interactionText.text = ""; }
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -114,29 +134,55 @@ public class DialogoCelular : MonoBehaviour
         if (headerNombre != null) headerNombre.text = "Kid";
 
         yield return new WaitForSeconds(0.4f);
-
-        yield return MostrarBurbujaNPC(mensajeInicial);
-
+        yield return MostrarBurbujaNPC(mensajeInicial11);
         yield return new WaitForSeconds(0.6f);
 
-        if (textoBoton1 != null) textoBoton1.text = textoChoice1;
-        if (textoBoton2 != null) textoBoton2.text = textoChoice2;
-        if (textoBoton3 != null) textoBoton3.text = textoChoice3;
-
-        if (boton1 != null) { boton1.onClick.RemoveAllListeners(); boton1.onClick.AddListener(Choice1Void); }
-        if (boton2 != null) { boton2.onClick.RemoveAllListeners(); boton2.onClick.AddListener(Choice2Void); }
-        if (boton3 != null) { boton3.onClick.RemoveAllListeners(); boton3.onClick.AddListener(Choice3Void); }
-
-        if (panelOpciones != null) panelOpciones.SetActive(true);
+        MostrarOpciones(textoChoice11_1, textoChoice11_2, textoChoice11_3,
+                        Choice11_1, Choice11_2, Choice11_3);
     }
 
-    // ─── Botones ──────────────────────────────────────────────────────────
-    public void Choice1Void() => StartCoroutine(EleccionCO(tipoChoice1, textoChoice1, respuestaNPCChoice1));
-    public void Choice2Void() => StartCoroutine(EleccionCO(tipoChoice2, textoChoice2, respuestaNPCChoice2));
-    public void Choice3Void() => StartCoroutine(EleccionCO(tipoChoice3, textoChoice3, respuestaNPCChoice3));
+    // ─── Elecciones Momento 11 ────────────────────────────────────────────
+    void Choice11_1() => StartCoroutine(EleccionMomento11CO(tipoChoice11_1, textoChoice11_1, respNPC11_1));
+    void Choice11_2() => StartCoroutine(EleccionMomento11CO(tipoChoice11_2, textoChoice11_2, respNPC11_2));
+    void Choice11_3() => StartCoroutine(EleccionMomento11CO(tipoChoice11_3, textoChoice11_3, respNPC11_3));
+
+    IEnumerator EleccionMomento11CO(TipoEleccion tipo, string textoJugador, string respuestaNPC)
+    {
+        if (panelOpciones != null) panelOpciones.SetActive(false);
+
+        yield return MostrarBurbujaJugador(textoJugador);
+        yield return new WaitForSeconds(0.8f);
+
+        if (!string.IsNullOrEmpty(respuestaNPC))
+        {
+            yield return MostrarBurbujaNPC(respuestaNPC);
+            yield return new WaitForSeconds(1.2f);
+        }
+
+        // Registrar momento 11 y pasar directo al 12 sin cerrar el chat
+        GameManager.Instance.RegistrarEleccion(tipo);
+        yield return TransicionMomento12CO();
+    }
 
     // ─────────────────────────────────────────────────────────────────────
-    IEnumerator EleccionCO(TipoEleccion tipo, string textoJugador, string respuestaNPC)
+    IEnumerator TransicionMomento12CO()
+    {
+        // Pausa como si el NPC estuviera escribiendo
+        yield return new WaitForSeconds(pausaEntreMomentos);
+
+        yield return MostrarBurbujaNPC(mensajeInicial12);
+        yield return new WaitForSeconds(0.6f);
+
+        MostrarOpciones(textoChoice12_1, textoChoice12_2, textoChoice12_3,
+                        Choice12_1, Choice12_2, Choice12_3);
+    }
+
+    // ─── Elecciones Momento 12 ────────────────────────────────────────────
+    void Choice12_1() => StartCoroutine(EleccionMomento12CO(tipoChoice12_1, textoChoice12_1, respNPC12_1));
+    void Choice12_2() => StartCoroutine(EleccionMomento12CO(tipoChoice12_2, textoChoice12_2, respNPC12_2));
+    void Choice12_3() => StartCoroutine(EleccionMomento12CO(tipoChoice12_3, textoChoice12_3, respNPC12_3));
+
+    IEnumerator EleccionMomento12CO(TipoEleccion tipo, string textoJugador, string respuestaNPC)
     {
         if (panelOpciones != null) panelOpciones.SetActive(false);
 
@@ -152,31 +198,37 @@ public class DialogoCelular : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         if (panelCelular != null) panelCelular.SetActive(false);
 
+        // Registrar momento 12 — dispara EvaluarFinal en GameManager
         GameManager.Instance.RegistrarEleccion(tipo);
-
-        bool esUltimo = GameManager.Instance.MomentoActual >= GameManager.TOTAL_MOMENTOS;
-        if (!esUltimo)
-        {
-            firstPersonController.enabled = true;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
 
         this.enabled = false;
     }
 
-    // ─────────────────────────────────────────────────────────────────────
+    // ── Helpers ───────────────────────────────────────────────────────────
+    void MostrarOpciones(string txt1, string txt2, string txt3,
+                         UnityEngine.Events.UnityAction cb1,
+                         UnityEngine.Events.UnityAction cb2,
+                         UnityEngine.Events.UnityAction cb3)
+    {
+        if (textoBoton1 != null) textoBoton1.text = txt1;
+        if (textoBoton2 != null) textoBoton2.text = txt2;
+        if (textoBoton3 != null) textoBoton3.text = txt3;
+
+        if (boton1 != null) { boton1.onClick.RemoveAllListeners(); boton1.onClick.AddListener(cb1); }
+        if (boton2 != null) { boton2.onClick.RemoveAllListeners(); boton2.onClick.AddListener(cb2); }
+        if (boton3 != null) { boton3.onClick.RemoveAllListeners(); boton3.onClick.AddListener(cb3); }
+
+        if (panelOpciones != null) panelOpciones.SetActive(true);
+    }
+
     IEnumerator MostrarBurbujaNPC(string mensaje)
     {
         if (prefabBurbujaNPC == null || contenedorMensajes == null) yield break;
-
         GameObject burbuja = Instantiate(prefabBurbujaNPC, contenedorMensajes);
         Text textoUI = burbuja.GetComponentInChildren<Text>();
         if (textoUI == null) yield break;
-
         textoUI.text = "";
         yield return new WaitForSeconds(0.15f);
-
         foreach (char c in mensaje)
         {
             textoUI.text += c;
@@ -186,21 +238,17 @@ public class DialogoCelular : MonoBehaviour
         ScrollAlFinal();
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     IEnumerator MostrarBurbujaJugador(string mensaje)
     {
         if (prefabBurbujaJugador == null || contenedorMensajes == null) yield break;
-
         GameObject burbuja = Instantiate(prefabBurbujaJugador, contenedorMensajes);
         Text textoUI = burbuja.GetComponentInChildren<Text>();
         if (textoUI != null) textoUI.text = mensaje;
-
         ScrollAlFinal();
         yield return new WaitForSeconds(0.1f);
         ScrollAlFinal();
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     void ScrollAlFinal()
     {
         if (scrollRect == null) return;

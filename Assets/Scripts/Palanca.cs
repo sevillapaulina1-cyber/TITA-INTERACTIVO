@@ -1,3 +1,5 @@
+
+
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,6 +37,7 @@ public class Palanca : MonoBehaviour
         {
             GameObject p = GameObject.FindWithTag("Player");
             if (p != null) jugador = p.transform;
+            else Debug.LogWarning("[Palanca] No se encontró objeto con tag 'Player'.");
         }
     }
 
@@ -42,17 +45,35 @@ public class Palanca : MonoBehaviour
     void Update()
     {
         if (_activada || _animando) return;
-        if (jugador == null) { Debug.Log("[Palanca] jugador null"); return; }
-        if (gestorPuzzle == null || !gestorPuzzle.PuzzlePendiente())
-        { Debug.Log($"[Palanca] puzzle no pendiente"); return; }
+        if (jugador == null) return;
+        if (gestorPuzzle == null || !gestorPuzzle.PuzzlePendiente()) return;
 
-        Ray ray = new Ray(jugador.position, jugador.forward);
-        Debug.DrawRay(jugador.position, jugador.forward * distanciaActivar, Color.red);
+        float distancia = Vector3.Distance(jugador.position, transform.position);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, distanciaActivar))
-            Debug.Log($"[Palanca] Raycast golpeó: {hit.collider.gameObject.name}");
+        if (distancia <= distanciaActivar)
+        {
+            Vector3 dirPalanca = (transform.position - jugador.position).normalized;
+            float angulo = Vector3.Angle(jugador.forward, dirPalanca);
+
+            if (angulo < 50f)
+            {
+                if (textoInteraccion != null)
+                    textoInteraccion.text = "Presiona E para bajar la palanca";
+
+                if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+                    StartCoroutine(ActivarCO());
+            }
+            else
+            {
+                if (textoInteraccion != null)
+                    textoInteraccion.text = "";
+            }
+        }
         else
-            Debug.Log("[Palanca] Raycast no golpeó nada");
+        {
+            if (textoInteraccion != null)
+                textoInteraccion.text = "";
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -102,4 +123,3 @@ public class Palanca : MonoBehaviour
             brazoPalanca.localRotation = _rotacionInicial;
     }
 }
-

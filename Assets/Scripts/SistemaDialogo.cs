@@ -3,11 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Sistema de diálogo reutilizable para los 12 momentos.
-/// Los botones se asignan automáticamente por código al abrir el diálogo.
-/// Solo necesitas asignar los 3 Buttons (no los OnClick) en el Inspector.
-/// </summary>
 public class SistemaDialogo : MonoBehaviour
 {
     [Header("── Identificación ──────────────────────")]
@@ -30,7 +25,7 @@ public class SistemaDialogo : MonoBehaviour
     public GameObject talkText;
     public Text subText;
 
-    [Header("── Botones (asigna el Button, no el OnClick) ──")]
+    [Header("── Botones ─────────────────────────────")]
     public Button boton1;
     public Button boton2;
     public Button boton3;
@@ -58,20 +53,26 @@ public class SistemaDialogo : MonoBehaviour
     [TextArea] public string respuestaNPCChoice3 = "";
 
     [Header("── Bloqueos previos (opcional) ─────────")]
+    [Tooltip("Asigna si hay monedas que recoger antes de este momento")]
     public RecolectorMonedas recolectorPrevio;
-    public PuzzlePalancas puzzlePrevio;
+    [Tooltip("Asigna GestorZonas_4a5 en el momento 5 para bloquear hasta completar el puzzle")]
+    public GestorZonas gestorZonasPrevio;
 
-    [Header("── Zoom Out (solo Momento 8) ───────────")]
+    [Header("── Zoom Out + Rotación (solo Momento 8) ──")]
     public bool hacerZoomOut = false;
     public Camera camara;
     public float fovInicial = 60f;
     public float fovFinal = 90f;
     public float duracionZoom = 2.0f;
     public float esperaZoom = 1.5f;
+    [Tooltip("Cuántos grados rota la cámara a cada lado durante el barrido")]
+    public float anguloBarrido = 60f;
+    [Tooltip("Cuántos grados sube y baja la cámara durante el barrido")]
+    public float anguloVertical = 20f;
+    [Tooltip("Duración total del barrido izquierda-derecha-centro")]
+    public float duracionBarrido = 4.0f;
 
-    // ── Estado interno ────────────────────────────────────────────────────
     bool _puedeInteractuar = true;
-    bool _botonesAsignados = false;
     float _time = 0.05f;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -82,30 +83,11 @@ public class SistemaDialogo : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Asigna los listeners de los botones a ESTE momento.
-    /// Se llama justo antes de mostrar las opciones.
-    /// Limpia listeners anteriores para evitar acumulación.
-    /// </summary>
     void AsignarBotones()
     {
-        if (boton1 != null)
-        {
-            boton1.onClick.RemoveAllListeners();
-            boton1.onClick.AddListener(Choice1Void);
-        }
-        if (boton2 != null)
-        {
-            boton2.onClick.RemoveAllListeners();
-            boton2.onClick.AddListener(Choice2Void);
-        }
-        if (boton3 != null)
-        {
-            boton3.onClick.RemoveAllListeners();
-            boton3.onClick.AddListener(Choice3Void);
-        }
-
-        _botonesAsignados = true;
+        if (boton1 != null) { boton1.onClick.RemoveAllListeners(); boton1.onClick.AddListener(Choice1Void); }
+        if (boton2 != null) { boton2.onClick.RemoveAllListeners(); boton2.onClick.AddListener(Choice2Void); }
+        if (boton3 != null) { boton3.onClick.RemoveAllListeners(); boton3.onClick.AddListener(Choice3Void); }
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -132,10 +114,10 @@ public class SistemaDialogo : MonoBehaviour
                         return;
                     }
 
-                    if (puzzlePrevio != null && puzzlePrevio.PuzzlePendiente())
+                    if (gestorZonasPrevio != null && gestorZonasPrevio.PuzzlePendiente())
                     {
                         if (interactionText != null)
-                            interactionText.text = "Completa el puzzle primero";
+                            interactionText.text = "Pisa las zonas marcadas primero";
                         return;
                     }
 
@@ -168,7 +150,6 @@ public class SistemaDialogo : MonoBehaviour
         talkPanel.SetActive(true);
         talkText.SetActive(true);
 
-        // Actualizar textos de botones
         if (textoBoton1 != null) textoBoton1.text = textoChoice1;
         if (textoBoton2 != null) textoBoton2.text = textoChoice2;
         if (textoBoton3 != null) textoBoton3.text = textoChoice3;
@@ -185,7 +166,6 @@ public class SistemaDialogo : MonoBehaviour
             yield return new WaitForSeconds(esperaZoom);
         }
 
-        // Asignar botones a ESTE momento justo antes de mostrarlos
         AsignarBotones();
         choicePack.SetActive(true);
     }
@@ -235,6 +215,9 @@ public class SistemaDialogo : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     IEnumerator ZoomOutCO()
     {
+        Quaternion rotacionOriginal = camara.transform.localRotation;
+
+        // ── Paso 1: Zoom out del FOV ──────────────────────────────────────
         float t = 0f;
         camara.fieldOfView = fovInicial;
         while (t < duracionZoom)
@@ -244,9 +227,45 @@ public class SistemaDialogo : MonoBehaviour
             yield return null;
         }
         camara.fieldOfView = fovFinal;
+
+        // ── Paso 2: Barrido en 4 tramos ───────────────────────────────────
+        // Tramo 1: centro → izquierda + arriba
+        // Tramo 2: izquierda+arriba → derecha + abajo
+        // Tramo 3: derecha+abajo → izquierda + centro vertical
+        // Tramo 4: izquierda → centro (posición original)
+
+        float tramo = duracionBarrido / 4f;
+
+        Quaternion izqArriba = rotacionOriginal * Quaternion.Euler(-anguloVertical, -anguloBarrido, 0f);
+        Quaternion derAbajo = rotacionOriginal * Quaternion.Euler(anguloVertical, anguloBarrido, 0f);
+        Quaternion izqCentro = rotacionOriginal * Quaternion.Euler(0f, -anguloBarrido * 0.5f, 0f);
+
+        // Tramo 1: centro → izquierda arriba
+        yield return LerpRotacion(rotacionOriginal, izqArriba, tramo);
+
+        // Tramo 2: izquierda arriba → derecha abajo
+        yield return LerpRotacion(izqArriba, derAbajo, tramo * 2f);
+
+        // Tramo 3: derecha abajo → izquierda centro
+        yield return LerpRotacion(derAbajo, izqCentro, tramo);
+
+        // Tramo 4: izquierda centro → rotación original
+        yield return LerpRotacion(izqCentro, rotacionOriginal, tramo);
+
+        camara.transform.localRotation = rotacionOriginal;
     }
 
-    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator LerpRotacion(Quaternion desde, Quaternion hasta, float duracion)
+    {
+        float t = 0f;
+        while (t < duracion)
+        {
+            t += Time.deltaTime;
+            camara.transform.localRotation = Quaternion.Lerp(desde, hasta, t / duracion);
+            yield return null;
+        }
+    }
+
     IEnumerator EscribirTexto(string hablante, string mensaje)
     {
         subText.text = hablante;

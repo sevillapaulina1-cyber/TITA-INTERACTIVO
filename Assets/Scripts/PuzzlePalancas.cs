@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Gestor del puzzle de palancas entre el momento 4 y el momento 5.
@@ -44,16 +45,16 @@ public class PuzzlePalancas : MonoBehaviour
     [Tooltip("Después de qué momento se activa este puzzle (4 para el tramo 4→5)")]
     public int momentoQueActiva = 4;
 
-    [Header("── Misión ───────────────────────────────")]
-    public string descripcionPalancas = "Baja las palancas";
-    public string descripcionMonedas = "Recoge las monedas";
-
     [Header("── Palancas ────────────────────────────")]
     public Palanca[] palancas;              // las 3 palancas de la zona
 
     [Header("── Monedas ─────────────────────────────")]
     public GameObject[] monedas;           // desactivadas al inicio
-    public int totalMonedas = 3;
+    public int          totalMonedas = 3;
+
+    [Header("── UI ──────────────────────────────────")]
+    [Tooltip("Text para mostrar progreso. Puede ser null.")]
+    public Text textoUI;
 
     [Header("── Efecto visual (opcional) ────────────")]
     [Tooltip("ParticleSystem que se reproduce al aparecer las monedas")]
@@ -62,71 +63,53 @@ public class PuzzlePalancas : MonoBehaviour
     [Header("── Audio (opcional) ───────────────────")]
     public AudioClip sonidoMonedas;        // sonido al aparecer las monedas
 
-    [Header("── Debug ────────────────────────────────")]
-    [Tooltip("Activa esto en el Inspector para probar el puzzle sin pasar por el momento 4")]
-    public bool forzarPuzzleActivo = false;
-
     // ── Estado interno ────────────────────────────────────────────────────
-    int _palancasActivadas = 0;
-    int _monedasRecogidas = 0;
-    bool _puzzleActivo = false;
-    bool _monedasVisibles = false;
-    bool _completado = false;
+    int  _palancasActivadas  = 0;
+    int  _monedasRecogidas   = 0;
+    bool _puzzleActivo       = false;
+    bool _monedasVisibles    = false;
+    bool _completado         = false;
 
     // ─────────────────────────────────────────────────────────────────────
     void Start()
     {
+        // Monedas desactivadas al inicio
         ToggleMonedas(false);
-
-        if (forzarPuzzleActivo)
-            IniciarPuzzle();
-        else
-            StartCoroutine(EsperarMomentoCO());
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    IEnumerator EsperarMomentoCO()
-    {
-        // Espera hasta que el GameManager registre el momento correcto
-        yield return new WaitUntil(() =>
-            GameManager.Instance != null &&
-            GameManager.Instance.MomentoActual == momentoQueActiva &&
-            !_completado
-        );
-        IniciarPuzzle();
+        ActualizarUI();
     }
 
     // ─────────────────────────────────────────────────────────────────────
     void Update()
     {
-        // Update vacío — la activación la maneja EsperarMomentoCO
+        if (_puzzleActivo || _completado) return;
+        if (GameManager.Instance == null) return;
+
+        // Se activa cuando el momento 4 ya fue registrado
+        if (GameManager.Instance.MomentoActual == momentoQueActiva)
+            IniciarPuzzle();
     }
 
     // ─────────────────────────────────────────────────────────────────────
     void IniciarPuzzle()
     {
-        _puzzleActivo = true;
+        _puzzleActivo      = true;
         _palancasActivadas = 0;
-        _monedasRecogidas = 0;
+        _monedasRecogidas  = 0;
 
-        // Mostrar misión: palancas
-        if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.MostrarObjetivo(
-                descripcionPalancas, 0, palancas != null ? palancas.Length : 3);
-
+        ActualizarUI();
         Debug.Log("[PuzzlePalancas] Puzzle iniciado — baja las 3 palancas.");
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Llamado por cada Palanca.cs cuando el jugador la baja.
+    /// </summary>
     public void PalancaActivada()
     {
         if (!_puzzleActivo || _monedasVisibles) return;
 
         _palancasActivadas++;
-
-        if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.ActualizarProgreso(
-                _palancasActivadas, palancas != null ? palancas.Length : 3);
+        ActualizarUI();
 
         Debug.Log($"[PuzzlePalancas] Palancas: {_palancasActivadas}/{palancas.Length}");
 
@@ -141,32 +124,36 @@ public class PuzzlePalancas : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
 
+        // Efecto de partículas en cada moneda
         if (efectoAparicion != null)
+        {
             foreach (var moneda in monedas)
                 if (moneda != null)
                     Instantiate(efectoAparicion, moneda.transform.position, Quaternion.identity);
+        }
 
+        // Sonido
         if (sonidoMonedas != null)
             AudioSource.PlayClipAtPoint(sonidoMonedas, transform.position);
 
+        // Activar monedas
         ToggleMonedas(true);
-
-        // Cambiar misión: ahora recoger monedas
-        if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.MostrarObjetivo(descripcionMonedas, 0, totalMonedas);
+        ActualizarUI();
 
         Debug.Log("[PuzzlePalancas] ¡Monedas aparecidas! Recógelas.");
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Llamado por Moneda.cs cuando el jugador recoge una moneda.
+    /// (En lugar de llamar a RecolectorMonedas, las monedas llaman aquí)
+    /// </summary>
     public void MonedaRecogida()
     {
         if (!_monedasVisibles) return;
 
         _monedasRecogidas++;
-
-        if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.ActualizarProgreso(_monedasRecogidas, totalMonedas);
+        ActualizarUI();
 
         Debug.Log($"[PuzzlePalancas] Monedas recogidas: {_monedasRecogidas}/{totalMonedas}");
 
@@ -177,20 +164,24 @@ public class PuzzlePalancas : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     void PuzzleCompletado()
     {
-        _completado = true;
+        _completado   = true;
         _puzzleActivo = false;
-
-        if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.CompletarObjetivo();
+        ActualizarUI();
 
         Debug.Log("[PuzzlePalancas] ¡Puzzle completado! Momento 5 habilitado.");
+        // El SistemaDialogo del momento 5 ya detecta automáticamente
+        // que MomentoActual == 4, por lo que responderá al raycast.
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Devuelve true si el puzzle aún no está completado.
+    /// SistemaDialogo del momento 5 puede consultarlo para bloquear la interacción.
+    /// </summary>
     public bool PuzzlePendiente()
     {
-        // Pendiente = el puzzle está activo y no completado
-        return _puzzleActivo && !_completado;
+        if (GameManager.Instance == null) return false;
+        return GameManager.Instance.MomentoActual == momentoQueActiva && !_completado;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -199,5 +190,31 @@ public class PuzzlePalancas : MonoBehaviour
         if (monedas == null) return;
         foreach (var m in monedas)
             if (m != null) m.SetActive(activo);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    void ActualizarUI()
+    {
+        if (textoUI == null) return;
+
+        if (_completado)
+        {
+            textoUI.text = "¡Completado!";
+            return;
+        }
+
+        if (_monedasVisibles)
+        {
+            textoUI.text = $"Monedas: {_monedasRecogidas}/{totalMonedas}";
+            return;
+        }
+
+        if (_puzzleActivo)
+        {
+            textoUI.text = $"Palancas: {_palancasActivadas}/{(palancas != null ? palancas.Length : 3)}";
+            return;
+        }
+
+        textoUI.text = "";
     }
 }
