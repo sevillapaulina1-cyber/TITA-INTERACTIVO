@@ -58,19 +58,15 @@ public class SistemaDialogo : MonoBehaviour
     [Tooltip("Asigna GestorZonas_4a5 en el momento 5 para bloquear hasta completar el puzzle")]
     public GestorZonas gestorZonasPrevio;
 
-    [Header("── Zoom Out + Rotación (solo Momento 8) ──")]
-    public bool hacerZoomOut = false;
-    public Camera camara;
-    public float fovInicial = 60f;
-    public float fovFinal = 90f;
-    public float duracionZoom = 2.0f;
-    public float esperaZoom = 1.5f;
-    [Tooltip("Cuántos grados rota la cámara a cada lado durante el barrido")]
-    public float anguloBarrido = 60f;
-    [Tooltip("Cuántos grados sube y baja la cámara durante el barrido")]
-    public float anguloVertical = 20f;
-    [Tooltip("Duración total del barrido izquierda-derecha-centro")]
-    public float duracionBarrido = 4.0f;
+    [Header("── Animación Momento 8 (Animator) ───────")]
+    [Tooltip("Marca esto solo en el Momento 8")]
+    public bool usarAnimacionMomento8 = false;
+    [Tooltip("Animator de la cámara con la animación de paneo")]
+    public Animator animatorCamara;
+    [Tooltip("Nombre del trigger en el Animator que dispara la animación")]
+    public string triggerAnimacion = "PaneoMomento8";
+    [Tooltip("Duración de la animación en segundos (para esperar antes de continuar)")]
+    public float duracionAnimacion = 6.0f;
 
     bool _puedeInteractuar = true;
     float _time = 0.05f;
@@ -80,6 +76,10 @@ public class SistemaDialogo : MonoBehaviour
     {
         if (npcTransform != null && posicionNPCEsteDia != null)
             npcTransform.position = posicionNPCEsteDia.position;
+
+        // Desactivar el Animator al inicio — solo se activa en el momento 8
+        if (animatorCamara != null)
+            animatorCamara.enabled = false;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -160,12 +160,6 @@ public class SistemaDialogo : MonoBehaviour
 
         yield return new WaitForSeconds(0.8f);
 
-        if (hacerZoomOut && camara != null)
-        {
-            yield return ZoomOutCO();
-            yield return new WaitForSeconds(esperaZoom);
-        }
-
         AsignarBotones();
         choicePack.SetActive(true);
     }
@@ -198,6 +192,24 @@ public class SistemaDialogo : MonoBehaviour
         talkText.SetActive(false);
         subText.text = "";
 
+        // ── Animación de cámara (solo Momento 8) ──────────────────────────
+        if (usarAnimacionMomento8 && animatorCamara != null)
+        {
+            if (firstPersonController != null)
+                firstPersonController.enabled = false;
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            // Activar el Animator, disparar el trigger y esperar
+            animatorCamara.enabled = true;
+            animatorCamara.SetTrigger(triggerAnimacion);
+            yield return new WaitForSeconds(duracionAnimacion);
+
+            // Desactivar cuando termina
+            animatorCamara.enabled = false;
+        }
+
         GameManager.Instance.RegistrarEleccion(tipo);
 
         bool esUltimo = GameManager.Instance.MomentoActual >= GameManager.TOTAL_MOMENTOS;
@@ -210,60 +222,6 @@ public class SistemaDialogo : MonoBehaviour
 
         this.enabled = false;
         yield return null;
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    IEnumerator ZoomOutCO()
-    {
-        Quaternion rotacionOriginal = camara.transform.localRotation;
-
-        // ── Paso 1: Zoom out del FOV ──────────────────────────────────────
-        float t = 0f;
-        camara.fieldOfView = fovInicial;
-        while (t < duracionZoom)
-        {
-            t += Time.deltaTime;
-            camara.fieldOfView = Mathf.Lerp(fovInicial, fovFinal, t / duracionZoom);
-            yield return null;
-        }
-        camara.fieldOfView = fovFinal;
-
-        // ── Paso 2: Barrido en 4 tramos ───────────────────────────────────
-        // Tramo 1: centro → izquierda + arriba
-        // Tramo 2: izquierda+arriba → derecha + abajo
-        // Tramo 3: derecha+abajo → izquierda + centro vertical
-        // Tramo 4: izquierda → centro (posición original)
-
-        float tramo = duracionBarrido / 4f;
-
-        Quaternion izqArriba = rotacionOriginal * Quaternion.Euler(-anguloVertical, -anguloBarrido, 0f);
-        Quaternion derAbajo = rotacionOriginal * Quaternion.Euler(anguloVertical, anguloBarrido, 0f);
-        Quaternion izqCentro = rotacionOriginal * Quaternion.Euler(0f, -anguloBarrido * 0.5f, 0f);
-
-        // Tramo 1: centro → izquierda arriba
-        yield return LerpRotacion(rotacionOriginal, izqArriba, tramo);
-
-        // Tramo 2: izquierda arriba → derecha abajo
-        yield return LerpRotacion(izqArriba, derAbajo, tramo * 2f);
-
-        // Tramo 3: derecha abajo → izquierda centro
-        yield return LerpRotacion(derAbajo, izqCentro, tramo);
-
-        // Tramo 4: izquierda centro → rotación original
-        yield return LerpRotacion(izqCentro, rotacionOriginal, tramo);
-
-        camara.transform.localRotation = rotacionOriginal;
-    }
-
-    IEnumerator LerpRotacion(Quaternion desde, Quaternion hasta, float duracion)
-    {
-        float t = 0f;
-        while (t < duracion)
-        {
-            t += Time.deltaTime;
-            camara.transform.localRotation = Quaternion.Lerp(desde, hasta, t / duracion);
-            yield return null;
-        }
     }
 
     IEnumerator EscribirTexto(string hablante, string mensaje)

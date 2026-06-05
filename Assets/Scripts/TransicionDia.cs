@@ -18,7 +18,8 @@ public class TransicionDia : MonoBehaviour
 {
     [Header("── UI ──────────────────────────────────")]
     public Image panelNegro;
-    public Text textoDia;
+    public Text textoDia;         // muestra la fecha    ej: "4 de abril, 2026"
+    public Text textoDiaNumero;   // muestra el día      ej: "Día 2"
 
     [Header("── NPCs (uno por día, en orden) ─────────")]
     [Tooltip("4 NPCs duplicados. Índice 0 = Día 1, 1 = Día 2, etc.")]
@@ -40,6 +41,13 @@ public class TransicionDia : MonoBehaviour
         "20 de mayo, 2026"
     };
 
+    [Tooltip("3 entradas: nombre del día al pasar al día 2, 3 y 4")]
+    public string[] nombresDias = {
+        "Día 2",
+        "Día 3",
+        "Día 4"
+    };
+
     [Header("── Tiempos ─────────────────────────────")]
     public float duracionFadeIn = 1.0f;
     public float duracionTexto = 2.0f;
@@ -50,6 +58,7 @@ public class TransicionDia : MonoBehaviour
     {
         SetAlpha(0f);
         if (textoDia != null) textoDia.enabled = false;
+        if (textoDiaNumero != null) textoDiaNumero.enabled = false;
 
         // Solo el NPC del día 1 activo al inicio
         for (int i = 0; i < npcsPorDia.Length; i++)
@@ -121,22 +130,33 @@ public class TransicionDia : MonoBehaviour
         SwapNPC(indiceSiguiente);
         Debug.Log($"[TransicionDia] NPC swapeado a índice {indiceSiguiente}");
 
-        // 4. Mostrar fecha
-        if (textoDia != null)
+        // 4. Mostrar día y fecha
+        if (textoDia != null || textoDiaNumero != null)
         {
-            int indice = diaQueTermino - 1; // día 1 termina → índice 0
-            string fecha = (indice >= 0 && indice < fechas.Length)
-                ? fechas[indice]
-                : $"Día {diaQueTermino + 1}";
-            textoDia.text = fecha;
-            textoDia.enabled = true;
+            int indice = diaQueTermino - 1;
+
+            if (textoDiaNumero != null)
+            {
+                textoDiaNumero.text = (indice >= 0 && indice < nombresDias.Length)
+                    ? nombresDias[indice]
+                    : $"Día {diaQueTermino + 1}";
+                textoDiaNumero.enabled = true;
+            }
+
+            if (textoDia != null)
+            {
+                textoDia.text = (indice >= 0 && indice < fechas.Length)
+                    ? fechas[indice]
+                    : "";
+                textoDia.enabled = true;
+            }
         }
 
         yield return new WaitForSeconds(duracionTexto);
 
-        // 5. Ocultar texto
-        if (textoDia != null)
-            textoDia.enabled = false;
+        // 5. Ocultar textos
+        if (textoDia != null) textoDia.enabled = false;
+        if (textoDiaNumero != null) textoDiaNumero.enabled = false;
 
         // 6. Fade de regreso
         yield return Fade(1f, 0f, duracionFadeOut);

@@ -1094,15 +1094,10 @@ MonoBehaviour:
   respuestaNPCChoice3: "S\xED...  "
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 689089446}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1 &48994551 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: fd67a93e37ccb3449b9a1c3fb3f52833, type: 3}
@@ -1141,6 +1136,7 @@ RectTransform:
   m_Children:
   - {fileID: 1708615762}
   - {fileID: 1380542079}
+  - {fileID: 688996293}
   m_Father: {fileID: 261401052}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1399,15 +1395,10 @@ MonoBehaviour:
   respuestaNPCChoice3: Si.. bueno seguimos hablando
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1001 &84292346
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3552,15 +3543,10 @@ MonoBehaviour:
   respuestaNPCChoice3: ...
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 1
-  camara: {fileID: 1309367559}
-  fovInicial: 40
-  fovFinal: 95
-  duracionZoom: 3
-  esperaZoom: 1.5
-  anguloBarrido: 40
-  anguloVertical: 40
-  duracionBarrido: 4
+  usarAnimacionMomento8: 1
+  animatorCamara: {fileID: 1309367561}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1001 &201710250
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4555,6 +4541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TransicionDia
   panelNegro: {fileID: 1708615764}
   textoDia: {fileID: 1380542077}
+  textoDiaNumero: {fileID: 688996294}
   npcsPorDia:
   - {fileID: 536017273}
   - {fileID: 422387398}
@@ -4571,6 +4558,10 @@ MonoBehaviour:
   - 4 de abril, 2026
   - 15 de abril, 2026
   - 20 de junio, 2026
+  nombresDias:
+  - "D\xEDa 2"
+  - "D\xEDa 11"
+  - "D\xEDa 65"
   duracionFadeIn: 1
   duracionTexto: 3
   duracionFadeOut: 1
@@ -5139,15 +5130,10 @@ MonoBehaviour:
   respuestaNPCChoice3: "\xBFYo? Bueno eso no importa, vamos a jugar."
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1 &307817139
 GameObject:
   m_ObjectHideFlags: 0
@@ -5222,15 +5208,10 @@ MonoBehaviour:
   respuestaNPCChoice3: Tengo Miascord, te paso mi user xd
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1001 &309771050
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6015,6 +5996,144 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 369380611}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &378404359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 378404362}
+  - component: {fileID: 378404361}
+  - component: {fileID: 378404360}
+  m_Layer: 0
+  m_Name: Audio Source
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!81 &378404360
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378404359}
+  m_Enabled: 1
+--- !u!82 &378404361
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378404359}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!4 &378404362
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378404359}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 538.7541, y: 10.40218, z: 572.92554}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &383849604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9829,15 +9948,10 @@ MonoBehaviour:
   respuestaNPCChoice3: Por eso siempre jugamos xd auqnue si te he visto desde antes
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1 &663129646 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ef27ffb100afdf24c9dfda88410de935, type: 3}
@@ -9995,7 +10109,7 @@ MonoBehaviour:
   gestorZonas: {fileID: 689089446}
   girar: 1
   velocidadGiro: 90
-  sonidoRecolecta: {fileID: 0}
+  sonidoRecolecta: {fileID: 8300000, guid: c5f5eee89326c0a408b4178f96bd4390, type: 3}
 --- !u!1001 &666519571
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10402,6 +10516,85 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &688996292
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 688996293}
+  - component: {fileID: 688996295}
+  - component: {fileID: 688996294}
+  m_Layer: 5
+  m_Name: Numero_dias
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &688996293
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 688996292}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 52065499}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 79.033}
+  m_SizeDelta: {x: 614.666, y: 79.0326}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &688996294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 688996292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: c7c3b705abe2f304f9bf2adce8915f07, type: 3}
+    m_FontSize: 30
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 54
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 
+--- !u!222 &688996295
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 688996292}
+  m_CullTransparentMesh: 1
 --- !u!1 &689089443
 GameObject:
   m_ObjectHideFlags: 0
@@ -11508,7 +11701,7 @@ MonoBehaviour:
   gestorZonas: {fileID: 0}
   girar: 1
   velocidadGiro: 90
-  sonidoRecolecta: {fileID: 0}
+  sonidoRecolecta: {fileID: 8300000, guid: c5f5eee89326c0a408b4178f96bd4390, type: 3}
 --- !u!1001 &770418746
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17499,15 +17692,10 @@ MonoBehaviour:
   respuestaNPCChoice3: "\xBFEncerio?... bueno xd"
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1 &1184097120
 GameObject:
   m_ObjectHideFlags: 0
@@ -18759,15 +18947,10 @@ MonoBehaviour:
   respuestaNPCChoice3: Umm... claro
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1 &1293957998
 GameObject:
   m_ObjectHideFlags: 0
@@ -19136,6 +19319,7 @@ GameObject:
   - component: {fileID: 1309367560}
   - component: {fileID: 1309367559}
   - component: {fileID: 1309367557}
+  - component: {fileID: 1309367561}
   m_Layer: 0
   m_Name: CamPantalla
   m_TagString: Player
@@ -19253,6 +19437,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 849382725}
   m_LocalEulerAnglesHint: {x: -0.0000000825583, y: 0.2373862, z: 8.30795e-10}
+--- !u!95 &1309367561
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1309367556}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ec2c1c31f694fc24f87deb61bd876182, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1318566859
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19379,7 +19585,7 @@ MonoBehaviour:
   gestorZonas: {fileID: 0}
   girar: 1
   velocidadGiro: 90
-  sonidoRecolecta: {fileID: 0}
+  sonidoRecolecta: {fileID: 8300000, guid: c5f5eee89326c0a408b4178f96bd4390, type: 3}
 --- !u!1 &1321976796
 GameObject:
   m_ObjectHideFlags: 0
@@ -21005,15 +21211,10 @@ MonoBehaviour:
     con mis padres xp"
   recolectorPrevio: {fileID: 960408332}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1 &1421373361
 GameObject:
   m_ObjectHideFlags: 0
@@ -27504,7 +27705,7 @@ MonoBehaviour:
   gestorZonas: {fileID: 689089446}
   girar: 1
   velocidadGiro: 90
-  sonidoRecolecta: {fileID: 0}
+  sonidoRecolecta: {fileID: 8300000, guid: c5f5eee89326c0a408b4178f96bd4390, type: 3}
 --- !u!1001 &1888028825
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27846,15 +28047,10 @@ MonoBehaviour:
   respuestaNPCChoice3: Gracias jaja, sigamos jugando xd
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  hacerZoomOut: 0
-  camara: {fileID: 0}
-  fovInicial: 60
-  fovFinal: 90
-  duracionZoom: 2
-  esperaZoom: 1.5
-  anguloBarrido: 60
-  anguloVertical: 20
-  duracionBarrido: 4
+  usarAnimacionMomento8: 0
+  animatorCamara: {fileID: 0}
+  triggerAnimacion: PaneoMomento8
+  duracionAnimacion: 6
 --- !u!1001 &1922921589
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29022,7 +29218,7 @@ MonoBehaviour:
   gestorZonas: {fileID: 0}
   girar: 1
   velocidadGiro: 90
-  sonidoRecolecta: {fileID: 0}
+  sonidoRecolecta: {fileID: 8300000, guid: c5f5eee89326c0a408b4178f96bd4390, type: 3}
 --- !u!1 &2005542390
 GameObject:
   m_ObjectHideFlags: 0
@@ -29262,7 +29458,7 @@ MonoBehaviour:
   gestorZonas: {fileID: 689089446}
   girar: 1
   velocidadGiro: 90
-  sonidoRecolecta: {fileID: 0}
+  sonidoRecolecta: {fileID: 8300000, guid: c5f5eee89326c0a408b4178f96bd4390, type: 3}
 --- !u!1 &2022668569 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: fb8377d94ed996d4b8ca20d6d17c28cf, type: 3}
@@ -31049,3 +31245,4 @@ SceneRoots:
   - {fileID: 169774563}
   - {fileID: 967097074}
   - {fileID: 2132919063}
+  - {fileID: 378404362}
