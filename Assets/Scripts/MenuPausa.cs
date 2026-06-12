@@ -25,6 +25,9 @@ public class MenuPausa : MonoBehaviour
     public AudioMixer audioMixer;
     public string parametroVolumen = "VolMaster";
     public Slider sliderVolumen;
+    [Tooltip("Text que muestra la etiqueta 'Volumen' encima del slider")]
+    public Text textoVolumen;
+    public string etiquetaVolumen = "Volumen";
 
     [Header("── Jugador ──────────────────────────────")]
     public MonoBehaviour firstPersonController;
@@ -38,6 +41,7 @@ public class MenuPausa : MonoBehaviour
         if (panelPausa != null) panelPausa.SetActive(false);
         if (panelFade != null) SetAlpha(0f);
 
+        if (textoVolumen != null) textoVolumen.text = etiquetaVolumen;
         InicializarSlider();
     }
 

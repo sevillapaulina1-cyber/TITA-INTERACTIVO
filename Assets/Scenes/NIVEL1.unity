@@ -41886,8 +41886,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -715.17, y: -228}
-  m_SizeDelta: {x: 239.6679, y: 38.1018}
+  m_AnchoredPosition: {x: -698.4672, y: -228}
+  m_SizeDelta: {x: 273.0733, y: 38.1018}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1365765266
 MonoBehaviour:
@@ -51310,6 +51310,8 @@ MonoBehaviour:
   audioMixer: {fileID: 24100000, guid: 2a0bf4d8b9b5bfa46a2f3902cdcca732, type: 2}
   parametroVolumen: VolMaster
   sliderVolumen: {fileID: 722966860}
+  textoVolumen: {fileID: 912564826}
+  etiquetaVolumen: Volumen
   firstPersonController: {fileID: 179773859}
 --- !u!4 &1622945362
 Transform:
