@@ -95,8 +95,13 @@ public class MenuInicio : MonoBehaviour
         if (botonSalir != null) botonSalir.interactable = false;
 
         yield return Fade(0f, 1f, duracionFadeOut);
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
         Application.Quit();
-        Debug.Log("[MenuInicio] Salir — funciona en build, no en el editor.");
+#endif
+        Debug.Log("[MenuInicio] Salir.");
     }
 
     // ─────────────────────────────────────────────────────────────────────
