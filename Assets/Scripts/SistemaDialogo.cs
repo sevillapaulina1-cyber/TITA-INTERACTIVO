@@ -156,7 +156,7 @@ public class SistemaDialogo : MonoBehaviour
 
         yield return EscribirTexto("Yo: ", textoYo);
         yield return PresionarMouse();
-        yield return EscribirTexto("Kid: ", textoNPC);
+        yield return EscribirTexto("SamuVR: ", textoNPC);
 
         yield return new WaitForSeconds(0.8f);
 
@@ -180,7 +180,7 @@ public class SistemaDialogo : MonoBehaviour
         if (!string.IsNullOrEmpty(respuestaNPC))
         {
             yield return new WaitForSeconds(0.4f);
-            yield return EscribirTexto("Kid: ", respuestaNPC);
+            yield return EscribirTexto("SamuVR: ", respuestaNPC);
             yield return new WaitForSeconds(1.5f);
         }
         else

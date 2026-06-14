@@ -3448,7 +3448,7 @@ MonoBehaviour:
   usarAnimacionMomento8: 1
   animatorCamara: {fileID: 1309367561}
   triggerAnimacion: PaneoMomento8
-  duracionAnimacion: 7
+  duracionAnimacion: 6.5
 --- !u!1001 &201710250
 PrefabInstance:
   m_ObjectHideFlags: 0
