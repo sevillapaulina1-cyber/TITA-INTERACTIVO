@@ -76,14 +76,24 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        // Iniciar música normal al arrancar
-        if (fuenteMusica != null && musicaNormal != null)
-        {
-            fuenteMusica.clip = musicaNormal;
-            fuenteMusica.loop = true;
-            fuenteMusica.volume = 1f;
-            fuenteMusica.Play();
-        }
+        // No arranca música automáticamente.
+        // Llamar IniciarMusicaJuego() desde la escena principal.
+    }
+
+    /// <summary>
+    /// Inicia la música de ambiente del juego (momentos 1–8).
+    /// Llamar desde un script de inicialización en la EscenaPrincipal.
+    /// </summary>
+    public void IniciarMusicaJuego()
+    {
+        if (fuenteMusica == null || musicaNormal == null) return;
+        if (fuenteMusica.isPlaying) return; // evitar doble arranque
+        _enTension = false;
+        _silenciado = false;
+        fuenteMusica.clip = musicaNormal;
+        fuenteMusica.loop = true;
+        fuenteMusica.volume = 1f;
+        fuenteMusica.Play();
     }
 
     // ─────────────────────────────────────────────────────────────────────
