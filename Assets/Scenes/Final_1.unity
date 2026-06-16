@@ -232,8 +232,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -713, y: 267}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -622.1679, y: 267}
+  m_SizeDelta: {x: 341.6642, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &171824626
 MonoBehaviour:
@@ -1201,9 +1201,9 @@ MonoBehaviour:
   colorRojo: {r: 0.85, g: 0.15, b: 0.15, a: 1}
   colorGris: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   colorLinea: {r: 1, g: 1, b: 1, a: 0.3}
-  separacionHorizontal: 120
-  amplitudOnda: 30
-  tamanoNodo: 70
+  separacionHorizontal: 150
+  amplitudOnda: 50
+  tamanoNodo: 100
   nombresMomentos:
   - Contacto
   - Juego
@@ -1251,8 +1251,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -713, y: 207}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -622.17, y: 207}
+  m_SizeDelta: {x: 341.66, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1728957574
 MonoBehaviour:
