@@ -460,8 +460,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 271426040}
-  - {fileID: 813482453}
   - {fileID: 1080955286}
+  - {fileID: 813482453}
   m_Father: {fileID: 1524146056}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1202,19 +1202,19 @@ MonoBehaviour:
   colorGris: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   colorLinea: {r: 1, g: 1, b: 1, a: 0.3}
   separacionHorizontal: 150
-  amplitudOnda: 50
+  amplitudOnda: 40
   tamanoNodo: 100
   nombresMomentos:
-  - Contacto
+  - Primer Contacto
   - Juego
-  - Cierre
+  - Volvamos a vernos
   - Reencuentro
   - "Emoci\xF3n"
   - "V\xEDnculo"
   - Rutina
-  - Contexto
+  - "Informaci\xF3n"
   - Confianza
-  - Canal
+  - Cambio de app
   - Secreto
   - Encuentro
 --- !u!1 &1728957572
@@ -1643,7 +1643,7 @@ MonoBehaviour:
   textoConfianza: {fileID: 171824626}
   textoRiesgo: {fileID: 1728957574}
   textoFinal: {fileID: 111067413}
-  botonSaltarBtn: {fileID: 0}
+  botonSaltarBtn: {fileID: 1080955287}
   botonReiniciarBtn: {fileID: 784482290}
   escenaInicio: NIVEL1
   sonidoUI: {fileID: 0}

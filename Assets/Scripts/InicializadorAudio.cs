@@ -1,15 +1,11 @@
 using UnityEngine;
 
 /// <summary>
-/// Coloca este script en la EscenaPrincipal (en cualquier GameObject de la escena).
-/// Su único trabajo es decirle al AudioManager que empiece la música del juego
-/// cuando se carga esta escena.
+/// Coloca este script en la EscenaPrincipal.
+/// Arranca la música de juego cuando la escena carga.
 ///
-/// SETUP EN UNITY:
-///   EscenaPrincipal → GameObject vacío "InicializadorAudio"
-///     └── InicializadorAudio.cs
-///
-/// No necesita ningún campo asignado en el Inspector.
+/// SETUP: GameObject vacío "InicializadorAudio" en EscenaPrincipal.
+/// No necesita campos en el Inspector.
 /// </summary>
 public class InicializadorAudio : MonoBehaviour
 {
@@ -18,6 +14,6 @@ public class InicializadorAudio : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.IniciarMusicaJuego();
         else
-            Debug.LogWarning("[InicializadorAudio] AudioManager no encontrado. ¿Está en la escena MenuInicio?");
+            Debug.LogWarning("[InicializadorAudio] AudioManager no encontrado.");
     }
 }

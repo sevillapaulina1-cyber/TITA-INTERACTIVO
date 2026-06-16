@@ -17,12 +17,6 @@ public class SistemaDialogo : MonoBehaviour
     [Header("── NPC ─────────────────────────────────")]
     public Transform npcTransform;
     public Transform posicionNPCEsteDia;
-    [Tooltip("Animator del NPC con las animaciones de saludo e idle")]
-    public Animator animatorNPC;
-    [Tooltip("Nombre del trigger de saludo en el Animator del NPC")]
-    public string triggerSaludo = "Saludo";
-    [Tooltip("Nombre del trigger/bool de idle en el Animator del NPC")]
-    public string triggerIdle = "Idle";
 
     [Header("── UI global ───────────────────────────")]
     public Text interactionText;
@@ -89,7 +83,6 @@ public class SistemaDialogo : MonoBehaviour
         if (npcTransform != null && posicionNPCEsteDia != null)
             npcTransform.position = posicionNPCEsteDia.position;
 
-        // Desactivar el Animator al inicio — solo se activa en el momento 8
         if (animatorCamara != null)
             animatorCamara.enabled = false;
 
@@ -224,14 +217,14 @@ public class SistemaDialogo : MonoBehaviour
 
             // ── ▼ AUDIO: respiración durante la animación (NUEVO) ──────────
             if (AudioManager.Instance != null)
-                AudioManager.Instance.IniciarRespiracion();
+                AudioManager.Instance.IniciarAnimacionMomento8();
             // ── ▲ AUDIO ────────────────────────────────────────────────────
 
             yield return new WaitForSeconds(duracionAnimacion);
 
             // ── ▼ AUDIO: detener respiración (NUEVO) ───────────────────────
             if (AudioManager.Instance != null)
-                AudioManager.Instance.DetenerRespiracion();
+                AudioManager.Instance.TerminarAnimacionMomento8();
             // ── ▲ AUDIO ────────────────────────────────────────────────────
 
             animatorCamara.enabled = false;

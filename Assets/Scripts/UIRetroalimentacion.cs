@@ -59,6 +59,11 @@ public class UIRetroalimentacion : MonoBehaviour
         }
         // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
+        // Detener música de juego/tensión al entrar a la escena de final
+        // (la música de retro empezará al terminar el video)
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.DetenerMusicaJuego();
+
         StartCoroutine(ReproducirVideoCO());
     }
 

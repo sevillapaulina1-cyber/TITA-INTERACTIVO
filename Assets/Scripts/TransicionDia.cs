@@ -43,7 +43,7 @@ public class TransicionDia : MonoBehaviour
     };
 
     [Header("── Audio de transición ──────────────────")]
-    [Tooltip("Sonido que se reproduce al hacer la transición de día (una vez)")]
+    [Tooltip("AudioSource para el sonido de transición de día (se crea automáticamente)")]
     public AudioSource fuenteTransicion;
     [Tooltip("Clip de sonido de transición (campanada, whoosh, etc.)")]
     public AudioClip clipTransicion;
@@ -66,7 +66,6 @@ public class TransicionDia : MonoBehaviour
             if (npcsPorDia[i] != null)
                 npcsPorDia[i].SetActive(i == 0);
 
-        // Auto-crear fuente de audio si no está asignada
         if (fuenteTransicion == null)
         {
             fuenteTransicion = gameObject.AddComponent<AudioSource>();
@@ -98,23 +97,18 @@ public class TransicionDia : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    // Fade de entrada al Día 1
+    // NOTA: No silenciamos el AudioManager aquí porque InicializadorAudio
+    // todavía no arrancó la música — el fade de Día 1 ya ocurre "antes" de que
+    // la música empiece. InicializadorAudio.Start() corre en el mismo frame que
+    // TransicionDia.Start(), así que dejamos que se solapen naturalmente.
+    // ─────────────────────────────────────────────────────────────────────
     IEnumerator IntroDia1CO()
     {
-        // ── ▼ AUDIO: silenciar música durante el fade de intro (NUEVO) ───
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.SilenciarParaTransicion();
-        // ── ▲ AUDIO ──────────────────────────────────────────────────────
-
         MostrarTextos(nombreDia1, fechaDia1);
-
         yield return new WaitForSeconds(duracionTexto);
         OcultarTextos();
         yield return Fade(1f, 0f, duracionFadeOut);
-
-        // ── ▼ AUDIO: restaurar música (NUEVO) ────────────────────────────
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.RestaurarMusica();
-        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         if (firstPersonController != null)
             firstPersonController.enabled = true;
@@ -126,7 +120,6 @@ public class TransicionDia : MonoBehaviour
         StartCoroutine(TransicionCO(diaQueTermino));
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     IEnumerator TransicionCO(int diaQueTermino)
     {
         int indiceSiguiente = diaQueTermino;
@@ -134,18 +127,17 @@ public class TransicionDia : MonoBehaviour
         if (firstPersonController != null)
             firstPersonController.enabled = false;
 
-        // ── ▼ AUDIO: silenciar música (NUEVO) ────────────────────────────
+        // Silenciar música ANTES del fade a negro
         if (AudioManager.Instance != null)
             AudioManager.Instance.SilenciarParaTransicion();
-        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         yield return Fade(0f, 1f, duracionFadeIn);
 
-        // ── ▼ AUDIO: sonido de transición de día (NUEVO) ─────────────────
+        // Sonido de transición de día
         if (fuenteTransicion != null && clipTransicion != null)
             fuenteTransicion.PlayOneShot(clipTransicion, volumenTransicion);
-        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
+        // Teletransportar jugador
         if (playerTransform != null && indiceSiguiente < spawnsPorDia.Length && spawnsPorDia[indiceSiguiente] != null)
         {
             CharacterController cc = playerTransform.GetComponent<CharacterController>();
@@ -166,10 +158,9 @@ public class TransicionDia : MonoBehaviour
         OcultarTextos();
         yield return Fade(1f, 0f, duracionFadeOut);
 
-        // ── ▼ AUDIO: restaurar música (NUEVO) ────────────────────────────
+        // Restaurar música DESPUÉS del fade de salida
         if (AudioManager.Instance != null)
             AudioManager.Instance.RestaurarMusica();
-        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         if (firstPersonController != null)
             firstPersonController.enabled = true;
