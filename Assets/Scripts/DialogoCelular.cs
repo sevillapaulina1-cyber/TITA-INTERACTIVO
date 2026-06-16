@@ -5,9 +5,7 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Sistema de diálogo estilo iMessage para los momentos 11 y 12.
-/// El jugador presiona E para abrir el chat (momento 11).
-/// Al elegir en el 11, el momento 12 llega automáticamente sin cerrar el chat.
-/// Al elegir en el 12, se cierra y el GameManager evalúa el final.
+/// MODIFICADO: Añade sonidos de notificación para mensajes entrantes/salientes.
 /// </summary>
 public class DialogoCelular : MonoBehaviour
 {
@@ -80,6 +78,12 @@ public class DialogoCelular : MonoBehaviour
     [Tooltip("Pausa antes de que llegue el mensaje del momento 12")]
     public float pausaEntreMomentos = 2.0f;
 
+    // ── ▼ AUDIO (NUEVO) ──────────────────────────────────────────────────
+    [Header("── Audio Celular ────────────────────────")]
+    [Tooltip("Componente SonidoNPC con los clips de notificación. Se busca automáticamente.")]
+    public SonidoNPC sonidoNPC;
+    // ── ▲ AUDIO ──────────────────────────────────────────────────────────
+
     // ── Estado interno ────────────────────────────────────────────────────
     bool _puedeInteractuar = true;
     float _tiempoEscritura = 0.025f;
@@ -89,6 +93,12 @@ public class DialogoCelular : MonoBehaviour
     {
         if (panelCelular != null) panelCelular.SetActive(false);
         if (panelOpciones != null) panelOpciones.SetActive(false);
+
+        // Buscar SonidoNPC automáticamente
+        if (sonidoNPC == null)
+            sonidoNPC = GetComponent<SonidoNPC>();
+        if (sonidoNPC == null)
+            sonidoNPC = GetComponentInChildren<SonidoNPC>();
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -134,6 +144,11 @@ public class DialogoCelular : MonoBehaviour
         if (headerNombre != null) headerNombre.text = "Kid";
 
         yield return new WaitForSeconds(0.4f);
+
+        // ── ▼ AUDIO: notificación al recibir el primer mensaje (NUEVO) ───
+        if (sonidoNPC != null) sonidoNPC.TocarNotificacion();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         yield return MostrarBurbujaNPC(mensajeInicial11);
         yield return new WaitForSeconds(0.6f);
 
@@ -150,16 +165,23 @@ public class DialogoCelular : MonoBehaviour
     {
         if (panelOpciones != null) panelOpciones.SetActive(false);
 
+        // ── ▼ AUDIO: sonido de mensaje enviado (NUEVO) ────────────────────
+        if (sonidoNPC != null) sonidoNPC.TocarMensajeEnviado();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         yield return MostrarBurbujaJugador(textoJugador);
         yield return new WaitForSeconds(0.8f);
 
         if (!string.IsNullOrEmpty(respuestaNPC))
         {
+            // ── ▼ AUDIO: notificación respuesta NPC (NUEVO) ───────────────
+            if (sonidoNPC != null) sonidoNPC.TocarNotificacion();
+            // ── ▲ AUDIO ──────────────────────────────────────────────────
+
             yield return MostrarBurbujaNPC(respuestaNPC);
             yield return new WaitForSeconds(1.2f);
         }
 
-        // Registrar momento 11 y pasar directo al 12 sin cerrar el chat
         GameManager.Instance.RegistrarEleccion(tipo);
         yield return TransicionMomento12CO();
     }
@@ -167,8 +189,11 @@ public class DialogoCelular : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     IEnumerator TransicionMomento12CO()
     {
-        // Pausa como si el NPC estuviera escribiendo
         yield return new WaitForSeconds(pausaEntreMomentos);
+
+        // ── ▼ AUDIO: notificación momento 12 (NUEVO) ─────────────────────
+        if (sonidoNPC != null) sonidoNPC.TocarNotificacion();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         yield return MostrarBurbujaNPC(mensajeInicial12);
         yield return new WaitForSeconds(0.6f);
@@ -186,11 +211,19 @@ public class DialogoCelular : MonoBehaviour
     {
         if (panelOpciones != null) panelOpciones.SetActive(false);
 
+        // ── ▼ AUDIO: sonido de mensaje enviado (NUEVO) ────────────────────
+        if (sonidoNPC != null) sonidoNPC.TocarMensajeEnviado();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         yield return MostrarBurbujaJugador(textoJugador);
         yield return new WaitForSeconds(0.8f);
 
         if (!string.IsNullOrEmpty(respuestaNPC))
         {
+            // ── ▼ AUDIO: notificación respuesta NPC (NUEVO) ───────────────
+            if (sonidoNPC != null) sonidoNPC.TocarNotificacion();
+            // ── ▲ AUDIO ──────────────────────────────────────────────────
+
             yield return MostrarBurbujaNPC(respuestaNPC);
             yield return new WaitForSeconds(1.2f);
         }
@@ -198,9 +231,7 @@ public class DialogoCelular : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         if (panelCelular != null) panelCelular.SetActive(false);
 
-        // Registrar momento 12 — dispara EvaluarFinal en GameManager
         GameManager.Instance.RegistrarEleccion(tipo);
-
         this.enabled = false;
     }
 
@@ -229,12 +260,22 @@ public class DialogoCelular : MonoBehaviour
         if (textoUI == null) yield break;
         textoUI.text = "";
         yield return new WaitForSeconds(0.15f);
+
+        // ── ▼ AUDIO: voz del NPC mientras escribe (NUEVO) ────────────────
+        if (sonidoNPC != null) sonidoNPC.HablarNPC();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         foreach (char c in mensaje)
         {
             textoUI.text += c;
             ScrollAlFinal();
             yield return new WaitForSeconds(_tiempoEscritura);
         }
+
+        // ── ▼ AUDIO: detener voz al terminar (NUEVO) ─────────────────────
+        if (sonidoNPC != null) sonidoNPC.PararVoz();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         ScrollAlFinal();
     }
 
@@ -263,4 +304,3 @@ public class DialogoCelular : MonoBehaviour
             Destroy(hijo.gameObject);
     }
 }
-

@@ -5,9 +5,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 
-/// <summary>
-
-/// </summary>
 public class MenuPausa : MonoBehaviour
 {
     [Header("── Escenas ──────────────────────────────")]
@@ -16,6 +13,10 @@ public class MenuPausa : MonoBehaviour
     [Header("── Panels ───────────────────────────────")]
     public GameObject panelPausa;
     public GameObject panelBotones;
+
+    [Header("── Botones ─────────────────────────────")]
+    public Button botonContinuar;
+    public Button botonSalir;
 
     [Header("── Fade ─────────────────────────────────")]
     public Image panelFade;
@@ -32,7 +33,12 @@ public class MenuPausa : MonoBehaviour
     [Header("── Jugador ──────────────────────────────")]
     public MonoBehaviour firstPersonController;
 
-    // ── Estado ────────────────────────────────────────────────────────────
+    // ── ▼ AUDIO UI (NUEVO) ───────────────────────────────────────────────
+    [Header("── Audio UI ────────────────────────────")]
+    [Tooltip("Componente SonidoUI en el Canvas (se busca automáticamente)")]
+    public SonidoUI sonidoUI;
+    // ── ▲ AUDIO UI ───────────────────────────────────────────────────────
+
     bool _pausado = false;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -43,6 +49,18 @@ public class MenuPausa : MonoBehaviour
 
         if (textoVolumen != null) textoVolumen.text = etiquetaVolumen;
         InicializarSlider();
+
+        // Buscar SonidoUI automáticamente
+        if (sonidoUI == null)
+            sonidoUI = FindAnyObjectByType<SonidoUI>();
+
+        // ── ▼ AUDIO: registrar botones (NUEVO) ───────────────────────────
+        if (sonidoUI != null)
+        {
+            if (botonContinuar != null) sonidoUI.RegistrarBoton(botonContinuar, SonidoUI.TipoSonidoBtn.Click);
+            if (botonSalir != null) sonidoUI.RegistrarBoton(botonSalir, SonidoUI.TipoSonidoBtn.Click);
+        }
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -74,9 +92,12 @@ public class MenuPausa : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>Botón "Resume" y ESC cuando está pausado.</summary>
     public void Continuar()
     {
+        // ── ▼ AUDIO: sonido de botón (NUEVO) ─────────────────────────────
+        SonidoUI.TocarClick();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         _pausado = false;
         Time.timeScale = 1f;
 
@@ -90,9 +111,12 @@ public class MenuPausa : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>Botón "Quit" — fade a negro y carga MenuInicio.</summary>
     public void Salir()
     {
+        // ── ▼ AUDIO: sonido de botón (NUEVO) ─────────────────────────────
+        SonidoUI.TocarClick();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         StartCoroutine(SalirCO());
     }
 
@@ -111,7 +135,6 @@ public class MenuPausa : MonoBehaviour
     }
 
     // ── Audio ─────────────────────────────────────────────────────────────
-    /// <summary>Llamado por OnValueChanged del SliderVolumen.</summary>
     public void CambiarVolumen(float valor)
     {
         AplicarVolumen(valor);
@@ -121,7 +144,6 @@ public class MenuPausa : MonoBehaviour
     void AplicarVolumen(float lineal)
     {
         if (audioMixer == null) return;
-        // Convierte lineal [0,1] a decibelios [-80, 0]
         float dB = lineal > 0.0001f ? Mathf.Log10(lineal) * 20f : -80f;
         audioMixer.SetFloat(parametroVolumen, dB);
     }
@@ -130,13 +152,12 @@ public class MenuPausa : MonoBehaviour
     {
         if (sliderVolumen == null) return;
         sliderVolumen.onValueChanged.RemoveAllListeners();
-        // Recupera el volumen guardado (1 = máximo por defecto)
         sliderVolumen.value = PlayerPrefs.GetFloat(parametroVolumen, 1f);
         AplicarVolumen(sliderVolumen.value);
         sliderVolumen.onValueChanged.AddListener(CambiarVolumen);
     }
 
-    // ── Fade (unscaled — funciona con timeScale = 0) ──────────────────────
+    // ── Fade (unscaled) ───────────────────────────────────────────────────
     IEnumerator Fade(float desde, float hasta, float duracion)
     {
         if (panelFade == null) yield break;

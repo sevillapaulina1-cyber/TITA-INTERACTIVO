@@ -5,48 +5,59 @@ using UnityEngine.Video;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Coloca este script en la escena de Final1 o Final2.
-///
-/// FLUJO:
-///   1. La escena carga → se oculta el panel de retroalimentación
-///   2. Se reproduce el video .mp4 en pantalla completa
-///   3. Al terminar el video (o si el jugador lo salta) → aparece la retroalimentación
-///
-/// SETUP EN INSPECTOR:
-///   - VideoPlayer:  componente VideoPlayer en cualquier GameObject de la escena
-///   - RawImage:     RawImage que cubre toda la pantalla (Canvas en Screen Space - Overlay)
-///                   asígnale el RenderTexture del VideoPlayer como textura
-///   - PanelRetro:   el GameObject raíz del panel de retroalimentación (empieza desactivado)
-///   - BotonSaltar:  botón opcional "Saltar video" visible durante la reproducción
+/// Pantalla de retroalimentación final.
+/// MODIFICADO: Inicia música de retroalimentación al mostrar el panel.
+///             Añade sonidos a botones Skip y Reiniciar.
 /// </summary>
 public class UIRetroalimentacion : MonoBehaviour
 {
     [Header("── Video ──────────────────────────────")]
-    public VideoPlayer videoPlayer;         // Componente VideoPlayer de la escena
-    public RawImage videoScreen;          // RawImage que muestra el video (pantalla completa)
-    public GameObject botonSaltar;          // Botón "Saltar" (opcional, puede ser null)
+    public VideoPlayer videoPlayer;
+    public RawImage videoScreen;
+    public GameObject botonSaltar;
 
     [Header("── Panel de retroalimentación ─────────")]
-    public GameObject panelRetro;           // Panel completo (se activa al terminar el video)
+    public GameObject panelRetro;
 
     [Header("── Textos de retroalimentación ────────")]
-    public Text textoResumen;               // Resumen completo multilinea
-    public Text textoConfianza;             // Ej: "Confianza: 32 pts"
-    public Text textoRiesgo;                // Ej: "Riesgo: 0 pts"
-    public Text textoFinal;                 // Ej: "Final 1 — Secuestro"
+    public Text textoResumen;
+    public Text textoConfianza;
+    public Text textoRiesgo;
+    public Text textoFinal;
+
+    [Header("── Botones ─────────────────────────────")]
+    public Button botonSaltarBtn;
+    public Button botonReiniciarBtn;
 
     [Header("── Reinicio ────────────────────────────")]
     public string escenaInicio = "Inicio";
 
+    // ── ▼ AUDIO (NUEVO) ──────────────────────────────────────────────────
+    [Header("── Audio UI ────────────────────────────")]
+    [Tooltip("SonidoUI del Canvas (se busca automáticamente)")]
+    public SonidoUI sonidoUI;
+    // ── ▲ AUDIO ──────────────────────────────────────────────────────────
+
     // ─────────────────────────────────────────────────────────────────────
     void Start()
     {
-        // Ocultar retroalimentación hasta que termine el video
         if (panelRetro != null)
             panelRetro.SetActive(false);
 
         if (botonSaltar != null)
             botonSaltar.SetActive(true);
+
+        // Buscar SonidoUI
+        if (sonidoUI == null)
+            sonidoUI = FindAnyObjectByType<SonidoUI>();
+
+        // ── ▼ AUDIO: registrar botones (NUEVO) ───────────────────────────
+        if (sonidoUI != null)
+        {
+            if (botonSaltarBtn != null) sonidoUI.RegistrarBoton(botonSaltarBtn, SonidoUI.TipoSonidoBtn.Skip);
+            if (botonReiniciarBtn != null) sonidoUI.RegistrarBoton(botonReiniciarBtn, SonidoUI.TipoSonidoBtn.Reiniciar);
+        }
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         StartCoroutine(ReproducirVideoCO());
     }
@@ -63,13 +74,11 @@ public class UIRetroalimentacion : MonoBehaviour
 
         videoScreen.gameObject.SetActive(true);
 
-        // Preparar video y esperar a que esté listo
         videoPlayer.Prepare();
         yield return new WaitUntil(() => videoPlayer.isPrepared);
 
         videoPlayer.Play();
 
-        // Esperar a que el video termine
         yield return new WaitUntil(() =>
             !videoPlayer.isPlaying ||
             (videoPlayer.frameCount > 0 &&
@@ -80,11 +89,12 @@ public class UIRetroalimentacion : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Llamado por el botón "Saltar" en el Inspector (OnClick).
-    /// </summary>
     public void SaltarVideo()
     {
+        // ── ▼ AUDIO: sonido skip (NUEVO) ─────────────────────────────────
+        SonidoUI.TocarSkip();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         if (videoPlayer != null && videoPlayer.isPlaying)
             videoPlayer.Stop();
 
@@ -95,16 +105,19 @@ public class UIRetroalimentacion : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     void MostrarPantallaRetro()
     {
-        // Ocultar video
         if (videoScreen != null)
             videoScreen.gameObject.SetActive(false);
 
         if (botonSaltar != null)
             botonSaltar.SetActive(false);
 
-        // Mostrar panel de retroalimentación
         if (panelRetro != null)
             panelRetro.SetActive(true);
+
+        // ── ▼ AUDIO: iniciar música de retroalimentación (NUEVO) ─────────
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.IniciarMusicaRetro();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         RellenarTextos();
     }
@@ -132,11 +145,12 @@ public class UIRetroalimentacion : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Asigna al botón de reinicio en el Inspector (OnClick).
-    /// </summary>
     public void ReiniciarExperiencia()
     {
+        // ── ▼ AUDIO: sonido reiniciar (NUEVO) ────────────────────────────
+        SonidoUI.TocarReiniciar();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         if (GameManager.Instance != null)
             GameManager.Instance.Reiniciar();
 

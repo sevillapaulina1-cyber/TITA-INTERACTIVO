@@ -42,6 +42,14 @@ public class TransicionDia : MonoBehaviour
         "Día 4"
     };
 
+    [Header("── Audio de transición ──────────────────")]
+    [Tooltip("Sonido que se reproduce al hacer la transición de día (una vez)")]
+    public AudioSource fuenteTransicion;
+    [Tooltip("Clip de sonido de transición (campanada, whoosh, etc.)")]
+    public AudioClip clipTransicion;
+    [Range(0f, 1f)]
+    public float volumenTransicion = 0.9f;
+
     [Header("── Tiempos ─────────────────────────────")]
     public float duracionFadeIn = 1.0f;
     public float duracionTexto = 2.0f;
@@ -50,7 +58,6 @@ public class TransicionDia : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     void Awake()
     {
-        // Arranca con pantalla negra para que el fade-in de Día 1 sea suave
         SetAlpha(mostrarIntroDia1 ? 1f : 0f);
         if (textoDia != null) textoDia.enabled = false;
         if (textoDiaNumero != null) textoDiaNumero.enabled = false;
@@ -58,6 +65,15 @@ public class TransicionDia : MonoBehaviour
         for (int i = 0; i < npcsPorDia.Length; i++)
             if (npcsPorDia[i] != null)
                 npcsPorDia[i].SetActive(i == 0);
+
+        // Auto-crear fuente de audio si no está asignada
+        if (fuenteTransicion == null)
+        {
+            fuenteTransicion = gameObject.AddComponent<AudioSource>();
+            fuenteTransicion.playOnAwake = false;
+            fuenteTransicion.loop = false;
+            fuenteTransicion.spatialBlend = 0f;
+        }
     }
 
     void Start()
@@ -67,7 +83,6 @@ public class TransicionDia : MonoBehaviour
         else
             Debug.LogError("[TransicionDia] GameManager.Instance es null en Start.");
 
-        // Bloquear jugador durante el fade de Día 1
         if (mostrarIntroDia1)
         {
             if (firstPersonController != null)
@@ -83,18 +98,23 @@ public class TransicionDia : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Fade de entrada al Día 1
-    // ─────────────────────────────────────────────────────────────────────
     IEnumerator IntroDia1CO()
     {
-        // Pantalla negra con textos visibles
+        // ── ▼ AUDIO: silenciar música durante el fade de intro (NUEVO) ───
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SilenciarParaTransicion();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         MostrarTextos(nombreDia1, fechaDia1);
 
         yield return new WaitForSeconds(duracionTexto);
-
         OcultarTextos();
-
         yield return Fade(1f, 0f, duracionFadeOut);
+
+        // ── ▼ AUDIO: restaurar música (NUEVO) ────────────────────────────
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.RestaurarMusica();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         if (firstPersonController != null)
             firstPersonController.enabled = true;
@@ -114,9 +134,18 @@ public class TransicionDia : MonoBehaviour
         if (firstPersonController != null)
             firstPersonController.enabled = false;
 
+        // ── ▼ AUDIO: silenciar música (NUEVO) ────────────────────────────
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SilenciarParaTransicion();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         yield return Fade(0f, 1f, duracionFadeIn);
 
-        // Teletransportar jugador
+        // ── ▼ AUDIO: sonido de transición de día (NUEVO) ─────────────────
+        if (fuenteTransicion != null && clipTransicion != null)
+            fuenteTransicion.PlayOneShot(clipTransicion, volumenTransicion);
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         if (playerTransform != null && indiceSiguiente < spawnsPorDia.Length && spawnsPorDia[indiceSiguiente] != null)
         {
             CharacterController cc = playerTransform.GetComponent<CharacterController>();
@@ -128,17 +157,19 @@ public class TransicionDia : MonoBehaviour
 
         SwapNPC(indiceSiguiente);
 
-        // Mostrar día y fecha
         int indice = diaQueTermino - 1;
         string nombreDia = (indice >= 0 && indice < nombresDias.Length) ? nombresDias[indice] : $"Día {diaQueTermino + 1}";
         string fecha = (indice >= 0 && indice < fechas.Length) ? fechas[indice] : "";
         MostrarTextos(nombreDia, fecha);
 
         yield return new WaitForSeconds(duracionTexto);
-
         OcultarTextos();
-
         yield return Fade(1f, 0f, duracionFadeOut);
+
+        // ── ▼ AUDIO: restaurar música (NUEVO) ────────────────────────────
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.RestaurarMusica();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         if (firstPersonController != null)
             firstPersonController.enabled = true;

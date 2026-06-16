@@ -68,6 +68,12 @@ public class SistemaDialogo : MonoBehaviour
     [Tooltip("Duración de la animación en segundos (para esperar antes de continuar)")]
     public float duracionAnimacion = 6.0f;
 
+    // ── ▼ AUDIO ── (NUEVO) ──────────────────────────────────────────────
+    [Header("── Audio NPC ────────────────────────────")]
+    [Tooltip("Componente SonidoNPC en este mismo GO o en el NPC. Se busca automáticamente si está vacío.")]
+    public SonidoNPC sonidoNPC;
+    // ── ▲ AUDIO ─────────────────────────────────────────────────────────
+
     bool _puedeInteractuar = true;
     float _time = 0.05f;
 
@@ -77,9 +83,14 @@ public class SistemaDialogo : MonoBehaviour
         if (npcTransform != null && posicionNPCEsteDia != null)
             npcTransform.position = posicionNPCEsteDia.position;
 
-        // Desactivar el Animator al inicio — solo se activa en el momento 8
         if (animatorCamara != null)
             animatorCamara.enabled = false;
+
+        // Buscar SonidoNPC automáticamente si no está asignado
+        if (sonidoNPC == null)
+            sonidoNPC = GetComponentInChildren<SonidoNPC>();
+        if (sonidoNPC == null && npcTransform != null)
+            sonidoNPC = npcTransform.GetComponent<SonidoNPC>();
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -154,9 +165,9 @@ public class SistemaDialogo : MonoBehaviour
         if (textoBoton2 != null) textoBoton2.text = textoChoice2;
         if (textoBoton3 != null) textoBoton3.text = textoChoice3;
 
-        yield return EscribirTexto("Yo: ", textoYo);
+        yield return EscribirTexto("Yo: ", textoYo, false);
         yield return PresionarMouse();
-        yield return EscribirTexto("SamuVR: ", textoNPC);
+        yield return EscribirTexto("SamuVR: ", textoNPC, true); // ← NPC habla
 
         yield return new WaitForSeconds(0.8f);
 
@@ -174,13 +185,13 @@ public class SistemaDialogo : MonoBehaviour
     {
         choicePack.SetActive(false);
 
-        yield return EscribirTexto("Yo: ", textoRespuesta);
+        yield return EscribirTexto("Yo: ", textoRespuesta, false);
         yield return new WaitForSeconds(0.5f);
 
         if (!string.IsNullOrEmpty(respuestaNPC))
         {
             yield return new WaitForSeconds(0.4f);
-            yield return EscribirTexto("SamuVR: ", respuestaNPC);
+            yield return EscribirTexto("SamuVR: ", respuestaNPC, true); // ← NPC responde
             yield return new WaitForSeconds(1.5f);
         }
         else
@@ -201,12 +212,21 @@ public class SistemaDialogo : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
-            // Activar el Animator, disparar el trigger y esperar
             animatorCamara.enabled = true;
             animatorCamara.SetTrigger(triggerAnimacion);
+
+            // ── ▼ AUDIO: respiración durante la animación (NUEVO) ──────────
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.IniciarRespiracion();
+            // ── ▲ AUDIO ────────────────────────────────────────────────────
+
             yield return new WaitForSeconds(duracionAnimacion);
 
-            // Desactivar cuando termina
+            // ── ▼ AUDIO: detener respiración (NUEVO) ───────────────────────
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.DetenerRespiracion();
+            // ── ▲ AUDIO ────────────────────────────────────────────────────
+
             animatorCamara.enabled = false;
         }
 
@@ -224,15 +244,25 @@ public class SistemaDialogo : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator EscribirTexto(string hablante, string mensaje)
+    // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ MODIFICADO: EscribirTexto ahora activa/desactiva voz del NPC ──
+    IEnumerator EscribirTexto(string hablante, string mensaje, bool esNPC)
     {
         subText.text = hablante;
+
+        if (esNPC && sonidoNPC != null)
+            sonidoNPC.HablarNPC();
+
         foreach (char c in mensaje)
         {
             subText.text += c;
             yield return new WaitForSeconds(_time);
         }
+
+        if (esNPC && sonidoNPC != null)
+            sonidoNPC.PararVoz();
     }
+    // ── ▲ FIN MODIFICACIÓN ──────────────────────────────────────────────
 
     IEnumerator PresionarMouse()
     {

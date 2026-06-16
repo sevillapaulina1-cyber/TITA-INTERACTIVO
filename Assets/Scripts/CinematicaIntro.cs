@@ -7,66 +7,27 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Reproduce el video de introducción (.mp4) y al terminar carga la escena del juego.
-/// El jugador puede saltarlo con SPACE, clic izquierdo o el botón "Saltar".
-///
-/// SETUP EN UNITY — Jerarquía completa de la escena "Cinematica":
-/// ──────────────────────────────────────────────────────────────
-/// [Scene: Cinematica]
-///   │
-///   ├── Main Camera
-///   │
-///   ├── VideoPlayerGO                    ← GameObject vacío
-///   │     └── VideoPlayer (componente)
-///   │           ├── Play On Awake  → OFF   (el script lo controla)
-///   │           ├── Render Mode    → Render Texture
-///   │           ├── Target Texture → VideoRT   (ver paso 1)
-///   │           └── Video Clip     → tu .mp4 de intro
-///   │
-///   ├── Canvas                           ← Screen Space - Overlay, Sort Order 10
-///   │     │
-///   │     ├── VideoRawImage              ← RawImage
-///   │     │     ├── Anchor  → Stretch completo (Alt+clic en anchor presets)
-///   │     │     └── Texture → VideoRT
-///   │     │
-///   │     └── BotonSaltar                ← Button (esquina inferior derecha)
-///   │           ├── Width ~120, Height ~40
-///   │           ├── Text hijo → "Saltar ▶"
-///   │           └── OnClick → CinematicaManager → SaltarVideo()
-///   │
-///   └── CinematicaManager                ← GameObject vacío
-///         └── CinematicaIntro.cs  ← ESTE SCRIPT
-///               ├── videoPlayer    → VideoPlayerGO (componente VideoPlayer)
-///               ├── videoScreen    → VideoRawImage
-///               ├── botonSaltar    → BotonSaltar
-///               └── escenaJuego    → "EscenaPrincipal"
-///
-/// PASO 1 — Crear RenderTexture:
-///   Project panel → clic derecho → Create → Render Texture
-///   Nombre: "VideoRT" | Size: 1920 × 1080
-///   Asignarla al VideoPlayer (Target Texture) y a la RawImage (Texture)
-///
-/// BUILD SETTINGS — orden de escenas:
-///   0. MenuInicio
-///   1. Cinematica        ← esta escena
-///   2. EscenaPrincipal
-///   3. Final1_Secuestro
-///   4. Final2_Policia
-/// ──────────────────────────────────────────────────────────────
+/// MODIFICADO: Añade sonido al botón "Saltar".
 /// </summary>
 public class CinematicaIntro : MonoBehaviour
 {
     [Header("── Video ───────────────────────────────")]
-    public VideoPlayer videoPlayer;     // componente VideoPlayer de la escena
-    public RawImage    videoScreen;     // RawImage que muestra el video
+    public VideoPlayer videoPlayer;
+    public RawImage videoScreen;
 
     [Header("── Botón saltar (opcional) ────────────")]
-    public GameObject  botonSaltar;     // puede quedar null si no quieres botón
+    public GameObject botonSaltar;
+    public Button botonSaltarBtn; // ← asigna el Button del botonSaltar
 
     [Header("── Siguiente escena ───────────────────")]
     [Tooltip("Nombre exacto de tu escena principal de juego")]
     public string escenaJuego = "EscenaPrincipal";
 
-    // ── Estado ────────────────────────────────────────────────────────────
+    // ── ▼ AUDIO (NUEVO) ──────────────────────────────────────────────────
+    [Header("── Audio UI ────────────────────────────")]
+    public SonidoUI sonidoUI;
+    // ── ▲ AUDIO ──────────────────────────────────────────────────────────
+
     bool _saltado = false;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -74,6 +35,15 @@ public class CinematicaIntro : MonoBehaviour
     {
         if (botonSaltar != null)
             botonSaltar.SetActive(true);
+
+        // Buscar SonidoUI y registrar botón
+        if (sonidoUI == null)
+            sonidoUI = FindAnyObjectByType<SonidoUI>();
+
+        // ── ▼ AUDIO: registrar botón skip (NUEVO) ────────────────────────
+        if (sonidoUI != null && botonSaltarBtn != null)
+            sonidoUI.RegistrarBoton(botonSaltarBtn, SonidoUI.TipoSonidoBtn.Skip);
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         StartCoroutine(ReproducirCO());
     }
@@ -83,7 +53,6 @@ public class CinematicaIntro : MonoBehaviour
     {
         if (_saltado) return;
 
-        // Saltar con SPACE o clic izquierdo
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             SaltarVideo();
         else if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
@@ -102,13 +71,11 @@ public class CinematicaIntro : MonoBehaviour
 
         videoScreen.gameObject.SetActive(true);
 
-        // Preparar y esperar
         videoPlayer.Prepare();
         yield return new WaitUntil(() => videoPlayer.isPrepared);
 
         videoPlayer.Play();
 
-        // Esperar a que termine el video
         yield return new WaitUntil(() =>
             _saltado ||
             !videoPlayer.isPlaying ||
@@ -121,14 +88,14 @@ public class CinematicaIntro : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Llamado por el botón "Saltar" en el Inspector (OnClick),
-    /// o automáticamente por SPACE / clic.
-    /// </summary>
     public void SaltarVideo()
     {
         if (_saltado) return;
         _saltado = true;
+
+        // ── ▼ AUDIO: sonido de skip (NUEVO) ──────────────────────────────
+        SonidoUI.TocarSkip();
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
         if (videoPlayer != null && videoPlayer.isPlaying)
             videoPlayer.Stop();

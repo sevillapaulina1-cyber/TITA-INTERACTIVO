@@ -1,19 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Va en cada zona del suelo. Cuando el jugador la pisa se activa
 /// y notifica al GestorZonas.
-///
-/// SETUP EN UNITY:
-///   1. Crea un GameObject con un modelo visible (plataforma, alfombra, etc.)
-///   2. Agrégale un Box Collider → marca "Is Trigger" ✓
-///   3. Agrégale este script
-///   4. Asigna gestorZonas → el GameObject con GestorZonas.cs
-///
-/// VISUAL FEEDBACK (opcional):
-///   - Asigna materialInactivo y materialActivo para que cambie de color al pisarse
-///   - Ej: inactivo = gris, activo = verde
+/// MODIFICADO: Añade sonido al pisar la zona.
 /// </summary>
 public class ZonaActivacion : MonoBehaviour
 {
@@ -21,14 +11,35 @@ public class ZonaActivacion : MonoBehaviour
     public GestorZonas gestorZonas;
 
     [Header("── Visual feedback (opcional) ──────────")]
-    public Renderer modeloZona;        // el Renderer de la plataforma/alfombra
-    public Material materialInactivo;  // color por defecto
-    public Material materialActivo;    // color al ser pisada
+    public Renderer modeloZona;
+    public Material materialInactivo;
+    public Material materialActivo;
 
-    // ── Estado ────────────────────────────────────────────────────────────
+    // ── ▼ AUDIO (NUEVO) ──────────────────────────────────────────────────
+    [Header("── Audio ───────────────────────────────")]
+    [Tooltip("AudioSource para el sonido de zona (se crea automáticamente si está vacío)")]
+    public AudioSource fuenteAudio;
+    [Tooltip("Clip que suena al pisar la zona")]
+    public AudioClip clipZona;
+    [Range(0f, 1f)]
+    public float volumenZona = 0.85f;
+    // ── ▲ AUDIO ──────────────────────────────────────────────────────────
+
     bool _activada = false;
 
     // ─────────────────────────────────────────────────────────────────────
+    void Awake()
+    {
+        // Auto-crear AudioSource si no está asignado
+        if (fuenteAudio == null)
+        {
+            fuenteAudio = gameObject.AddComponent<AudioSource>();
+            fuenteAudio.playOnAwake = false;
+            fuenteAudio.loop = false;
+            fuenteAudio.spatialBlend = 0.5f; // semiespacial
+        }
+    }
+
     void Start()
     {
         if (modeloZona != null && materialInactivo != null)
@@ -43,11 +54,14 @@ public class ZonaActivacion : MonoBehaviour
 
         _activada = true;
 
-        // Cambiar visual
         if (modeloZona != null && materialActivo != null)
             modeloZona.material = materialActivo;
 
-        // Notificar al gestor
+        // ── ▼ AUDIO: sonido al pisar la zona (NUEVO) ─────────────────────
+        if (fuenteAudio != null && clipZona != null)
+            fuenteAudio.PlayOneShot(clipZona, volumenZona);
+        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
         if (gestorZonas != null)
             gestorZonas.ZonaActivada();
 
@@ -64,3 +78,4 @@ public class ZonaActivacion : MonoBehaviour
             modeloZona.material = materialInactivo;
     }
 }
+

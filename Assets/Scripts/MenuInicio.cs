@@ -5,26 +5,13 @@ using System.Collections;
 
 /// <summary>
 /// Menú principal de la experiencia.
-///
-/// CAMBIO RESPECTO A LA VERSIÓN ANTERIOR:
-///   El campo "escenaPrincipal" ahora se llama "escenaCinematica".
-///   En el Inspector asigna "Cinematica" (o el nombre exacto de tu escena de intro).
-///   El flujo queda: MenuInicio → Cinematica → EscenaPrincipal
-///
-/// SETUP EN UNITY:
-///   Canvas
-///     ├── Fondo          ← Image que cubre toda la pantalla
-///     ├── Titulo         ← Text con el nombre de la experiencia
-///     ├── Subtitulo      ← Text secundario (opcional)
-///     ├── BotonIniciar   ← Button → OnClick → MenuInicio.IniciarExperiencia()
-///     ├── BotonSalir     ← Button → OnClick → MenuInicio.Salir()
-///     └── PanelFade      ← Image negra stretch completo, alpha 0 al inicio
+/// MODIFICADO: Añade sonidos a los botones.
 /// </summary>
 public class MenuInicio : MonoBehaviour
 {
     [Header("── Escenas ──────────────────────────────")]
     [Tooltip("Nombre exacto de tu escena de cinemática de intro")]
-    public string escenaCinematica = "Cinematica";      // ← antes era escenaPrincipal
+    public string escenaCinematica = "Cinematica";
 
     [Header("── UI ──────────────────────────────────")]
     public Text textoTitulo;
@@ -43,14 +30,39 @@ public class MenuInicio : MonoBehaviour
     public float duracionFadeIn = 0.8f;
     public float duracionFadeOut = 1.0f;
 
+    // ── ▼ AUDIO (NUEVO) ──────────────────────────────────────────────────
+    [Header("── Audio UI ────────────────────────────")]
+    [Tooltip("Componente SonidoUI en el Canvas (se busca automáticamente)")]
+    public SonidoUI sonidoUI;
+    // ── ▲ AUDIO ──────────────────────────────────────────────────────────
+
     // ─────────────────────────────────────────────────────────────────────
     void Start()
     {
         if (textoTitulo != null) textoTitulo.text = titulo;
         if (textoSubtitulo != null) textoSubtitulo.text = subtitulo;
 
-        if (botonIniciar != null) { botonIniciar.onClick.RemoveAllListeners(); botonIniciar.onClick.AddListener(IniciarExperiencia); }
-        if (botonSalir != null) { botonSalir.onClick.RemoveAllListeners(); botonSalir.onClick.AddListener(Salir); }
+        // Buscar SonidoUI automáticamente
+        if (sonidoUI == null)
+            sonidoUI = FindAnyObjectByType<SonidoUI>();
+
+        if (botonIniciar != null)
+        {
+            botonIniciar.onClick.RemoveAllListeners();
+            botonIniciar.onClick.AddListener(IniciarExperiencia);
+            // ── ▼ AUDIO: registrar sonido de click (NUEVO) ────────────────
+            if (sonidoUI != null) sonidoUI.RegistrarBoton(botonIniciar, SonidoUI.TipoSonidoBtn.Click);
+            // ── ▲ AUDIO ──────────────────────────────────────────────────
+        }
+
+        if (botonSalir != null)
+        {
+            botonSalir.onClick.RemoveAllListeners();
+            botonSalir.onClick.AddListener(Salir);
+            // ── ▼ AUDIO: registrar sonido de click (NUEVO) ────────────────
+            if (sonidoUI != null) sonidoUI.RegistrarBoton(botonSalir, SonidoUI.TipoSonidoBtn.Click);
+            // ── ▲ AUDIO ──────────────────────────────────────────────────
+        }
 
         StartCoroutine(FadeEntradaCO());
     }
@@ -76,11 +88,10 @@ public class MenuInicio : MonoBehaviour
 
         yield return Fade(0f, 1f, duracionFadeOut);
 
-        // Resetear GameManager si viene de un reinicio
         if (GameManager.Instance != null)
             GameManager.Instance.Reiniciar();
 
-        SceneManager.LoadScene(escenaCinematica);   // ← va a Cinematica, no al juego directo
+        SceneManager.LoadScene(escenaCinematica);
     }
 
     // ─────────────────────────────────────────────────────────────────────
