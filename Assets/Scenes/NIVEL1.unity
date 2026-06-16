@@ -1204,6 +1204,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 422387397}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 422387399}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -1234,6 +1237,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 0}
 --- !u!1 &48994551 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: fd67a93e37ccb3449b9a1c3fb3f52833, type: 3}
@@ -1507,6 +1511,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 1510042113}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 1510042115}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -1535,6 +1542,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 0}
 --- !u!1 &84845616
 GameObject:
   m_ObjectHideFlags: 0
@@ -3420,6 +3428,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 1510042113}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 1510042115}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -3449,6 +3460,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 1309367561}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6.5
+  sonidoNPC: {fileID: 0}
 --- !u!1001 &201710250
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4730,6 +4742,9 @@ MonoBehaviour:
   - "D\xEDa 6"
   - "D\xEDa 17"
   - "D\xEDa 82"
+  fuenteTransicion: {fileID: 0}
+  clipTransicion: {fileID: 0}
+  volumenTransicion: 0.9
   duracionFadeIn: 1
   duracionTexto: 3
   duracionFadeOut: 1
@@ -5439,6 +5454,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 1736884222}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 1736884223}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -5467,6 +5485,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 1736884226}
 --- !u!1 &307817139
 GameObject:
   m_ObjectHideFlags: 0
@@ -5517,6 +5536,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 878580063}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 878580064}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -5545,6 +5567,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 0}
 --- !u!1001 &309771050
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20308,6 +20331,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 1510042113}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 1510042115}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -20336,6 +20362,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 0}
 --- !u!1 &663129646 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ef27ffb100afdf24c9dfda88410de935, type: 3}
@@ -26844,6 +26871,9 @@ MonoBehaviour:
   modeloZona: {fileID: 0}
   materialInactivo: {fileID: 0}
   materialActivo: {fileID: 0}
+  fuenteAudio: {fileID: 0}
+  clipZona: {fileID: 0}
+  volumenZona: 0.85
 --- !u!1 &722966859
 GameObject:
   m_ObjectHideFlags: 0
@@ -29911,6 +29941,9 @@ MonoBehaviour:
   modeloZona: {fileID: 0}
   materialInactivo: {fileID: 0}
   materialActivo: {fileID: 0}
+  fuenteAudio: {fileID: 0}
+  clipZona: {fileID: 0}
+  volumenZona: 0.85
 --- !u!1 &933287954
 GameObject:
   m_ObjectHideFlags: 0
@@ -31435,6 +31468,7 @@ MonoBehaviour:
   tipoChoice12_3: 2
   respNPC12_3: Dejame ver
   pausaEntreMomentos: 2
+  sonidoNPC: {fileID: 0}
 --- !u!1 &982981254
 GameObject:
   m_ObjectHideFlags: 0
@@ -38867,6 +38901,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 422387397}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 422387399}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -38895,6 +38932,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 0}
 --- !u!1 &1184097120
 GameObject:
   m_ObjectHideFlags: 0
@@ -39785,6 +39823,9 @@ MonoBehaviour:
   modeloZona: {fileID: 0}
   materialInactivo: {fileID: 0}
   materialActivo: {fileID: 0}
+  fuenteAudio: {fileID: 0}
+  clipZona: {fileID: 0}
+  volumenZona: 0.85
 --- !u!1 &1253346968 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8616685848737228372, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
@@ -40211,6 +40252,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 1736884222}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 1736884223}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -40239,6 +40283,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 1736884226}
 --- !u!1 &1293957998
 GameObject:
   m_ObjectHideFlags: 0
@@ -42904,6 +42949,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 1736884222}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 1736884223}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -42933,6 +42981,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 1736884226}
 --- !u!1 &1421373361
 GameObject:
   m_ObjectHideFlags: 0
@@ -51305,6 +51354,8 @@ MonoBehaviour:
   escenaMenu: MenuInicio
   panelPausa: {fileID: 414201989}
   panelBotones: {fileID: 1242005524}
+  botonContinuar: {fileID: 0}
+  botonSalir: {fileID: 0}
   panelFade: {fileID: 0}
   duracionFade: 0.8
   audioMixer: {fileID: 24100000, guid: 2a0bf4d8b9b5bfa46a2f3902cdcca732, type: 2}
@@ -51313,6 +51364,7 @@ MonoBehaviour:
   textoVolumen: {fileID: 912564826}
   etiquetaVolumen: Volumen
   firstPersonController: {fileID: 179773859}
+  sonidoUI: {fileID: 0}
 --- !u!4 &1622945362
 Transform:
   m_ObjectHideFlags: 0
@@ -53953,6 +54005,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1736884223}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1736884226}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1736884225}
   m_SourcePrefab: {fileID: 100100000, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
 --- !u!4 &1736884222 stripped
 Transform:
@@ -54004,6 +54062,123 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0.13, y: 0.6, z: -2.71}
+--- !u!82 &1736884225
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536017273}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.575
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1736884226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536017273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 189b17ae1c711de489bb87e6f9887f29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SonidoNPC
+  fuenteVoz: {fileID: 1736884225}
+  clipVozNPC: {fileID: 8300000, guid: b964da63952863847a3991eb90b38b62, type: 3}
+  clipNotificacion: {fileID: 0}
+  clipMensajeEnviado: {fileID: 0}
+  intervaloVoz: 0.177
+  volumenVoz: 0.127
+  variacionPitch: 0.05
+  pitchBase: 1.2
 --- !u!1 &1739429285
 GameObject:
   m_ObjectHideFlags: 0
@@ -61100,6 +61275,9 @@ MonoBehaviour:
   distanciaInteraccion: 5
   npcTransform: {fileID: 422387397}
   posicionNPCEsteDia: {fileID: 0}
+  animatorNPC: {fileID: 422387399}
+  triggerSaludo: saludo
+  triggerIdle: idle
   interactionText: {fileID: 262110545}
   talkPanel: {fileID: 1043238967}
   choicePack: {fileID: 1659107247}
@@ -61128,6 +61306,7 @@ MonoBehaviour:
   animatorCamara: {fileID: 0}
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
+  sonidoNPC: {fileID: 0}
 --- !u!1001 &1922921589
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -152,8 +152,15 @@ public class MenuPausa : MonoBehaviour
     {
         if (sliderVolumen == null) return;
         sliderVolumen.onValueChanged.RemoveAllListeners();
-        sliderVolumen.value = PlayerPrefs.GetFloat(parametroVolumen, 1f);
-        AplicarVolumen(sliderVolumen.value);
+
+        const float VOLUMEN_DEFAULT = 0.7f;
+        if (!PlayerPrefs.HasKey(parametroVolumen))
+            PlayerPrefs.SetFloat(parametroVolumen, VOLUMEN_DEFAULT);
+
+        float volGuardado = PlayerPrefs.GetFloat(parametroVolumen, VOLUMEN_DEFAULT);
+        sliderVolumen.value = volGuardado;
+        AplicarVolumen(volGuardado);
+
         sliderVolumen.onValueChanged.AddListener(CambiarVolumen);
     }
 
