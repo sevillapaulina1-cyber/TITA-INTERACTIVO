@@ -1682,11 +1682,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   fuenteMusica: {fileID: 1261038828}
-  fuenteCrossfade: {fileID: 0}
+  fuenteCrossfade: {fileID: 1261038827}
   fuenteRespiracion: {fileID: 1261038826}
   fuenteRetro: {fileID: 1261038825}
-  grupoMusica: {fileID: 0}
-  grupoSFX: {fileID: 0}
+  grupoMusica: {fileID: 24300002, guid: 2a0bf4d8b9b5bfa46a2f3902cdcca732, type: 2}
+  grupoSFX: {fileID: 24300002, guid: 2a0bf4d8b9b5bfa46a2f3902cdcca732, type: 2}
   audioMixer: {fileID: 24100000, guid: 2a0bf4d8b9b5bfa46a2f3902cdcca732, type: 2}
   parametroMusica: VolMusica
   parametroSFX: VolSFX

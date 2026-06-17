@@ -18,6 +18,7 @@ using UnityEngine;
 ///   descripcionMision  → texto que aparece en el panel de objetivo
 ///   totalMonedas       → 3
 ///   monedas[]          → GameObjects de las monedas
+///   mensajeSiguientePaso → texto que aparece al completar (ej. "Vuelve a hablar con el NPC")
 /// </summary>
 public class RecolectorMonedas : MonoBehaviour
 {
@@ -28,6 +29,10 @@ public class RecolectorMonedas : MonoBehaviour
     [Header("── Misión ───────────────────────────────")]
     [Tooltip("Texto que aparece en el panel de objetivo")]
     public string descripcionMision = "Recoge las monedas";
+
+    [Header("── Siguiente paso ───────────────────────")]
+    [Tooltip("Mensaje que aparece al completar el puzzle")]
+    public string mensajeSiguientePaso = "Vuelve a hablar con el NPC";
 
     [Header("── Monedas ─────────────────────────────")]
     public int totalMonedas = 3;
@@ -92,9 +97,9 @@ public class RecolectorMonedas : MonoBehaviour
         _tareaActiva = false;
         _completado = true;
 
-        // Panel: marcar completado y fade out
+        // ── MODIFICADO: mostrar "Vuelve a hablar con el NPC" en vez de fade out inmediato
         if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.CompletarObjetivo();
+            UIObjetivo.Instance.MostrarSiguientePaso(mensajeSiguientePaso);
 
         Debug.Log($"[RecolectorMonedas] ¡Completado! Momento {momentoQueActiva + 1} habilitado.");
     }

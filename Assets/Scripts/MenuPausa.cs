@@ -2,21 +2,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 
 /// <summary>
 /// Menú de pausa.
-/// El slider de volumen controla el parámetro "VolMaster" del AudioMixer raíz,
-/// que debe ser el mismo AudioMixer asignado en AudioManager (MixerPrincipal).
-/// Así el slider afecta TODA la salida de audio: música, SFX y respiración.
-///
-/// SETUP DEL MIXER EN UNITY:
-///   1. Selecciona el MixerPrincipal en el Project panel.
-///   2. En la ventana Audio Mixer, haz clic derecho en el volumen del grupo "Master"
-///      → "Expose 'Volume' to script" → renómbralo "VolMaster".
-///   3. Asigna ese mismo MixerPrincipal al campo audioMixer de este script
-///      Y al campo audioMixer del AudioManager.
+/// El control de volumen fue eliminado — todo el audio se gestiona
+/// exclusivamente a través de AudioManager y su AudioMixer.
 /// </summary>
 public class MenuPausa : MonoBehaviour
 {
@@ -35,15 +26,6 @@ public class MenuPausa : MonoBehaviour
     public Image panelFade;
     public float duracionFade = 0.8f;
 
-    [Header("── Audio Mixer (slider de volumen) ───────")]
-    [Tooltip("El mismo MixerPrincipal que usa AudioManager")]
-    public AudioMixer audioMixer;
-    [Tooltip("Nombre del parámetro expuesto del Master (clic derecho → Expose → renombrar)")]
-    public string parametroVolumen = "VolMaster";
-    public Slider sliderVolumen;
-    public Text textoVolumen;
-    public string etiquetaVolumen = "Volumen";
-
     [Header("── Jugador ──────────────────────────────")]
     public MonoBehaviour firstPersonController;
 
@@ -57,9 +39,6 @@ public class MenuPausa : MonoBehaviour
     {
         if (panelPausa != null) panelPausa.SetActive(false);
         if (panelFade != null) SetAlpha(0f);
-        if (textoVolumen != null) textoVolumen.text = etiquetaVolumen;
-
-        InicializarSlider();
 
         if (sonidoUI == null)
             sonidoUI = FindAnyObjectByType<SonidoUI>();
@@ -131,36 +110,6 @@ public class MenuPausa : MonoBehaviour
         Cursor.visible = true;
 
         SceneManager.LoadScene(escenaMenu);
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Llamado por OnValueChanged del Slider.
-    /// Convierte valor lineal [0,1] a decibelios y lo aplica al Master del Mixer.
-    /// Esto afecta TODA la salida de audio (música + SFX) porque es el grupo raíz.
-    /// </summary>
-    public void CambiarVolumen(float valor)
-    {
-        AplicarVolumen(valor);
-        PlayerPrefs.SetFloat(parametroVolumen, valor);
-    }
-
-    void AplicarVolumen(float lineal)
-    {
-        if (audioMixer == null) return;
-        // Conversión lineal → dB. Si es 0 va a -80 dB (silencio).
-        float dB = lineal > 0.0001f ? Mathf.Log10(lineal) * 20f : -80f;
-        audioMixer.SetFloat(parametroVolumen, dB);
-    }
-
-    void InicializarSlider()
-    {
-        if (sliderVolumen == null) return;
-        sliderVolumen.onValueChanged.RemoveAllListeners();
-        float valorGuardado = PlayerPrefs.GetFloat(parametroVolumen, 1f);
-        sliderVolumen.value = valorGuardado;
-        AplicarVolumen(valorGuardado);
-        sliderVolumen.onValueChanged.AddListener(CambiarVolumen);
     }
 
     // ─────────────────────────────────────────────────────────────────────

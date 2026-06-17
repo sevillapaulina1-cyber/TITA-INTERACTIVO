@@ -12,6 +12,7 @@ using UnityEngine;
 ///         ├── momentoQueActiva → 4
 ///         ├── zonas[]          → [Zona1, Zona2, Zona3]
 ///         ├── monedas[]        → [Moneda1, Moneda2, Moneda3]
+///         ├── mensajeSiguientePaso → "Vuelve a hablar con el NPC"
 ///         └── forzarActivo     → marcar solo para debug
 ///
 /// Zona1 / Zona2 / Zona3          ← GameObject con modelo visible
@@ -30,30 +31,34 @@ public class GestorZonas : MonoBehaviour
     public int momentoQueActiva = 4;
 
     [Header("── Misión ───────────────────────────────")]
-    public string descripcionZonas  = "Pisa las 3 zonas marcadas";
+    public string descripcionZonas = "Pisa las 3 zonas marcadas";
     public string descripcionMonedas = "Recoge las monedas";
+
+    [Header("── Siguiente paso ───────────────────────")]
+    [Tooltip("Mensaje que aparece al completar el puzzle")]
+    public string mensajeSiguientePaso = "Vuelve a hablar con el NPC";
 
     [Header("── Zonas ───────────────────────────────")]
     public ZonaActivacion[] zonas;
 
     [Header("── Monedas ─────────────────────────────")]
     public GameObject[] monedas;
-    public int          totalMonedas = 3;
+    public int totalMonedas = 3;
 
     [Header("── Efectos (opcional) ──────────────────")]
     public ParticleSystem efectoAparicion;
-    public AudioClip      sonidoMonedas;
+    public AudioClip sonidoMonedas;
 
     [Header("── Debug ────────────────────────────────")]
     [Tooltip("Marca para probar sin pasar por el momento 4")]
     public bool forzarActivo = false;
 
     // ── Estado ────────────────────────────────────────────────────────────
-    int  _zonasActivadas  = 0;
-    int  _monedasRecogidas = 0;
-    bool _activo           = false;
-    bool _monedasVisibles  = false;
-    bool _completado       = false;
+    int _zonasActivadas = 0;
+    int _monedasRecogidas = 0;
+    bool _activo = false;
+    bool _monedasVisibles = false;
+    bool _completado = false;
 
     // ─────────────────────────────────────────────────────────────────────
     void Start()
@@ -77,7 +82,7 @@ public class GestorZonas : MonoBehaviour
 
     void IniciarPuzzle()
     {
-        _activo         = true;
+        _activo = true;
         _zonasActivadas = 0;
         _monedasRecogidas = 0;
 
@@ -142,10 +147,11 @@ public class GestorZonas : MonoBehaviour
     void Completado()
     {
         _completado = true;
-        _activo     = false;
+        _activo = false;
 
+        // ── MODIFICADO: mostrar "Vuelve a hablar con el NPC" en vez de fade out inmediato
         if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.CompletarObjetivo();
+            UIObjetivo.Instance.MostrarSiguientePaso(mensajeSiguientePaso);
 
         Debug.Log("[GestorZonas] ¡Completado! Momento 5 habilitado.");
     }

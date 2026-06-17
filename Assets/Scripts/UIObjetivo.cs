@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Panel de misión/objetivo en la esquina superior derecha.
 /// Aparece con fade al iniciar un puzzle y desaparece al completarlo.
-/// Todos los puzzles (RecolectorMonedas, PuzzlePalancas) lo llaman.
+/// Todos los puzzles (RecolectorMonedas, GestorZonas) lo llaman.
 ///
 /// SETUP EN UNITY — jerarquía:
 /// ══════════════════════════════════════════════════════
@@ -38,11 +38,14 @@ using UnityEngine.UI;
 ///   textoProgreso    → TextoProgreso
 ///   duracionFade     → 0.4
 ///   delayAlCompletar → 1.5   (segundos visible tras completar antes de desaparecer)
+///   sonidoMostrar    → clip que suena al aparecer el panel
+///   sonidoCompletar  → clip que suena al completar / mostrar siguiente paso
 ///
 /// USO DESDE OTROS SCRIPTS:
 ///   UIObjetivo.Instance.MostrarObjetivo("Recoge las monedas", 0, 3);
 ///   UIObjetivo.Instance.ActualizarProgreso(1, 3);
-///   UIObjetivo.Instance.CompletarObjetivo();      // fade out automático
+///   UIObjetivo.Instance.CompletarObjetivo();          // fade out automático
+///   UIObjetivo.Instance.MostrarSiguientePaso("Vuelve a hablar con el NPC");
 /// ══════════════════════════════════════════════════════
 /// </summary>
 public class UIObjetivo : MonoBehaviour
@@ -51,14 +54,22 @@ public class UIObjetivo : MonoBehaviour
     public static UIObjetivo Instance { get; private set; }
 
     [Header("── UI ──────────────────────────────────")]
-    public GameObject  panelObjetivo;
+    public GameObject panelObjetivo;
     public CanvasGroup canvasGroup;
-    public Text        textoMision;
-    public Text        textoProgreso;
+    public Text textoMision;
+    public Text textoProgreso;
 
     [Header("── Tiempos ─────────────────────────────")]
-    public float duracionFade     = 0.4f;
+    public float duracionFade = 0.4f;
     public float delayAlCompletar = 1.5f;   // segundos visible tras completar
+
+    [Header("── Audio ───────────────────────────────")]
+    [Tooltip("Sonido al aparecer el panel de objetivo")]
+    public AudioClip sonidoMostrar;
+    [Tooltip("Sonido al completar el objetivo o mostrar siguiente paso")]
+    public AudioClip sonidoCompletar;
+    [Range(0f, 1f)]
+    public float volumenUI = 0.9f;
 
     // ─────────────────────────────────────────────────────────────────────
     void Awake()
@@ -67,7 +78,7 @@ public class UIObjetivo : MonoBehaviour
         Instance = this;
 
         if (panelObjetivo != null) panelObjetivo.SetActive(false);
-        if (canvasGroup   != null) canvasGroup.alpha = 0f;
+        if (canvasGroup != null) canvasGroup.alpha = 0f;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -79,17 +90,20 @@ public class UIObjetivo : MonoBehaviour
     {
         StopAllCoroutines();
 
-        if (textoMision   != null) textoMision.text   = descripcion;
+        if (textoMision != null) textoMision.text = descripcion;
         if (textoProgreso != null) textoProgreso.text = FormatearProgreso(actual, total);
 
         if (panelObjetivo != null) panelObjetivo.SetActive(true);
         StartCoroutine(FadeCO(0f, 1f, duracionFade));
+
+        // ── Audio al mostrar ──────────────────────────────────────────────
+        ReproducirSonido(sonidoMostrar);
     }
 
     // ─────────────────────────────────────────────────────────────────────
     /// <summary>
     /// Actualiza solo el contador sin rehacer el fade.
-    /// Llamar cada vez que se recoge una moneda o se activa una palanca.
+    /// Llamar cada vez que se recoge una moneda o se activa una zona.
     /// </summary>
     public void ActualizarProgreso(int actual, int total)
     {
@@ -109,11 +123,48 @@ public class UIObjetivo : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Muestra el mensaje de siguiente paso (ej. "Vuelve a hablar con el NPC")
+    /// reemplazando el texto de misión, sin mostrar progreso.
+    /// Luego desaparece automáticamente.
+    /// </summary>
+    public void MostrarSiguientePaso(string mensaje)
+    {
+        StopAllCoroutines();
+
+        if (textoMision != null) textoMision.text = mensaje;
+        if (textoProgreso != null) textoProgreso.text = "";
+
+        if (panelObjetivo != null) panelObjetivo.SetActive(true);
+
+        // ── Audio al completar/siguiente paso ─────────────────────────────
+        ReproducirSonido(sonidoCompletar);
+
+        StartCoroutine(SiguientePasoCO());
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
     IEnumerator CompletarCO()
     {
+        // ── Audio al completar ────────────────────────────────────────────
+        ReproducirSonido(sonidoCompletar);
+
         // Asegurar que está visible
         yield return FadeCO(canvasGroup != null ? canvasGroup.alpha : 1f, 1f, 0.1f);
         yield return new WaitForSeconds(delayAlCompletar);
+        yield return FadeCO(1f, 0f, duracionFade);
+        if (panelObjetivo != null) panelObjetivo.SetActive(false);
+    }
+
+    IEnumerator SiguientePasoCO()
+    {
+        // Fade in desde donde esté
+        float alphaInicial = canvasGroup != null ? canvasGroup.alpha : 0f;
+        yield return FadeCO(alphaInicial, 1f, duracionFade);
+
+        // Espera un poco más para que sea legible
+        yield return new WaitForSeconds(delayAlCompletar + 1f);
+
         yield return FadeCO(1f, 0f, duracionFade);
         if (panelObjetivo != null) panelObjetivo.SetActive(false);
     }
@@ -130,6 +181,14 @@ public class UIObjetivo : MonoBehaviour
             yield return null;
         }
         canvasGroup.alpha = hasta;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    void ReproducirSonido(AudioClip clip)
+    {
+        if (clip == null) return;
+        if (Camera.main != null)
+            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position, volumenUI);
     }
 
     // ─────────────────────────────────────────────────────────────────────
