@@ -2,28 +2,20 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Voz/audio de presencia para los NPCs de ambiente en los distintos mapas
-/// (diferente al NPC niño principal). Reproduce un clip de voz/sonido cuando
-/// el jugador se acerca, o a intervalos aleatorios para dar vida al escenario.
-///
-/// TIPOS DE NPC AMBIENTE:
-///   TipoNPC.TipoA → NPC tipo 1 (ej. adulto masculino)
-///   TipoNPC.TipoB → NPC tipo 2 (ej. adulto femenino)
-///   TipoNPC.TipoC → NPC tipo 3 (ej. niño/a secundario)
+/// Voz/audio de presencia para los NPCs de ambiente en los distintos mapas.
+/// Audio 3D espacial — suena desde la posición del NPC en el mundo.
 ///
 /// SETUP EN UNITY:
 /// ──────────────────────────────────────────────────────────────────
 /// [NPC GameObject]
-///   ├── NPC Mesh / Animator
 ///   └── SonidoNPCAmbiente.cs
-///         ├── tipoNPC            → TipoA / TipoB / TipoC
-///         ├── fuenteAudio        → AudioSource (espacial 3D, no loop, no playOnAwake)
-///         ├── clips[]            → 2–4 clips de voz/murmullo para este tipo de NPC
-///         ├── modoReproduccion   → Proximidad / Intervalo / Ambos
-///         ├── distanciaActivar   → 4.0  (solo en modo Proximidad)
-///         ├── intervaloMin       → 6.0  (solo en modo Intervalo)
-///         ├── intervaloMax       → 12.0
-///         └── volumen            → 0.7
+///         ├── tipoNPC          → TipoA / TipoB / TipoC
+///         ├── clips[]          → 2–4 clips de voz/murmullo
+///         ├── modoReproduccion → Intervalo  ← recomendado
+///         ├── intervaloMin     → 5.0
+///         ├── intervaloMax     → 10.0
+///         ├── volumen          → 0.8
+///         └── distanciaMaxima  → 20.0  ← ajusta según el tamaño de tu mapa
 /// ──────────────────────────────────────────────────────────────────
 /// </summary>
 public class SonidoNPCAmbiente : MonoBehaviour
@@ -34,69 +26,75 @@ public class SonidoNPCAmbiente : MonoBehaviour
     [Header("── Identificación ──────────────────────")]
     public TipoNPC tipoNPC = TipoNPC.TipoA;
 
-    [Header("── Audio ───────────────────────────────")]
-    public AudioSource fuenteAudio;
-    [Tooltip("Clips de voz/murmullo para este NPC (se elige uno al azar)")]
+    [Header("── Clips ────────────────────────────────")]
+    [Tooltip("Clips de voz/murmullo (se elige uno al azar cada vez)")]
     public AudioClip[] clips;
     [Range(0f, 1f)]
-    public float volumen = 0.7f;
-    [Tooltip("Variación de pitch para cada reproducción")]
+    public float volumen = 0.8f;
     [Range(0f, 0.15f)]
     public float variacionPitch = 0.05f;
 
     [Header("── Pitch por tipo de NPC ───────────────")]
-    [Tooltip("Pitch base para TipoA (adulto masculino ~0.9)")]
+    [Tooltip("Adulto masculino ~0.9")]
     public float pitchTipoA = 0.9f;
-    [Tooltip("Pitch base para TipoB (adulto femenino ~1.1)")]
+    [Tooltip("Adulto femenino ~1.1")]
     public float pitchTipoB = 1.1f;
-    [Tooltip("Pitch base para TipoC (niño/a ~1.3)")]
+    [Tooltip("Niño/a ~1.3")]
     public float pitchTipoC = 1.3f;
 
+    [Header("── Audio 3D ─────────────────────────────")]
+    [Tooltip("Distancia mínima donde el volumen es máximo")]
+    public float distanciaMinima = 1f;
+    [Tooltip("Distancia máxima donde el sonido deja de escucharse — ajusta al tamaño del mapa")]
+    public float distanciaMaxima = 20f;
+
     [Header("── Modo ─────────────────────────────────")]
-    public ModoReproduccion modoReproduccion = ModoReproduccion.Ambos;
+    public ModoReproduccion modoReproduccion = ModoReproduccion.Intervalo;
 
     [Header("── Proximidad ───────────────────────────")]
     [Tooltip("Distancia al jugador para activar (modo Proximidad)")]
-    public float distanciaActivar = 4.0f;
-    [Tooltip("Referencia al jugador (se busca por Tag si está vacío)")]
+    public float distanciaActivar = 8f;
     public Transform jugador;
-    [Tooltip("Cooldown tras reproducir por proximidad (segundos)")]
-    public float cooldownProximidad = 5.0f;
+    public float cooldownProximidad = 6f;
 
     [Header("── Intervalo ────────────────────────────")]
-    [Tooltip("Intervalo mínimo entre reproducciones aleatorias (segundos)")]
-    public float intervaloMin = 6.0f;
-    [Tooltip("Intervalo máximo entre reproducciones aleatorias (segundos)")]
-    public float intervaloMax = 14.0f;
+    public float intervaloMin = 5f;
+    public float intervaloMax = 10f;
 
     // ── Estado ────────────────────────────────────────────────────────────
-    float _tiempoProximidad = 0f;
+    AudioSource _fuente;
     bool _enCooldown = false;
 
     // ─────────────────────────────────────────────────────────────────────
     void Awake()
     {
-        if (fuenteAudio == null)
-            fuenteAudio = gameObject.AddComponent<AudioSource>();
+        _fuente = gameObject.AddComponent<AudioSource>();
+        _fuente.playOnAwake = false;
+        _fuente.loop = false;
+        _fuente.spatialBlend = 1f;                          // 3D completo
+        _fuente.rolloffMode = AudioRolloffMode.Custom;     // curva más natural que Linear
+        _fuente.minDistance = distanciaMinima;
+        _fuente.maxDistance = distanciaMaxima;
+        _fuente.dopplerLevel = 0f;                          // sin efecto doppler en NPCs estáticos
+        _fuente.volume = volumen;
 
-        fuenteAudio.playOnAwake = false;
-        fuenteAudio.loop = false;
-        fuenteAudio.spatialBlend = 1f; // 3D — suena desde la posición del NPC
-        fuenteAudio.rolloffMode = AudioRolloffMode.Linear;
-        fuenteAudio.maxDistance = 12f;
-        fuenteAudio.minDistance = 1f;
+        // Curva de rolloff personalizada: volumen completo cerca, caída suave
+        AnimationCurve curva = new AnimationCurve();
+        curva.AddKey(0f, 1f);
+        curva.AddKey(0.1f, 0.9f);
+        curva.AddKey(0.5f, 0.4f);
+        curva.AddKey(1f, 0f);
+        _fuente.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curva);
     }
 
     void Start()
     {
-        // Buscar jugador por tag si no está asignado
         if (jugador == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) jugador = p.transform;
         }
 
-        // Iniciar reproducción por intervalo
         if (modoReproduccion == ModoReproduccion.Intervalo ||
             modoReproduccion == ModoReproduccion.Ambos)
             StartCoroutine(BucleIntervaloCO());
@@ -106,7 +104,8 @@ public class SonidoNPCAmbiente : MonoBehaviour
     void Update()
     {
         if (modoReproduccion == ModoReproduccion.Intervalo) return;
-        if (_enCooldown || jugador == null || clips == null || clips.Length == 0) return;
+        if (_enCooldown || jugador == null) return;
+        if (clips == null || clips.Length == 0) return;
 
         float distancia = Vector3.Distance(transform.position, jugador.position);
         if (distancia <= distanciaActivar)
@@ -129,9 +128,7 @@ public class SonidoNPCAmbiente : MonoBehaviour
 
         while (true)
         {
-            if (clips != null && clips.Length > 0 && !fuenteAudio.isPlaying)
-                ReproducirClipAleatorio();
-
+            ReproducirClipAleatorio();
             yield return new WaitForSeconds(Random.Range(intervaloMin, intervaloMax));
         }
     }
@@ -139,7 +136,7 @@ public class SonidoNPCAmbiente : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     void ReproducirClipAleatorio()
     {
-        if (clips == null || clips.Length == 0 || fuenteAudio == null) return;
+        if (clips == null || clips.Length == 0 || _fuente == null) return;
 
         AudioClip clip = clips[Random.Range(0, clips.Length)];
         if (clip == null) return;
@@ -147,8 +144,8 @@ public class SonidoNPCAmbiente : MonoBehaviour
         float pitchBase = tipoNPC == TipoNPC.TipoA ? pitchTipoA :
                           tipoNPC == TipoNPC.TipoB ? pitchTipoB : pitchTipoC;
 
-        fuenteAudio.pitch = pitchBase + Random.Range(-variacionPitch, variacionPitch);
-        fuenteAudio.PlayOneShot(clip, volumen);
+        _fuente.pitch = pitchBase + Random.Range(-variacionPitch, variacionPitch);
+        _fuente.PlayOneShot(clip, volumen);
     }
 
     // ─────────────────────────────────────────────────────────────────────

@@ -71,6 +71,9 @@ public class UIObjetivo : MonoBehaviour
     [Range(0f, 1f)]
     public float volumenUI = 0.9f;
 
+    // AudioSource 2D propio — no depende de Camera.main ni de posición en el mundo
+    AudioSource _audioSource;
+
     // ─────────────────────────────────────────────────────────────────────
     void Awake()
     {
@@ -79,6 +82,13 @@ public class UIObjetivo : MonoBehaviour
 
         if (panelObjetivo != null) panelObjetivo.SetActive(false);
         if (canvasGroup != null) canvasGroup.alpha = 0f;
+
+        // Crear AudioSource 2D en este mismo GameObject
+        _audioSource = gameObject.AddComponent<AudioSource>();
+        _audioSource.playOnAwake = false;
+        _audioSource.loop = false;
+        _audioSource.spatialBlend = 0f;   // 2D puro — suena siempre igual
+        _audioSource.volume = volumenUI;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -186,9 +196,9 @@ public class UIObjetivo : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     void ReproducirSonido(AudioClip clip)
     {
-        if (clip == null) return;
-        if (Camera.main != null)
-            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position, volumenUI);
+        if (clip == null || _audioSource == null) return;
+        _audioSource.volume = volumenUI;
+        _audioSource.PlayOneShot(clip);
     }
 
     // ─────────────────────────────────────────────────────────────────────
