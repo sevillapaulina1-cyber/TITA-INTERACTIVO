@@ -38,7 +38,7 @@ public class GestorVolumen : MonoBehaviour
         float lineal = PlayerPrefs.GetFloat(parametroVolumen, volumenDefault);
         lineal = Mathf.Clamp(lineal, 0f, 1f);
 
-        float dB = lineal > 0.0001f ? Mathf.Log10(lineal) * 20f : -80f;
+        float dB = lineal > 0.0001f ? Mathf.Log10(lineal) * 20f : -10f;
         audioMixer.SetFloat(parametroVolumen, dB);
 
         Debug.Log($"[GestorVolumen] Volumen aplicado: {lineal:F2} ({dB:F1} dB)");
