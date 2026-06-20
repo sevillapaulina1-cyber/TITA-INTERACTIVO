@@ -230,7 +230,7 @@ public class SistemaDialogo : MonoBehaviour
             animatorCamara.enabled = false;
         }
 
-        GameManager.Instance.RegistrarEleccion(tipo);
+        GameManager.Instance.RegistrarEleccion(tipo, textoRespuesta);
 
         bool esUltimo = GameManager.Instance.MomentoActual >= GameManager.TOTAL_MOMENTOS;
         if (!esUltimo)

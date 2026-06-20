@@ -35,6 +35,10 @@ public class GameManager : MonoBehaviour
 
     public TipoEleccion[] HistorialElecciones { get; private set; } = new TipoEleccion[TOTAL_MOMENTOS];
 
+    // ── ▼ NUEVO: guarda el texto exacto que el jugador eligió en cada momento ──
+    public string[] HistorialTextos { get; private set; } = new string[TOTAL_MOMENTOS];
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
+
     public event System.Action<int> OnFinDia;
     public event System.Action OnJuegoCompleto;
 
@@ -61,12 +65,13 @@ public class GameManager : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    public void RegistrarEleccion(TipoEleccion eleccion)
+    public void RegistrarEleccion(TipoEleccion eleccion, string textoEleccion = "")
     {
         MomentoActual++;
         DecisionesEnEsteDia++;
 
         HistorialElecciones[MomentoActual - 1] = eleccion;
+        HistorialTextos[MomentoActual - 1] = textoEleccion;
 
         switch (eleccion)
         {
@@ -140,6 +145,7 @@ public class GameManager : MonoBehaviour
         MomentoActual = 0; DiaActual = 1; DecisionesEnEsteDia = 0;
         EleccionesVerdes = EleccionesRojas = EleccionesNeutras = 0;
         HistorialElecciones = new TipoEleccion[TOTAL_MOMENTOS];
+        HistorialTextos = new string[TOTAL_MOMENTOS];
         if (Camera.main != null) Camera.main.fieldOfView = 60f;
     }
 }

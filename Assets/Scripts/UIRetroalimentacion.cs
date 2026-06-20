@@ -19,6 +19,23 @@ public class UIRetroalimentacion : MonoBehaviour
     [Header("── Panel de retroalimentación ─────────")]
     public GameObject panelRetro;
 
+    // ── ▼ NUEVO: pantalla de reflexión, aparece ANTES de la retroalimentación ──
+    [Header("── Reflexión (entre cinemática y retro) ─")]
+    [Tooltip("Panel propio para los mensajes de reflexión, separado del panel de retro y del mapa")]
+    public GameObject panelReflexion;
+    [Tooltip("Texto donde se va mostrando cada mensaje de reflexión")]
+    public Text textoReflexion;
+    [Tooltip("CanvasGroup del panelReflexion, usado para el fundido. Se busca/crea automáticamente si está vacío.")]
+    public CanvasGroup canvasGroupReflexion;
+    [Tooltip("Mensajes de reflexión que se muestran uno por uno, en orden, antes de la retroalimentación")]
+    [TextArea(2, 4)]
+    public string[] mensajesReflexion;
+    [Tooltip("Segundos que se mantiene visible cada mensaje (sin contar el fundido)")]
+    public float duracionPorMensaje = 4f;
+    [Tooltip("Duración del fundido de entrada/salida de cada mensaje")]
+    public float duracionFadeReflexion = 0.8f;
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
+
     [Header("── Textos de retroalimentación ────────")]
     public Text textoResumen;
     public Text textoConfianza;
@@ -43,6 +60,11 @@ public class UIRetroalimentacion : MonoBehaviour
     {
         if (panelRetro != null)
             panelRetro.SetActive(false);
+
+        // ── ▼ NUEVO ──────────────────────────────────────────────────────
+        if (panelReflexion != null)
+            panelReflexion.SetActive(false);
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
 
         if (botonSaltar != null)
             botonSaltar.SetActive(true);
@@ -73,7 +95,7 @@ public class UIRetroalimentacion : MonoBehaviour
         if (videoPlayer == null || videoScreen == null)
         {
             Debug.LogWarning("[UIRetroalimentacion] Falta VideoPlayer o RawImage. Se salta el video.");
-            MostrarPantallaRetro();
+            yield return SecuenciaReflexionYRetroCO();
             yield break;
         }
 
@@ -90,7 +112,7 @@ public class UIRetroalimentacion : MonoBehaviour
              videoPlayer.frame >= (long)videoPlayer.frameCount - 2)
         );
 
-        MostrarPantallaRetro();
+        yield return SecuenciaReflexionYRetroCO();
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -104,8 +126,65 @@ public class UIRetroalimentacion : MonoBehaviour
             videoPlayer.Stop();
 
         StopAllCoroutines();
+        StartCoroutine(SecuenciaReflexionYRetroCO());
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ NUEVO: oculta video/skip, muestra los mensajes de reflexión
+    //     (pantalla propia, sin el mapa) y luego pasa a la retroalimentación ──
+    IEnumerator SecuenciaReflexionYRetroCO()
+    {
+        if (videoScreen != null)
+            videoScreen.gameObject.SetActive(false);
+
+        if (botonSaltar != null)
+            botonSaltar.SetActive(false);
+
+        yield return MostrarReflexionCO();
+
         MostrarPantallaRetro();
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator MostrarReflexionCO()
+    {
+        if (panelReflexion == null || textoReflexion == null || mensajesReflexion == null || mensajesReflexion.Length == 0)
+            yield break;
+
+        CanvasGroup cg = canvasGroupReflexion;
+        if (cg == null) cg = panelReflexion.GetComponent<CanvasGroup>();
+        if (cg == null) cg = panelReflexion.AddComponent<CanvasGroup>();
+
+        panelReflexion.SetActive(true);
+
+        foreach (string mensaje in mensajesReflexion)
+        {
+            if (string.IsNullOrEmpty(mensaje)) continue;
+
+            textoReflexion.text = mensaje;
+
+            yield return FundirCanvasGroupCO(cg, 0f, 1f, duracionFadeReflexion);
+            yield return new WaitForSeconds(duracionPorMensaje);
+            yield return FundirCanvasGroupCO(cg, 1f, 0f, duracionFadeReflexion);
+        }
+
+        panelReflexion.SetActive(false);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator FundirCanvasGroupCO(CanvasGroup cg, float desde, float hasta, float duracion)
+    {
+        float t = 0f;
+        cg.alpha = desde;
+        while (t < duracion)
+        {
+            t += Time.deltaTime;
+            cg.alpha = Mathf.Lerp(desde, hasta, t / duracion);
+            yield return null;
+        }
+        cg.alpha = hasta;
+    }
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
     // ─────────────────────────────────────────────────────────────────────
     void MostrarPantallaRetro()
@@ -162,3 +241,4 @@ public class UIRetroalimentacion : MonoBehaviour
         SceneManager.LoadScene(escenaInicio);
     }
 }
+
