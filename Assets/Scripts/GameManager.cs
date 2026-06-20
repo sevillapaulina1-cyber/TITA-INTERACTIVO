@@ -128,14 +128,32 @@ public class GameManager : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ NUEVO: única fuente de verdad para el desenlace, usada tanto por
+    //     UIRetroalimentacion como por MapaDecisiones ──────────────────────
+    public bool EsFinal1 => PuntosConfianza >= PuntosRiesgo;
+
+    public string ObtenerTituloFinal()
+    {
+        return EsFinal1 ? "Final 1 — Secuestro" : "Final 2 — Policía";
+    }
+
+    public string ObtenerMensajeFinal()
+    {
+        return EsFinal1
+            ? "El niño confió mucho en ti y lograste que no avisara a nadie."
+            : "Tu lenguaje fue muy sospechoso, el niño avisó a sus padres.";
+    }
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
+
+    // ─────────────────────────────────────────────────────────────────────
     public string ObtenerResumen()
     {
-        string finalStr = (PuntosConfianza >= PuntosRiesgo) ? "Final 1 — Secuestro" : "Final 2 — Policía";
+        string finalStr = ObtenerTituloFinal();
         return $"=== Resumen de tu recorrido ===\n\n" +
                $"Decisiones protectoras (verde):  {EleccionesVerdes}  → +{EleccionesVerdes * 2} pts\n" +
                $"Decisiones ambiguas   (neutro):  {EleccionesNeutras} → +{EleccionesNeutras} pts\n" +
                $"Decisiones vulnerables (rojo):   {EleccionesRojas}  → +{EleccionesRojas * 2} pts\n\n" +
-               $"Total Confianza: {PuntosConfianza}\nTotal Riesgo: {PuntosRiesgo}\n\nDesenlace: {finalStr}";
+               $"Total Confianza: {PuntosConfianza}\nTotal Riesgo: {PuntosRiesgo}\n\nDesenlace: {finalStr}\n\n{ObtenerMensajeFinal()}";
     }
 
     // ─────────────────────────────────────────────────────────────────────

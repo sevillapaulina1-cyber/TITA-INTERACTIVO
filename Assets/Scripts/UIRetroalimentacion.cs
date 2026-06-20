@@ -16,6 +16,15 @@ public class UIRetroalimentacion : MonoBehaviour
     public RawImage videoScreen;
     public GameObject botonSaltar;
 
+    // ── ▼ NUEVO: el texto del botón Saltar se asigna por código, porque en el
+    //     build no estaba apareciendo (problema típico de fuente/Text vacío) ──
+    [Header("── Texto del botón Saltar ──────────────")]
+    [Tooltip("Text (UI) del botón Saltar. Arrástralo aquí; el script le pone el texto en Start().")]
+    public Text textoBotonSaltar;
+    [Tooltip("Texto que se va a mostrar en el botón Saltar")]
+    public string textoSaltar = "Saltar";
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
+
     [Header("── Panel de retroalimentación ─────────")]
     public GameObject panelRetro;
 
@@ -68,6 +77,14 @@ public class UIRetroalimentacion : MonoBehaviour
 
         if (botonSaltar != null)
             botonSaltar.SetActive(true);
+
+        // ── ▼ NUEVO: forzar el texto del botón Saltar por código ───────────
+        if (textoBotonSaltar == null && botonSaltar != null)
+            textoBotonSaltar = botonSaltar.GetComponentInChildren<Text>(true);
+
+        if (textoBotonSaltar != null)
+            textoBotonSaltar.text = textoSaltar;
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
 
         // Buscar SonidoUI
         if (sonidoUI == null)
@@ -222,10 +239,7 @@ public class UIRetroalimentacion : MonoBehaviour
         if (textoRiesgo != null) textoRiesgo.text = $"Riesgo:    {gm.PuntosRiesgo} pts";
 
         if (textoFinal != null)
-        {
-            bool esFinal1 = gm.PuntosConfianza >= gm.PuntosRiesgo;
-            textoFinal.text = esFinal1 ? "Final 1 — Secuestro" : "Final 2 — Policía";
-        }
+            textoFinal.text = $"{gm.ObtenerTituloFinal()}\n{gm.ObtenerMensajeFinal()}";
     }
 
     // ─────────────────────────────────────────────────────────────────────
