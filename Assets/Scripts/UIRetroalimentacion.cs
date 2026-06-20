@@ -30,7 +30,7 @@ public class UIRetroalimentacion : MonoBehaviour
     public Button botonReiniciarBtn;
 
     [Header("── Reinicio ────────────────────────────")]
-    public string escenaInicio = "Inicio";
+    public string escenaInicio = "NIVEL1";
 
     // ── ▼ AUDIO (NUEVO) ──────────────────────────────────────────────────
     [Header("── Audio UI ────────────────────────────")]
