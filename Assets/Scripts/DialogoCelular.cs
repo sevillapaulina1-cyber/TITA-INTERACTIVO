@@ -141,7 +141,7 @@ public class DialogoCelular : MonoBehaviour
         LimpiarMensajes();
 
         if (panelCelular != null) panelCelular.SetActive(true);
-        if (headerNombre != null) headerNombre.text = "Kid";
+        if (headerNombre != null) headerNombre.text = "SamuVR";
 
         yield return new WaitForSeconds(0.4f);
 
