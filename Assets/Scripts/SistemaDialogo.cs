@@ -58,6 +58,12 @@ public class SistemaDialogo : MonoBehaviour
     [Tooltip("Asigna GestorZonas_4a5 en el momento 5 para bloquear hasta completar el puzzle")]
     public GestorZonas gestorZonasPrevio;
 
+    [Header("── Aviso persistente \"Habla con SamuVR\" ─")]
+    [Tooltip("Marca esto SOLO en los momentos de inicio de día (1, 4, 7). NO marcar en el momento 10 (Día 4).")]
+    public bool esInicioDeDia = false;
+    [Tooltip("Texto del aviso persistente que se muestra hasta que el jugador presione E")]
+    public string textoAvisoInicioDia = "Habla con SamuVR";
+
     [Header("── Animación Momento 8 (Animator) ───────")]
     [Tooltip("Marca esto solo en el Momento 8")]
     public bool usarAnimacionMomento8 = false;
@@ -76,6 +82,24 @@ public class SistemaDialogo : MonoBehaviour
 
     bool _puedeInteractuar = true;
     float _time = 0.05f;
+    bool _avisoInicioMostrado = false;
+
+    // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Llamado externamente desde TransicionDia (o TutorialControles) una vez
+    /// que la transición de día y el tutorial inicial terminaron.
+    /// Muestra el aviso persistente "Habla con SamuVR" si este momento aplica.
+    /// No hace nada si esInicioDeDia está desmarcado o ya se mostró.
+    /// </summary>
+    public void MostrarAvisoInicioDia()
+    {
+        if (!esInicioDeDia || _avisoInicioMostrado) return;
+
+        _avisoInicioMostrado = true;
+
+        if (UIObjetivo.Instance != null)
+            UIObjetivo.Instance.MostrarObjetivoPersistente(textoAvisoInicioDia);
+    }
 
     // ─────────────────────────────────────────────────────────────────────
     void Start()
@@ -131,6 +155,12 @@ public class SistemaDialogo : MonoBehaviour
                             interactionText.text = "Pisa las zonas marcadas primero";
                         return;
                     }
+
+                    // ── Ocultar cualquier aviso persistente al iniciar el diálogo ──
+                    // (aplica tanto al aviso de inicio de día como al de
+                    // "vuelve a hablar con SamuVR" tras completar un puzzle)
+                    if (UIObjetivo.Instance != null)
+                        UIObjetivo.Instance.OcultarObjetivo();
 
                     _puedeInteractuar = false;
                     StartCoroutine(DialogoCO());

@@ -45,7 +45,9 @@ using UnityEngine.UI;
 ///   UIObjetivo.Instance.MostrarObjetivo("Recoge las monedas", 0, 3);
 ///   UIObjetivo.Instance.ActualizarProgreso(1, 3);
 ///   UIObjetivo.Instance.CompletarObjetivo();          // fade out automático
-///   UIObjetivo.Instance.MostrarSiguientePaso("Vuelve a hablar con el NPC");
+///   UIObjetivo.Instance.MostrarSiguientePaso("Vuelve a hablar con el NPC"); // se autooculta
+///   UIObjetivo.Instance.MostrarObjetivoPersistente("Habla con SamuVR");     // NO se autooculta
+///   UIObjetivo.Instance.OcultarObjetivo();             // oculta el persistente manualmente
 /// ══════════════════════════════════════════════════════
 /// </summary>
 public class UIObjetivo : MonoBehaviour
@@ -154,6 +156,39 @@ public class UIObjetivo : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Muestra un objetivo FIJO que NO desaparece solo (sin temporizador).
+    /// Útil para "Habla con SamuVR" al inicio de cada día, donde debe
+    /// quedarse en pantalla hasta que el jugador realmente interactúe.
+    /// Llamar a OcultarObjetivo() para quitarlo manualmente (ej. al presionar E).
+    /// </summary>
+    public void MostrarObjetivoPersistente(string mensaje)
+    {
+        StopAllCoroutines();
+
+        if (textoMision != null) textoMision.text = mensaje;
+        if (textoProgreso != null) textoProgreso.text = "";
+
+        if (panelObjetivo != null) panelObjetivo.SetActive(true);
+
+        // ── Audio al mostrar ──────────────────────────────────────────────
+        ReproducirSonido(sonidoMostrar);
+
+        StartCoroutine(FadeCO(canvasGroup != null ? canvasGroup.alpha : 0f, 1f, duracionFade));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Oculta el panel inmediatamente con fade out, sin esperar.
+    /// Pensado para cerrar un objetivo persistente (ej. al presionar E para hablar).
+    /// </summary>
+    public void OcultarObjetivo()
+    {
+        StopAllCoroutines();
+        StartCoroutine(OcultarCO());
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
     IEnumerator CompletarCO()
     {
         // ── Audio al completar ────────────────────────────────────────────
@@ -176,6 +211,13 @@ public class UIObjetivo : MonoBehaviour
         yield return new WaitForSeconds(delayAlCompletar + 1f);
 
         yield return FadeCO(1f, 0f, duracionFade);
+        if (panelObjetivo != null) panelObjetivo.SetActive(false);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator OcultarCO()
+    {
+        yield return FadeCO(canvasGroup != null ? canvasGroup.alpha : 1f, 0f, duracionFade);
         if (panelObjetivo != null) panelObjetivo.SetActive(false);
     }
 

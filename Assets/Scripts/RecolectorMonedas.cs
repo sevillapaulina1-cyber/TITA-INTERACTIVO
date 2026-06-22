@@ -31,7 +31,7 @@ public class RecolectorMonedas : MonoBehaviour
     public string descripcionMision = "Recoge las monedas";
 
     [Header("── Siguiente paso ───────────────────────")]
-    [Tooltip("Mensaje que aparece al completar el puzzle")]
+    [Tooltip("Mensaje persistente que aparece al completar el puzzle y se queda fijo hasta que el jugador hable con el NPC")]
     public string mensajeSiguientePaso = "Vuelve a hablar con el NPC";
 
     [Header("── Monedas ─────────────────────────────")]
@@ -97,11 +97,23 @@ public class RecolectorMonedas : MonoBehaviour
         _tareaActiva = false;
         _completado = true;
 
-        // ── MODIFICADO: mostrar "Vuelve a hablar con el NPC" en vez de fade out inmediato
+        // ── MODIFICADO: muestra "¡Completado!" brevemente y luego deja fijo
+        // el aviso de volver a hablar con el NPC (no se autooculta; lo cierra
+        // SistemaDialogo al presionar E).
         if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.MostrarSiguientePaso(mensajeSiguientePaso);
+            StartCoroutine(AvisarVolverNPCCO());
 
         Debug.Log($"[RecolectorMonedas] ¡Completado! Momento {momentoQueActiva + 1} habilitado.");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    System.Collections.IEnumerator AvisarVolverNPCCO()
+    {
+        UIObjetivo.Instance.CompletarObjetivo();
+        // Espera el tiempo del fade out de "¡Completado!" antes de mostrar
+        // el aviso persistente, para no pisar la animación.
+        yield return new WaitForSeconds(UIObjetivo.Instance.delayAlCompletar + UIObjetivo.Instance.duracionFade + 0.1f);
+        UIObjetivo.Instance.MostrarObjetivoPersistente(mensajeSiguientePaso);
     }
 
     // ─────────────────────────────────────────────────────────────────────

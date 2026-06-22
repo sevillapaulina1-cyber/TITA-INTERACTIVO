@@ -12,7 +12,6 @@ using UnityEngine;
 ///         ├── momentoQueActiva → 4
 ///         ├── zonas[]          → [Zona1, Zona2, Zona3]
 ///         ├── monedas[]        → [Moneda1, Moneda2, Moneda3]
-///         ├── mensajeSiguientePaso → "Vuelve a hablar con el NPC"
 ///         └── forzarActivo     → marcar solo para debug
 ///
 /// Zona1 / Zona2 / Zona3          ← GameObject con modelo visible
@@ -34,10 +33,6 @@ public class GestorZonas : MonoBehaviour
     public string descripcionZonas = "Pisa las 3 zonas marcadas";
     public string descripcionMonedas = "Recoge las monedas";
 
-    [Header("── Siguiente paso ───────────────────────")]
-    [Tooltip("Mensaje que aparece al completar el puzzle")]
-    public string mensajeSiguientePaso = "Vuelve a hablar con el NPC";
-
     [Header("── Zonas ───────────────────────────────")]
     public ZonaActivacion[] zonas;
 
@@ -52,6 +47,10 @@ public class GestorZonas : MonoBehaviour
     [Header("── Debug ────────────────────────────────")]
     [Tooltip("Marca para probar sin pasar por el momento 4")]
     public bool forzarActivo = false;
+
+    [Header("── Aviso al completar ──────────────────")]
+    [Tooltip("Mensaje persistente que se muestra tras recoger todas las monedas, hasta que el jugador hable con el NPC")]
+    public string textoVolverANPC = "Vuelve a hablar con SamuVR";
 
     // ── Estado ────────────────────────────────────────────────────────────
     int _zonasActivadas = 0;
@@ -149,11 +148,24 @@ public class GestorZonas : MonoBehaviour
         _completado = true;
         _activo = false;
 
-        // ── MODIFICADO: mostrar "Vuelve a hablar con el NPC" en vez de fade out inmediato
         if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.MostrarSiguientePaso(mensajeSiguientePaso);
+        {
+            // Muestra "¡Completado!" brevemente y luego deja fijo
+            // el aviso de volver a hablar con el NPC (no se autooculta).
+            StartCoroutine(AvisarVolverNPCCO());
+        }
 
         Debug.Log("[GestorZonas] ¡Completado! Momento 5 habilitado.");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    IEnumerator AvisarVolverNPCCO()
+    {
+        UIObjetivo.Instance.CompletarObjetivo();
+        // Espera el tiempo del fade out de "¡Completado!" antes de mostrar
+        // el aviso persistente, para no pisar la animación.
+        yield return new WaitForSeconds(UIObjetivo.Instance.delayAlCompletar + UIObjetivo.Instance.duracionFade + 0.1f);
+        UIObjetivo.Instance.MostrarObjetivoPersistente(textoVolverANPC);
     }
 
     // ─────────────────────────────────────────────────────────────────────
