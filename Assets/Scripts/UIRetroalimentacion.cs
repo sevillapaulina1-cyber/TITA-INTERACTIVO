@@ -28,6 +28,13 @@ public class UIRetroalimentacion : MonoBehaviour
     [Header("── Panel de retroalimentación ─────────")]
     public GameObject panelRetro;
 
+    [Header("── ScrollRect del mapa (opcional) ───────")]
+    [Tooltip("Si el mapa está dentro de un ScrollRect, asígnalo aquí para que se reinicie " +
+             "al inicio (scroll al extremo izquierdo) cada vez que se muestre la pantalla.")]
+    public ScrollRect scrollRectMapa;
+    [Tooltip("Si está activado, el ScrollRect permite scroll horizontal (para el mapa de días)")]
+    public bool scrollHorizontal = true;
+
     // ── ▼ NUEVO: pantalla de reflexión, aparece ANTES de la retroalimentación ──
     [Header("── Reflexión (entre cinemática y retro) ─")]
     [Tooltip("Panel propio para los mensajes de reflexión, separado del panel de retro y del mapa")]
@@ -214,6 +221,15 @@ public class UIRetroalimentacion : MonoBehaviour
 
         if (panelRetro != null)
             panelRetro.SetActive(true);
+
+        // ── Configurar y reiniciar el ScrollRect del mapa ─────────────────
+        if (scrollRectMapa != null)
+        {
+            scrollRectMapa.horizontal = scrollHorizontal;
+            scrollRectMapa.vertical = false;
+            // Reiniciar al extremo izquierdo para que el jugador vea desde el Día 1
+            scrollRectMapa.normalizedPosition = new Vector2(0f, 0.5f);
+        }
 
         // ── ▼ AUDIO: iniciar música de retroalimentación (NUEVO) ─────────
         if (AudioManager.Instance != null)
