@@ -8,9 +8,7 @@ public class Moneda : MonoBehaviour
     [Tooltip("Asigna para tramos sin puzzle de zonas")]
     public RecolectorMonedas recolector;
 
-    [Header("── Gestor Zonas (tramo 4→5) ─────────────")]
-    [Tooltip("Asigna GestorZonas_4a5 para las monedas del puzzle de zonas")]
-    public GestorZonas gestorZonas;
+    // gestorZonas eliminado — GestorZonas ya no usa monedas (puzzle de zonas completa directo)
 
     [Header("── Animación ───────────────────────────")]
     public bool girar = true;
@@ -38,10 +36,8 @@ public class Moneda : MonoBehaviour
         if (sonidoRecolecta != null)
             PlaySonidoIndependiente(sonidoRecolecta, transform.position, mixerGroup);
 
-        // Notificar al gestor correspondiente
-        if (gestorZonas != null)
-            gestorZonas.MonedaRecogida();
-        else if (recolector != null)
+        // Notificar al recolector (solo para tramos normales sin puzzle de zonas)
+        if (recolector != null)
             recolector.MonedaRecolectada();
 
         gameObject.SetActive(false);
