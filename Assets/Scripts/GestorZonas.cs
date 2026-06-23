@@ -3,7 +3,10 @@ using UnityEngine;
 
 /// <summary>
 /// Gestiona las 3 zonas del puzzle entre momento 4 y 5.
-/// Cuando el jugador pisa las 3 zonas aparecen las monedas.
+/// Cuando el jugador pisa las 3 zonas el puzzle se completa directamente
+/// (sin mecánica de monedas). Aparece "¡Completado!" y luego el aviso
+/// persistente "Vuelve a hablar con SamuVR" que no se quita hasta que
+/// el jugador presione E para hablar con el NPC.
 ///
 /// SETUP EN UNITY:
 /// ─────────────────────────────────────────────────────
@@ -11,7 +14,6 @@ using UnityEngine;
 ///   └── GestorZonas.cs
 ///         ├── momentoQueActiva → 4
 ///         ├── zonas[]          → [Zona1, Zona2, Zona3]
-///         ├── monedas[]        → [Moneda1, Moneda2, Moneda3]
 ///         └── forzarActivo     → marcar solo para debug
 ///
 /// Zona1 / Zona2 / Zona3          ← GameObject con modelo visible
@@ -21,7 +23,7 @@ using UnityEngine;
 ///         └── gestorZonas → GestorZonas_4a5
 ///
 /// En SistemaDialogo del momento 5:
-///   puzzlePrevio → GestorZonas_4a5
+///   gestorZonasPrevio → GestorZonas_4a5
 /// ─────────────────────────────────────────────────────
 /// </summary>
 public class GestorZonas : MonoBehaviour
@@ -31,39 +33,26 @@ public class GestorZonas : MonoBehaviour
 
     [Header("── Misión ───────────────────────────────")]
     public string descripcionZonas = "Pisa las 3 zonas marcadas";
-    public string descripcionMonedas = "Recoge las monedas";
 
     [Header("── Zonas ───────────────────────────────")]
     public ZonaActivacion[] zonas;
-
-    [Header("── Monedas ─────────────────────────────")]
-    public GameObject[] monedas;
-    public int totalMonedas = 3;
-
-    [Header("── Efectos (opcional) ──────────────────")]
-    public ParticleSystem efectoAparicion;
-    public AudioClip sonidoMonedas;
 
     [Header("── Debug ────────────────────────────────")]
     [Tooltip("Marca para probar sin pasar por el momento 4")]
     public bool forzarActivo = false;
 
     [Header("── Aviso al completar ──────────────────")]
-    [Tooltip("Mensaje persistente que se muestra tras recoger todas las monedas, hasta que el jugador hable con el NPC")]
+    [Tooltip("Mensaje persistente tras completar las zonas, hasta que el jugador hable con el NPC")]
     public string textoVolverANPC = "Vuelve a hablar con SamuVR";
 
     // ── Estado ────────────────────────────────────────────────────────────
     int _zonasActivadas = 0;
-    int _monedasRecogidas = 0;
     bool _activo = false;
-    bool _monedasVisibles = false;
     bool _completado = false;
 
     // ─────────────────────────────────────────────────────────────────────
     void Start()
     {
-        ToggleMonedas(false);
-
         if (forzarActivo)
             IniciarPuzzle();
         else
@@ -83,7 +72,6 @@ public class GestorZonas : MonoBehaviour
     {
         _activo = true;
         _zonasActivadas = 0;
-        _monedasRecogidas = 0;
 
         if (UIObjetivo.Instance != null)
             UIObjetivo.Instance.MostrarObjetivo(
@@ -95,7 +83,7 @@ public class GestorZonas : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     public void ZonaActivada()
     {
-        if (!_activo || _monedasVisibles) return;
+        if (!_activo || _completado) return;
 
         _zonasActivadas++;
 
@@ -106,76 +94,37 @@ public class GestorZonas : MonoBehaviour
         Debug.Log($"[GestorZonas] Zonas: {_zonasActivadas}/{zonas.Length}");
 
         if (_zonasActivadas >= zonas.Length)
-            StartCoroutine(AparecerMonedasCO());
-    }
-
-    IEnumerator AparecerMonedasCO()
-    {
-        _monedasVisibles = true;
-        yield return new WaitForSeconds(0.3f);
-
-        if (efectoAparicion != null)
-            foreach (var m in monedas)
-                if (m != null)
-                    Instantiate(efectoAparicion, m.transform.position, Quaternion.identity);
-
-        if (sonidoMonedas != null)
-            AudioSource.PlayClipAtPoint(sonidoMonedas, transform.position);
-
-        ToggleMonedas(true);
-
-        if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.MostrarObjetivo(descripcionMonedas, 0, totalMonedas);
-
-        Debug.Log("[GestorZonas] ¡Monedas aparecidas!");
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    public void MonedaRecogida()
-    {
-        if (!_monedasVisibles) return;
-        _monedasRecogidas++;
-
-        if (UIObjetivo.Instance != null)
-            UIObjetivo.Instance.ActualizarProgreso(_monedasRecogidas, totalMonedas);
-
-        if (_monedasRecogidas >= totalMonedas)
             Completado();
     }
 
+    // ─────────────────────────────────────────────────────────────────────
     void Completado()
     {
         _completado = true;
         _activo = false;
 
-        if (UIObjetivo.Instance != null)
-        {
-            // Muestra "¡Completado!" brevemente y luego deja fijo
-            // el aviso de volver a hablar con el NPC (no se autooculta).
-            StartCoroutine(AvisarVolverNPCCO());
-        }
+        // Muestra "¡Completado!" brevemente y luego deja fijo el aviso
+        // persistente hasta que el jugador hable con el NPC.
+        StartCoroutine(AvisarVolverNPCCO());
 
         Debug.Log("[GestorZonas] ¡Completado! Momento 5 habilitado.");
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     IEnumerator AvisarVolverNPCCO()
     {
         UIObjetivo.Instance.CompletarObjetivo();
-        // Espera el tiempo del fade out de "¡Completado!" antes de mostrar
-        // el aviso persistente, para no pisar la animación.
-        yield return new WaitForSeconds(UIObjetivo.Instance.delayAlCompletar + UIObjetivo.Instance.duracionFade + 0.1f);
+        // Espera que termine la animación de "¡Completado!" antes de mostrar
+        // el aviso persistente, para no pisar el fade out.
+        yield return new WaitForSeconds(
+            UIObjetivo.Instance.delayAlCompletar + UIObjetivo.Instance.duracionFade + 0.1f);
         UIObjetivo.Instance.MostrarObjetivoPersistente(textoVolverANPC);
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>SistemaDialogo del momento 5 consulta esto para bloquear.</summary>
-    public bool PuzzlePendiente() => _activo && !_completado;
-
-    void ToggleMonedas(bool activo)
-    {
-        if (monedas == null) return;
-        foreach (var m in monedas)
-            if (m != null) m.SetActive(activo);
-    }
+    /// <summary>
+    /// SistemaDialogo del momento 5 consulta esto para bloquear el diálogo.
+    /// Devuelve true mientras el puzzle no haya sido completado.
+    /// Se vuelve false solo cuando el jugador ha pisado todas las zonas.
+    /// </summary>
+    public bool PuzzlePendiente() => !_completado;
 }

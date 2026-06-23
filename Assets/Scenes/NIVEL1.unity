@@ -4489,12 +4489,6 @@ MonoBehaviour:
   - {fileID: 422387398}
   - {fileID: 1510042114}
   - {fileID: 878580062}
-  dialogoInicioPorDia:
-  - {fileID: 302257234}
-  - {fileID: 1169072040}
-  - {fileID: 662032484}
-  delayAvisoDia1: 20
-  delayAvisoTransicion: 2
   spawnsPorDia:
   - {fileID: 550211510}
   - {fileID: 1808830447}
@@ -21345,7 +21339,7 @@ MonoBehaviour:
   - {fileID: 665037663}
   totalMonedas: 3
   efectoAparicion: {fileID: 0}
-  sonidoMonedas: {fileID: 8300000, guid: a555fb45c37a5dc45878bd9f08616a24, type: 3}
+  sonidoMonedas: {fileID: 0}
   forzarActivo: 0
   textoVolverANPC: Vuelve a hablar con SamuVR
 --- !u!1001 &696381204

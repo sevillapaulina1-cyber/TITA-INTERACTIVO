@@ -539,22 +539,12 @@ MonoBehaviour:
   duracionFadeIn: 0.8
   duracionFadeOut: 1
   sonidoUI: {fileID: 927272330}
-  panelAudifonos: {fileID: 0}
-  textoAudifonos: {fileID: 0}
-  mensajeAudifonos: "Para una mejor experiencia,\nte recomendamos usar aud\xEDfonos."
-  duracionPanelAudifonos: 4
-  panelAdvertencia: {fileID: 0}
-  textoAdvertencia: {fileID: 0}
-  mensajeAdvertencia: 'El contenido y la historia de esta experiencia tienen
-
-    fines
-    educativos e informativos.
-
-'
-  duracionPanelAdvertencia: 6
+  videoPlayer: {fileID: 0}
+  rawImageVideo: {fileID: 0}
+  panelVideo: {fileID: 0}
+  botonSaltar: {fileID: 0}
+  duracionFadeVideo: 0.6
   panelMenuPrincipal: {fileID: 0}
-  duracionFadePantallasPrevias: 0.6
-  textoSaltar: {fileID: 0}
 --- !u!4 &468367657
 Transform:
   m_ObjectHideFlags: 0
@@ -1722,6 +1712,7 @@ MonoBehaviour:
   musicaNormal: {fileID: 8300000, guid: b525d7b38cc59b442a7caa1b63a81bc4, type: 3}
   musicaTension: {fileID: 8300000, guid: 9f224ee75a51cd042aaa860a7d0e889a, type: 3}
   musicaRetroalimentacion: {fileID: 8300000, guid: 38675ac042cf2ee458c87242ff147258, type: 3}
+  musicaMenu: {fileID: 8300000, guid: 38675ac042cf2ee458c87242ff147258, type: 3}
   sonidoRespiracion: {fileID: 8300000, guid: 8e6ca15c0a2243143aaa0b527cc6eca0, type: 3}
   duracionCrossfade: 2
   duracionFadeTransicion: 0.8
