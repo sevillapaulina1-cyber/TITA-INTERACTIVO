@@ -1215,17 +1215,17 @@ MonoBehaviour:
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
-  textoYo: ...
-  textoNPC: "Sabes hoy fue un d\xEDa algo aburrido."
-  textoChoice1: "\xBFQu\xE9 pas\xF3?"
+  textoYo: Un poco diferente este nivel.
+  textoNPC: "Si jaja igual hoy fue un d\xEDa aburrido."
+  textoChoice1: "\xBFC\xF3mo as\xED?"
   tipoChoice1: 1
-  respuestaNPCChoice1: "No pasa nada interesante, por eso me gusta jugar mucho pero
-    mis pap\xE1s se molestan por eso"
-  textoChoice2: "A m\xED tambi\xE9n me pasa"
+  respuestaNPCChoice1: "Solo hacer tarea es aburrido, por eso juego mucho pero a
+    mis pap\xE1s les molesta."
+  textoChoice2: "El m\xEDo igual."
   tipoChoice2: 0
-  respuestaNPCChoice2: "No pasa nada interesante, por eso me gusta jugar mucho pero
-    mis pap\xE1s se molestan por eso"
-  textoChoice3: A veces nadie entiende
+  respuestaNPCChoice2: "Solo hacer tarea es aburrido, por eso juego mucho pero a
+    mis pap\xE1s les molesta."
+  textoChoice3: "Si te entiendo, el m\xEDo igual."
   tipoChoice3: 2
   respuestaNPCChoice3: "S\xED...  "
   recolectorPrevio: {fileID: 0}
@@ -1523,15 +1523,15 @@ MonoBehaviour:
   textoBoton3: {fileID: 881719972}
   textoYo: "\xBFNo tienes m\xE1s amigos?"
   textoNPC: No le digo a muchos que juego tanto, no soy muy sociable...
-  textoChoice1: Esta bien, es tu espacio
+  textoChoice1: Esta bien, es tu espacio.
   tipoChoice1: 0
-  respuestaNPCChoice1: Eres un gran amigo sabes
-  textoChoice2: Puedes confiar en mi
+  respuestaNPCChoice1: Eres un gran amigo sabes.
+  textoChoice2: Puedes confiar en mi.
   tipoChoice2: 0
-  respuestaNPCChoice2: Eres un gran amigo sabes
-  textoChoice3: Es mejor no contarle a todos
+  respuestaNPCChoice2: Eres un gran amigo sabes.
+  textoChoice3: Es mejor no contarle a todos.
   tipoChoice3: 2
-  respuestaNPCChoice3: Si.. bueno seguimos hablando
+  respuestaNPCChoice3: Si.. bueno seguimos hablando.
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
   esInicioDeDia: 0
@@ -3342,18 +3342,18 @@ MonoBehaviour:
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
-  textoYo: Pero eso es bueno.
+  textoYo: Ahora nos tenemos el uno al otro :)
   textoNPC: "Si, antes jugaba solo pero es m\xE1s divertido desde que te conoc\xED
     :D "
-  textoChoice1: Si, yo igual
+  textoChoice1: Si, yo igual lo creo :D
   tipoChoice1: 1
   respuestaNPCChoice1: :D
-  textoChoice2: "Yo tambi\xE9n me divierto mucho m\xE1s contigo c:"
+  textoChoice2: "Yo tambi\xE9n me divierto mucho m\xE1s contigo :D"
   tipoChoice2: 0
   respuestaNPCChoice2: Que nice :D
-  textoChoice3: Me gustas mucho de verdad
+  textoChoice3: Me gustas mucho igual
   tipoChoice3: 2
-  respuestaNPCChoice3: ...
+  respuestaNPCChoice3: Mmm... gracias?
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
   esInicioDeDia: 0
@@ -5225,13 +5225,13 @@ MonoBehaviour:
   respuestaNPCChoice1: Claro, juguemos juntos :D
   textoChoice2: "\xBFQu\xE9 nivel eres?"
   tipoChoice2: 1
-  respuestaNPCChoice2: "\xBFYo? Bueno eso no importa, vamos a jugar."
+  respuestaNPCChoice2: Soy nivel 66 jeje, soy muy bueno, juguemos
   textoChoice3: "\xBFCu\xE1ntos a\xF1os tienes?"
   tipoChoice3: 2
-  respuestaNPCChoice3: "\xBFYo? Bueno eso no importa, vamos a jugar."
+  respuestaNPCChoice3: "\xBFYo? Bueno... tengo 12, jugamos? "
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  esInicioDeDia: 0
+  esInicioDeDia: 1
   textoAvisoInicioDia: Habla con SamuVR
   usarAnimacionMomento8: 0
   animatorCamara: {fileID: 0}
@@ -5299,15 +5299,15 @@ MonoBehaviour:
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
-  textoYo: Oye quiero enviarte Tobux pero el chat no me deja :c
-  textoNPC: "A veces el chat aqu\xED falla :c"
-  textoChoice1: Oye tienes Miascord? Me das tu usuario
+  textoYo: Oye quiero enviarte Tobux pero el juego no me deja :c
+  textoNPC: "A veces eso aqu\xED falla :c pero gracias."
+  textoChoice1: Oye tienes Miascord? Me das tu usuario?
   tipoChoice1: 2
-  respuestaNPCChoice1: Bueno... es ######
+  respuestaNPCChoice1: Claro... es ######.
   textoChoice2: "\xBFTienes otra app para hablar?"
   tipoChoice2: 0
   respuestaNPCChoice2: "S\xED, tengo Miascord, te paso mi user xd"
-  textoChoice3: Es mejor hablar en privado en otro lado
+  textoChoice3: Es mejor hablar en privado en otro lado.
   tipoChoice3: 2
   respuestaNPCChoice3: Tengo Miascord, te paso mi user xd
   recolectorPrevio: {fileID: 0}
@@ -20508,13 +20508,13 @@ MonoBehaviour:
   textoNPC: Si, hoy no tuve clases y suelo jugar luego de la escuela.
   textoChoice1: "\xBFA qu\xE9 hora sueles jugar?"
   tipoChoice1: 2
-  respuestaNPCChoice1: A la hora que normalmente me conecto xd
-  textoChoice2: Que bien que tengas tiempo
+  respuestaNPCChoice1: Normalmente en la tarde y casi noche.
+  textoChoice2: Que bien que no tuviste clase.
   tipoChoice2: 1
-  respuestaNPCChoice2: Si xd
-  textoChoice3: "Yo tambi\xE9n juego por estas horas"
+  respuestaNPCChoice2: "Sipi, as\xED podemos jugar."
+  textoChoice3: "Yo juego por estas horas y m\xE1s tarde igual."
   tipoChoice3: 0
-  respuestaNPCChoice3: Por eso siempre jugamos xd auqnue si te he visto desde antes
+  respuestaNPCChoice3: "Por eso siempre te veo conectado xd pero as\xED podemos jugar."
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
   esInicioDeDia: 0
@@ -31858,27 +31858,27 @@ MonoBehaviour:
   textoBoton1: {fileID: 1340565850}
   textoBoton2: {fileID: 1851945454}
   textoBoton3: {fileID: 574773287}
-  mensajeInicial11: No le digo a otros que hablo contigo
-  textoChoice11_1: No pasa nada
+  mensajeInicial11: No le digo a otros que hablo contigo.
+  textoChoice11_1: No pasa nada.
   tipoChoice11_1: 0
-  respNPC11_1: "S\xED... igual me alegra poder hablar contigo"
-  textoChoice11_2: Es mejor que sea entre nosotros
+  respNPC11_1: Igual me alegra poder hablar contigo.
+  textoChoice11_2: Es mejor que sea entre nosotros.
   tipoChoice11_2: 2
-  respNPC11_2: "S\xED, exacto. T\xFA me entiendes"
-  textoChoice11_3: "S\xED, es nuestro secreto"
+  respNPC11_2: "S\xED, exacto. T\xFA me entiendes."
+  textoChoice11_3: "S\xED, es nuestro secreto."
   tipoChoice11_3: 2
-  respNPC11_3: "Me alegra mucho... eres especial para m\xED"
-  mensajeInicial12: "Ser\xEDa chevere jugar en persona alg\xFAn d\xEDa"
-  textoChoice12_1: "Tal vez en grupo con m\xE1s gente"
+  respNPC11_3: Me alegra mucho... eres un amigo especial.
+  mensajeInicial12: "Ser\xEDa bueno jugar en persona alg\xFAn d\xEDa."
+  textoChoice12_1: "Tal vez en grupo con m\xE1s gente, si quieres."
   tipoChoice12_1: 2
-  respNPC12_1: "Mmmm no lo s\xE9"
-  textoChoice12_2: "S\xED, podr\xEDamos vernos"
+  respNPC12_1: "Mmmm no lo s\xE9."
+  textoChoice12_2: "S\xED, podr\xEDamos vernos."
   tipoChoice12_2: 0
-  respNPC12_2: Donde vives?
-  textoChoice12_3: "Hay parque cerca, podr\xEDamos ir"
+  respNPC12_2: Igual cre que vivimos cerca jaja.
+  textoChoice12_3: "Hay parque cerca, podr\xEDamos ir."
   tipoChoice12_3: 2
-  respNPC12_3: Dejame ver
-  pausaEntreMomentos: 2
+  respNPC12_3: Dejame ver.
+  pausaEntreMomentos: 1
   sonidoNPC: {fileID: 878580067}
 --- !u!1 &982981254
 GameObject:
@@ -33424,13 +33424,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1071061096}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.05272045, z: -0, w: 0.9986093}
+  m_LocalRotation: {x: -0, y: -0.32002196, z: -0, w: 0.9474102}
   m_LocalPosition: {x: 613.93, y: 0, z: 662.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -6.044, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -37.329, z: 0}
 --- !u!1 &1073937868
 GameObject:
   m_ObjectHideFlags: 0
@@ -39369,19 +39369,19 @@ MonoBehaviour:
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
   textoYo: Hola, nos volvemos a encontrar jaja
-  textoNPC: 'Que bueno que volviste c:'
-  textoChoice1: "S\xED, me ca\xEDste bien"
+  textoNPC: Que bueno que volviste al juego :D
+  textoChoice1: "S\xED, me ca\xEDste bien."
   tipoChoice1: 1
   respuestaNPCChoice1: Jeje sigamos jugando
-  textoChoice2: "Ten\xEDa tiempo libre"
+  textoChoice2: Estuvo interesante la otra vez :p
   tipoChoice2: 0
   respuestaNPCChoice2: Jeje sigamos jugando
-  textoChoice3: Te estaba esperando
+  textoChoice3: "Estaba esperando que te conectar\xE1s."
   tipoChoice3: 2
-  respuestaNPCChoice3: "\xBFEncerio?... bueno xd"
+  respuestaNPCChoice3: "\xBFEnserio?... bueno xd juguemos"
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  esInicioDeDia: 0
+  esInicioDeDia: 1
   textoAvisoInicioDia: Habla con SamuVR
   usarAnimacionMomento8: 0
   animatorCamara: {fileID: 0}
@@ -40818,9 +40818,9 @@ MonoBehaviour:
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
-  textoYo: Si es bastante divertido.
-  textoNPC: Bueno, tengo que irme ya.
-  textoChoice1: "Jugamos ma\xF1ana si quieres"
+  textoYo: "\xBFJugamos otro nivel?"
+  textoNPC: Lo siento, tengo que irme ya.
+  textoChoice1: "Jugamos ma\xF1ana si quieres."
   tipoChoice1: 1
   respuestaNPCChoice1: Claro, chao :>
   textoChoice2: "Ok, cu\xEDdate"
@@ -40828,7 +40828,7 @@ MonoBehaviour:
   respuestaNPCChoice2: Chao :)
   textoChoice3: "Agr\xE9game para hablar luego"
   tipoChoice3: 2
-  respuestaNPCChoice3: Umm... claro
+  respuestaNPCChoice3: 'Umm... claro '
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
   esInicioDeDia: 0
@@ -43782,18 +43782,17 @@ MonoBehaviour:
   textoBoton1: {fileID: 468814505}
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
-  textoYo: ...
-  textoNPC: Me gusta este mapa, lo juego siempre :D
+  textoYo: Que interesante nivel xd
+  textoNPC: Si, me gusta este mapa, lo juego siempre :D
   textoChoice1: "A mi tambi\xE9n, \xBFqu\xE9 otros juegos te gustan?"
   tipoChoice1: 0
-  respuestaNPCChoice1: Me gusta mucho el de carreras y el de contruir xd
-  textoChoice2: "Yo soy nuevo aqu\xED"
+  respuestaNPCChoice1: Me gusta mucho el de carreras y el de construir xd
+  textoChoice2: "Yo soy nuevo aqu\xED jaja"
   tipoChoice2: 1
-  respuestaNPCChoice2: "Pues te ense\xF1o jsjs"
+  respuestaNPCChoice2: "Si se nota xd, ya aprender\xE1s los atajos"
   textoChoice3: "\xBFSiempre juegas solo?"
   tipoChoice3: 2
-  respuestaNPCChoice3: "A veces, la mayor\xEDa del tiempo, pero tambi\xE9n juego
-    con mis padres xp"
+  respuestaNPCChoice3: "A veces, la mayor\xEDa del tiempo..."
   recolectorPrevio: {fileID: 960408332}
   gestorZonasPrevio: {fileID: 0}
   esInicioDeDia: 0
@@ -61164,8 +61163,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 19}
+  m_SizeDelta: {x: 104.9011, y: 72.3455}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1771884718
 MonoBehaviour:
@@ -63316,16 +63315,16 @@ MonoBehaviour:
   textoBoton2: {fileID: 649342887}
   textoBoton3: {fileID: 881719972}
   textoYo: ...
-  textoNPC: "Mis pap\xE1s casi no entienden esto UnU"
-  textoChoice1: "Es normal, son de otra generaci\xF3n"
+  textoNPC: "Mis pap\xE1s casi no entienden esto :("
+  textoChoice1: "Es normal, son de otra generaci\xF3n."
   tipoChoice1: 1
-  respuestaNPCChoice1: Bueno juguemos otro nivel
-  textoChoice2: Puedes hablar conmigo si quieres
+  respuestaNPCChoice1: Bueno juguemos otro nivel.
+  textoChoice2: Puedes hablar conmigo si quieres.
   tipoChoice2: 0
-  respuestaNPCChoice2: Bueno juguemos otro nivel
-  textoChoice3: Yo si te entiendo mejor que ellos
+  respuestaNPCChoice2: Gracias xd, juguemos otro nivel.
+  textoChoice3: Yo si te entiendo mejor que ellos.
   tipoChoice3: 2
-  respuestaNPCChoice3: Gracias jaja, sigamos jugando xd
+  respuestaNPCChoice3: Si creo jaja sigamos jugando.
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
   esInicioDeDia: 0

@@ -228,7 +228,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -401.52, y: 372}
+  m_AnchoredPosition: {x: -401.52, y: 439}
   m_SizeDelta: {x: 803.04, y: 65.2217}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &111067413
@@ -339,7 +339,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -622.1679, y: 267}
+  m_AnchoredPosition: {x: -622.17, y: 353}
   m_SizeDelta: {x: 341.6642, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &171824626
@@ -998,8 +998,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 141.52, y: 84.12735}
-  m_SizeDelta: {x: 2186.9146, y: 1257.4006}
+  m_AnchoredPosition: {x: 172.71222, y: 155}
+  m_SizeDelta: {x: 2177.3242, y: 1089.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &728181306
 MonoBehaviour:
@@ -1401,8 +1401,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
-  m_HorizontalFit: 2
-  m_VerticalFit: 2
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &813482452
 GameObject:
   m_ObjectHideFlags: 0
@@ -1534,7 +1534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.38039216}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2145,7 +2145,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -622.17, y: 207}
+  m_AnchoredPosition: {x: -622.17, y: 280}
   m_SizeDelta: {x: 341.66, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1728957574
@@ -2409,7 +2409,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8456892}
   m_HandleRect: {fileID: 8456891}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2591,7 +2591,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
-    m_FontSize: 1
+    m_FontSize: 35
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
