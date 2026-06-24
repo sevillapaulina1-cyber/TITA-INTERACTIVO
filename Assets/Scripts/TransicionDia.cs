@@ -105,6 +105,9 @@ public class TransicionDia : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     IEnumerator IntroDia1CO()
     {
+        // Bloquear texto "Presiona E" durante toda la intro del Día 1
+        SistemaDialogo.BloquearInteraccion = true;
+
         // Sonido de transición al entrar al Día 1
         if (fuenteTransicion != null && clipTransicion != null)
             fuenteTransicion.PlayOneShot(clipTransicion, volumenTransicion);
@@ -120,6 +123,9 @@ public class TransicionDia : MonoBehaviour
 
         if (firstPersonController != null)
             firstPersonController.enabled = true;
+
+        // Desbloquear interacción al terminar la intro
+        SistemaDialogo.BloquearInteraccion = false;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -131,6 +137,9 @@ public class TransicionDia : MonoBehaviour
     IEnumerator TransicionCO(int diaQueTermino)
     {
         int indiceSiguiente = diaQueTermino;
+
+        // Bloquear texto "Presiona E" durante toda la transición de día
+        SistemaDialogo.BloquearInteraccion = true;
 
         if (firstPersonController != null)
             firstPersonController.enabled = false;
@@ -172,6 +181,9 @@ public class TransicionDia : MonoBehaviour
 
         if (firstPersonController != null)
             firstPersonController.enabled = true;
+
+        // Desbloquear interacción al terminar la transición
+        SistemaDialogo.BloquearInteraccion = false;
     }
 
     // ─────────────────────────────────────────────────────────────────────

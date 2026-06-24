@@ -998,8 +998,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 172.71222, y: 155}
-  m_SizeDelta: {x: 2177.3242, y: 1089.1}
+  m_AnchoredPosition: {x: -123.49, y: 219.03398}
+  m_SizeDelta: {x: 2156.1, y: 1343.4879}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &728181306
 MonoBehaviour:
@@ -2079,18 +2079,18 @@ MonoBehaviour:
   colorDia: {r: 0.14, g: 0.42, b: 0.48, a: 1}
   colorFinal1: {r: 0.11, g: 0.73, b: 0.33, a: 1}
   colorFinal2: {r: 0.85, g: 0.15, b: 0.15, a: 1}
-  separacionEntreDias: 640
-  separacionVerticalMomentos: 200
+  separacionEntreDias: 580
+  separacionVerticalMomentos: 180
   margenIzquierdo: 140
   grosorLinea: 4
-  anchoHubDia: 150
+  anchoHubDia: 120
   altoHubDia: 80
-  anchoTarjeta: 280
+  anchoTarjeta: 230
   altoTarjeta: 170
   anchoTarjetaFinal: 360
   altoTarjetaFinal: 230
   mostrarTextoEleccion: 1
-  paddingInternoTarjeta: 20
+  paddingInternoTarjeta: 15
   alturaRelativaTitulo: 0.3
   separacionTituloCuerpo: 0.06
   tamanoFuenteHub: 15
@@ -2229,8 +2229,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -188.12646, y: -139.47983}
-  m_SizeDelta: {x: 220, y: 130}
+  m_AnchoredPosition: {x: -229.53845, y: -152.29785}
+  m_SizeDelta: {x: 302.824, y: 155.636}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1789608808
 GameObject:
@@ -2451,7 +2451,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8456892}
   m_HandleRect: {fileID: 8456891}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

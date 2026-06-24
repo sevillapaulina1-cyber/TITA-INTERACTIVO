@@ -1237,6 +1237,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 422387402}
+  momentoSiguienteEncadenado: {fileID: 1915595599}
+  esEncadenado: 0
 --- !u!1 &48994551 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: fd67a93e37ccb3449b9a1c3fb3f52833, type: 3}
@@ -1541,6 +1543,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 1510042118}
+  momentoSiguienteEncadenado: {fileID: 0}
+  esEncadenado: 0
 --- !u!1 &84845616
 GameObject:
   m_ObjectHideFlags: 0
@@ -3363,6 +3367,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 9
   sonidoNPC: {fileID: 1510042118}
+  momentoSiguienteEncadenado: {fileID: 0}
+  esEncadenado: 1
 --- !u!1001 &201710250
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5232,6 +5238,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 1736884226}
+  momentoSiguienteEncadenado: {fileID: 0}
+  esEncadenado: 0
 --- !u!1 &307817139
 GameObject:
   m_ObjectHideFlags: 0
@@ -5313,6 +5321,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 878580067}
+  momentoSiguienteEncadenado: {fileID: 0}
+  esEncadenado: 0
 --- !u!1001 &309771050
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20518,6 +20528,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 1510042118}
+  momentoSiguienteEncadenado: {fileID: 200905530}
+  esEncadenado: 0
 --- !u!1 &663129646 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ef27ffb100afdf24c9dfda88410de935, type: 3}
@@ -28843,7 +28855,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 790.13
+      value: 792.02
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -28851,23 +28863,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 665.79
+      value: 664.77
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9861478
+      value: 0.94286746
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.000000021552951
+      value: -0.00000002060703
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.1658691
+      value: 0.33316806
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000036251844
+      value: -0.00000000728162
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -28875,7 +28887,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 19.095
+      value: 38.922
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e18aa2776ad3374438c7cd85f07f1bf0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -33277,13 +33289,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1071061096}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.32002196, z: -0, w: 0.9474102}
-  m_LocalPosition: {x: 613.93, y: 0, z: 662.6}
+  m_LocalRotation: {x: -0, y: -0.38597324, z: -0, w: 0.92251}
+  m_LocalPosition: {x: 614.228, y: 0, z: 663.122}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -37.329, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -45.408, z: 0}
 --- !u!1 &1073937868
 GameObject:
   m_ObjectHideFlags: 0
@@ -39241,6 +39253,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 422387402}
+  momentoSiguienteEncadenado: {fileID: 0}
+  esEncadenado: 0
 --- !u!1 &1184097120
 GameObject:
   m_ObjectHideFlags: 0
@@ -40691,6 +40705,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 1736884226}
+  momentoSiguienteEncadenado: {fileID: 0}
+  esEncadenado: 1
 --- !u!1 &1293957998
 GameObject:
   m_ObjectHideFlags: 0
@@ -43654,6 +43670,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 1736884226}
+  momentoSiguienteEncadenado: {fileID: 1288806835}
+  esEncadenado: 0
 --- !u!1 &1421373361
 GameObject:
   m_ObjectHideFlags: 0
@@ -63054,6 +63072,8 @@ MonoBehaviour:
   triggerAnimacion: PaneoMomento8
   duracionAnimacion: 6
   sonidoNPC: {fileID: 422387402}
+  momentoSiguienteEncadenado: {fileID: 0}
+  esEncadenado: 1
 --- !u!1001 &1922921589
 PrefabInstance:
   m_ObjectHideFlags: 0

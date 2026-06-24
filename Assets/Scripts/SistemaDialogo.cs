@@ -80,6 +80,27 @@ public class SistemaDialogo : MonoBehaviour
     public SonidoNPC sonidoNPC;
     // ── ▲ AUDIO ─────────────────────────────────────────────────────────
 
+    // ── ▼ ENCADENAMIENTO ─────────────────────────────────────────────────
+    [Header("── Encadenamiento de momentos ──────────")]
+    [Tooltip("Si se asigna, al terminar la elección de ESTE momento se lanza automáticamente " +
+             "el diálogo del siguiente sin que el jugador tenga que presionar E. " +
+             "Úsalo en: Momento 2 → apunta al Momento 3 | Momento 5 → 6 | Momento 7 → 8.")]
+    public SistemaDialogo momentoSiguienteEncadenado;
+
+    [Tooltip("Marca esto en los momentos que son lanzados por encadenamiento (3, 6, 8). " +
+             "Oculta el texto 'Presiona E para hablar' porque nunca se necesita presionar E.")]
+    public bool esEncadenado = false;
+    // ── ▲ ENCADENAMIENTO ─────────────────────────────────────────────────
+
+    // ── ▼ BLOQUEO GLOBAL (usado por TransicionDia) ───────────────────────
+    /// <summary>
+    /// Cuando es true, TODOS los SistemaDialogo dejan de mostrar el texto
+    /// "Presiona E para hablar" y de detectar la tecla E.
+    /// TransicionDia lo activa al iniciar un fade y lo desactiva al terminar.
+    /// </summary>
+    public static bool BloquearInteraccion = false;
+    // ── ▲ BLOQUEO GLOBAL ─────────────────────────────────────────────────
+
     bool _puedeInteractuar = true;
     float _time = 0.05f;
     bool _avisoInicioMostrado = false;
@@ -129,6 +150,8 @@ public class SistemaDialogo : MonoBehaviour
     void Update()
     {
         if (!_puedeInteractuar) return;
+        if (BloquearInteraccion) { if (interactionText != null) interactionText.text = ""; return; }
+        if (esEncadenado) return; // sale sin tocar interactionText — lo controla el momento anterior
         if (GameManager.Instance == null) return;
         if (GameManager.Instance.MomentoActual + 1 != momentoIndex) return;
 
@@ -263,6 +286,19 @@ public class SistemaDialogo : MonoBehaviour
         GameManager.Instance.RegistrarEleccion(tipo, textoRespuesta);
 
         bool esUltimo = GameManager.Instance.MomentoActual >= GameManager.TOTAL_MOMENTOS;
+
+        // ── ▼ ENCADENAMIENTO: si hay un siguiente momento asignado, lanzarlo
+        //     automáticamente sin devolver el control al jugador ─────────────
+        if (!esUltimo && momentoSiguienteEncadenado != null)
+        {
+            // Pequeña pausa de cortesía antes de que arranque el siguiente diálogo
+            yield return new WaitForSeconds(0.6f);
+            this.enabled = false;
+            momentoSiguienteEncadenado.LanzarDialogoEncadenado(firstPersonController);
+            yield break;
+        }
+        // ── ▲ ENCADENAMIENTO ─────────────────────────────────────────────
+
         if (!esUltimo)
         {
             firstPersonController.enabled = true;
@@ -273,6 +309,22 @@ public class SistemaDialogo : MonoBehaviour
         this.enabled = false;
         yield return null;
     }
+
+    // ── ▼ ENCADENAMIENTO ─────────────────────────────────────────────────
+    /// <summary>
+    /// Llamado por el momento anterior (encadenado) para iniciar este diálogo
+    /// sin que el jugador tenga que acercarse ni presionar E.
+    /// El firstPersonController ya viene desactivado del momento anterior.
+    /// </summary>
+    public void LanzarDialogoEncadenado(MonoBehaviour fpsController)
+    {
+        if (!this.enabled) this.enabled = true;
+        // Redirigir la referencia al FPS Controller para que EleccionCO lo reactive al final
+        firstPersonController = fpsController;
+        _puedeInteractuar = false;
+        StartCoroutine(DialogoCO());
+    }
+    // ── ▲ ENCADENAMIENTO ─────────────────────────────────────────────────
 
     // ─────────────────────────────────────────────────────────────────────
     // ── ▼ MODIFICADO: EscribirTexto ahora activa/desactiva voz del NPC ──
