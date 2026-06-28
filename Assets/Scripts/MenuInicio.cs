@@ -5,7 +5,7 @@ using System.Collections;
 
 /// <summary>
 /// Menú principal de la experiencia.
-/// MODIFICADO: Añade sonidos a los botones.
+/// MODIFICADO: Añade botón de Créditos que abre un panel sin cambiar de escena.
 /// </summary>
 public class MenuInicio : MonoBehaviour
 {
@@ -17,10 +17,15 @@ public class MenuInicio : MonoBehaviour
     public Text textoTitulo;
     public Text textoSubtitulo;
     public Button botonIniciar;
+    public Button botonCreditos;          // ← NUEVO
     public Button botonSalir;
 
     [Header("── Panel negro para fade ───────────────")]
     public Image panelFade;
+
+    [Header("── Créditos ────────────────────────────")]
+    [Tooltip("Arrastra aquí el GameObject raíz del Panel Créditos")]
+    public PanelCreditos panelCreditos;   // ← NUEVO
 
     [Header("── Contenido ───────────────────────────")]
     public string titulo = "Experiencia Interactiva";
@@ -36,6 +41,10 @@ public class MenuInicio : MonoBehaviour
     public SonidoUI sonidoUI;
     // ── ▲ AUDIO ───────────────────────────────────────────────────────────
 
+    // GameObject raíz de los botones del menú (para ocultarlos al abrir créditos)
+    // Si todos los botones están bajo un mismo panel, asigna ese GameObject aquí.
+    // Si no, se ocultan/muestran individualmente con los métodos internos.
+
     // ─────────────────────────────────────────────────────────────────────
     void Start()
     {
@@ -45,12 +54,24 @@ public class MenuInicio : MonoBehaviour
         if (sonidoUI == null)
             sonidoUI = FindAnyObjectByType<SonidoUI>();
 
+        if (panelCreditos == null)
+            panelCreditos = FindAnyObjectByType<PanelCreditos>();
+
         if (botonIniciar != null)
         {
             botonIniciar.onClick.RemoveAllListeners();
             botonIniciar.onClick.AddListener(IniciarExperiencia);
             if (sonidoUI != null) sonidoUI.RegistrarBoton(botonIniciar, SonidoUI.TipoSonidoBtn.Click);
         }
+
+        // ── BOTÓN CRÉDITOS ────────────────────────────────────────────────
+        if (botonCreditos != null)
+        {
+            botonCreditos.onClick.RemoveAllListeners();
+            botonCreditos.onClick.AddListener(AbrirCreditos);
+            if (sonidoUI != null) sonidoUI.RegistrarBoton(botonCreditos, SonidoUI.TipoSonidoBtn.Click);
+        }
+        // ─────────────────────────────────────────────────────────────────
 
         if (botonSalir != null)
         {
@@ -75,6 +96,56 @@ public class MenuInicio : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    // ── CRÉDITOS ──────────────────────────────────────────────────────────
+
+    void AbrirCreditos()
+    {
+        StartCoroutine(AbrirCreditosCO());
+    }
+
+    IEnumerator AbrirCreditosCO()
+    {
+        SetBotonesInteractivos(false);
+
+        yield return Fade(0f, 1f, duracionFadeOut * 0.5f);
+
+        // Ocultar menú y mostrar créditos
+        SetBotonesVisibles(false);
+
+        if (panelCreditos != null)
+            panelCreditos.Mostrar();        // PanelCreditos hace su propio fade de entrada
+
+        yield return Fade(1f, 0f, duracionFadeOut * 0.5f);
+    }
+
+    /// <summary>
+    /// Llamado por PanelCreditos cuando el usuario pulsa "Regresar".
+    /// Reactiva los botones del menú.
+    /// </summary>
+    public void MostrarMenuDesdeCreditos()
+    {
+        SetBotonesVisibles(true);
+        SetBotonesInteractivos(true);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    void SetBotonesVisibles(bool visible)
+    {
+        if (textoTitulo != null) textoTitulo.gameObject.SetActive(visible);
+        if (textoSubtitulo != null) textoSubtitulo.gameObject.SetActive(visible);
+        if (botonIniciar != null) botonIniciar.gameObject.SetActive(visible);
+        if (botonCreditos != null) botonCreditos.gameObject.SetActive(visible);
+        if (botonSalir != null) botonSalir.gameObject.SetActive(visible);
+    }
+
+    void SetBotonesInteractivos(bool interactable)
+    {
+        if (botonIniciar != null) botonIniciar.interactable = interactable;
+        if (botonCreditos != null) botonCreditos.interactable = interactable;
+        if (botonSalir != null) botonSalir.interactable = interactable;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
     public void IniciarExperiencia()
     {
         StartCoroutine(IniciarCO());
@@ -82,8 +153,7 @@ public class MenuInicio : MonoBehaviour
 
     IEnumerator IniciarCO()
     {
-        if (botonIniciar != null) botonIniciar.interactable = false;
-        if (botonSalir != null) botonSalir.interactable = false;
+        SetBotonesInteractivos(false);
 
         yield return Fade(0f, 1f, duracionFadeOut);
 
@@ -108,8 +178,7 @@ public class MenuInicio : MonoBehaviour
 
     IEnumerator SalirCO()
     {
-        if (botonIniciar != null) botonIniciar.interactable = false;
-        if (botonSalir != null) botonSalir.interactable = false;
+        SetBotonesInteractivos(false);
 
         yield return Fade(0f, 1f, duracionFadeOut);
 

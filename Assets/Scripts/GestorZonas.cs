@@ -3,9 +3,9 @@ using UnityEngine;
 
 /// <summary>
 /// Gestiona las 3 zonas del puzzle entre momento 4 y 5.
-/// Al completar llama a UIObjetivo.MostrarPantallaCompletado() que:
-///   1. Muestra imagen central de completado 4 segundos
-///   2. Luego muestra el objetivo persistente "Vuelve a hablar con SamuVR"
+/// Las zonas arrancan DESHABILITADAS; se habilitan solo cuando
+/// IniciarPuzzle() es llamado (tras recibir la misión).
+/// Al completar llama a UIObjetivo.MostrarPantallaCompletado().
 /// </summary>
 public class GestorZonas : MonoBehaviour
 {
@@ -53,6 +53,20 @@ public class GestorZonas : MonoBehaviour
         _activo = true;
         _zonasActivadas = 0;
 
+        // ── ▼ NUEVO: habilitar zonas ahora que el puzzle ha comenzado ──────
+        if (zonas != null)
+        {
+            foreach (var zona in zonas)
+            {
+                if (zona != null)
+                {
+                    zona.Reiniciar();   // limpia estado por si había sido pisada antes
+                    zona.Habilitar();   // permite detectar al jugador
+                }
+            }
+        }
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────────
+
         if (UIObjetivo.Instance != null)
             UIObjetivo.Instance.MostrarObjetivo(
                 descripcionZonas, 0, zonas != null ? zonas.Length : 3);
@@ -83,7 +97,6 @@ public class GestorZonas : MonoBehaviour
         _completado = true;
         _activo = false;
 
-        // Pantalla central de completado → luego objetivo persistente de volver al NPC
         if (UIObjetivo.Instance != null)
             UIObjetivo.Instance.MostrarPantallaCompletado(textoVolverANPC);
 

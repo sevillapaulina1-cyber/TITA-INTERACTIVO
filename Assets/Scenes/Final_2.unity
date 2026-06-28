@@ -1764,11 +1764,11 @@ RectTransform:
   - {fileID: 2115668724}
   m_Father: {fileID: 528820541}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -338.99988, y: 234.00005}
-  m_SizeDelta: {x: 3021.7407, y: 1343.4879}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: -355.8909, y: 48.3805}
+  m_SizeDelta: {x: 2265.0464, y: 1323.3981}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1253365609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2071,26 +2071,32 @@ MonoBehaviour:
   colorGris: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   colorLinea: {r: 1, g: 1, b: 1, a: 0.3}
   colorDia: {r: 0.14, g: 0.42, b: 0.48, a: 1}
-  anchoBloquesDia: 420
-  gapEntreBloques: 20
+  anchoColumna: 170
+  gapColumnas: 50
   margenIzquierdo: 140
   margenDerecho: 60
   yHub: 85
-  yMomentos: -70
+  gapHubMomentos: 18
+  gapEntreMomentos: 12
   grosorLinea: 4
   anchoHub: 110
   altoHub: 48
-  anchoTarjeta: 230
-  altoTarjeta: 170
-  anchoTarjetaFinal: 360
-  altoTarjetaFinal: 230
+  anchoMomento: 145
+  altoMomento: 100
+  anchoDesenlace: 190
+  altoDesenlace: 170
   fsHub: 13
-  fsTitTarj: 11
-  fsCpoTarj: 10
-  fsTitFinal: 13
-  fsCpoFinal: 11
+  fsTitMom: 12
+  fsCpoMom: 10
+  fsTitDes: 13
+  fsCpoDes: 11
   padTarjeta: 7
   fraccionTitulo: 0.32
+  nombresDias:
+  - "D\xEDa 1"
+  - "D\xEDa 7"
+  - "D\xEDa 18"
+  - "D\xEDa 115"
   nombresMomentos:
   - Contacto
   - Juego
@@ -2104,11 +2110,6 @@ MonoBehaviour:
   - Canal
   - Secreto
   - Encuentro
-  nombresDias:
-  - "D\xEDa 1"
-  - "D\xEDa 7"
-  - "D\xEDa 18"
-  - "D\xEDa 115"
 --- !u!4 &1783757533
 Transform:
   m_ObjectHideFlags: 0
