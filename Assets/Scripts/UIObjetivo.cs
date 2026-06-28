@@ -4,76 +4,75 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Panel de misión/objetivo en la esquina superior derecha.
-/// Aparece con fade al iniciar un puzzle y desaparece al completarlo.
-/// Todos los puzzles (RecolectorMonedas, GestorZonas) lo llaman.
+/// Al completar un puzzle muestra un panel CENTRAL con imagen durante
+/// duracionCompletado segundos, luego ese panel desaparece y aparece el
+/// objetivo persistente "Vuelve a hablar con SamuVR" en la esquina.
 ///
 /// SETUP EN UNITY — jerarquía:
 /// ══════════════════════════════════════════════════════
 /// Canvas  (Screen Space - Overlay, Sort Order 20)
-///   └── PanelObjetivo                    ← este panel, SetActive(false) al inicio
-///         │  Anchor: top-right
-///         │  Pivot: (1, 1)
-///         │  Pos: (-20, -20)             ← margen desde la esquina
-///         │  Size: (280, 100)
-///         │  Image: fondo oscuro semitransparente (0,0,0, alpha 180)
-///         │  CanvasGroup: Alpha 0 al inicio  ← para el fade
-///         │
-///         ├── TextoTitulo               ← Text  "OBJETIVO"
-///         │     Font size: 11  Bold  Color: #AAAAAA  mayúsculas
-///         │     Anchor: top-left  Pos: (12, -10)
-///         │
-///         ├── TextoMision               ← Text  (descripción dinámica)
-///         │     Font size: 14  Bold  Color: blanco
-///         │     Anchor: top-left  Pos: (12, -30)
-///         │     Width: 256
-///         │
-///         └── TextoProgreso             ← Text  "0 / 3"
-///               Font size: 13  Color: #CCCCCC
-///               Anchor: top-left  Pos: (12, -52)
+///   ├── PanelObjetivo                    ← panel esquina superior derecha
+///   │     │  Anchor: top-right  Pivot: (1,1)  Pos: (-20,-20)  Size: (280,100)
+///   │     │  Image fondo oscuro  +  CanvasGroup alpha 0
+///   │     ├── TextoTitulo               ← "OBJETIVO"
+///   │     ├── TextoMision               ← descripción dinámica
+///   │     └── TextoProgreso             ← "0 / 3"
+///   │
+///   └── PanelCompletado                  ← panel central de completado
+///         │  Anchor: center  Pivot: (0.5,0.5)  Pos: (0,0)  Size: (400,220)
+///         │  SetActive(false) al inicio  +  CanvasGroup alpha 0
+///         ├── ImagenCompletado           ← Image con tu sprite de completado
+///         └── TextoCompletadoLabel       ← Text "¡Completado!" (opcional)
 ///
-/// INSPECTOR — campos del script UIObjetivo:
-///   panelObjetivo    → PanelObjetivo
-///   canvasGroup      → CanvasGroup del PanelObjetivo
-///   textoMision      → TextoMision
-///   textoProgreso    → TextoProgreso
-///   duracionFade     → 0.4
-///   delayAlCompletar → 1.5   (segundos visible tras completar antes de desaparecer)
-///   sonidoMostrar    → clip que suena al aparecer el panel
-///   sonidoCompletar  → clip que suena al completar / mostrar siguiente paso
+/// INSPECTOR:
+///   panelObjetivo         → PanelObjetivo
+///   canvasGroup           → CanvasGroup de PanelObjetivo
+///   textoMision / textoProgreso
+///   panelCompletado       → PanelCompletado
+///   canvasGroupCompletado → CanvasGroup de PanelCompletado
+///   imagenCompletado      → Image del panel central
+///   textoCompletadoLabel  → Text opcional debajo de la imagen
+///   duracionCompletado    → 4
+///   sonidoMostrar / sonidoCompletar
 ///
-/// USO DESDE OTROS SCRIPTS:
-///   UIObjetivo.Instance.MostrarObjetivo("Recoge las monedas", 0, 3);
-///   UIObjetivo.Instance.ActualizarProgreso(1, 3);
-///   UIObjetivo.Instance.CompletarObjetivo();          // fade out automático
-///   UIObjetivo.Instance.MostrarSiguientePaso("Vuelve a hablar con el NPC"); // se autooculta
-///   UIObjetivo.Instance.MostrarObjetivoPersistente("Habla con SamuVR");     // NO se autooculta
-///   UIObjetivo.Instance.OcultarObjetivo();             // oculta el persistente manualmente
+/// USO PRINCIPAL DESDE RecolectorMonedas y GestorZonas:
+///   UIObjetivo.Instance.MostrarPantallaCompletado("Vuelve a hablar con SamuVR");
 /// ══════════════════════════════════════════════════════
 /// </summary>
 public class UIObjetivo : MonoBehaviour
 {
-    // ── Singleton ─────────────────────────────────────────────────────────
     public static UIObjetivo Instance { get; private set; }
 
-    [Header("── UI ──────────────────────────────────")]
+    [Header("── Panel esquina (objetivo) ─────────────")]
     public GameObject panelObjetivo;
     public CanvasGroup canvasGroup;
     public Text textoMision;
     public Text textoProgreso;
 
+    [Header("── Panel central (completado) ───────────")]
+    [Tooltip("Panel que aparece al centro al completar el puzzle")]
+    public GameObject panelCompletado;
+    [Tooltip("CanvasGroup del PanelCompletado para el fade")]
+    public CanvasGroup canvasGroupCompletado;
+    [Tooltip("Image del panel central — asigna tu sprite de completado")]
+    public Image imagenCompletado;
+    [Tooltip("Texto opcional debajo de la imagen")]
+    public Text textoCompletadoLabel;
+
     [Header("── Tiempos ─────────────────────────────")]
     public float duracionFade = 0.4f;
-    public float delayAlCompletar = 1.5f;   // segundos visible tras completar
+    public float delayAlCompletar = 1.5f;   // conservado por compatibilidad
+    [Tooltip("Segundos que se muestra el panel central de completado")]
+    public float duracionCompletado = 4f;
 
     [Header("── Audio ───────────────────────────────")]
-    [Tooltip("Sonido al aparecer el panel de objetivo")]
+    [Tooltip("Sonido al aparecer el panel de objetivo (esquina)")]
     public AudioClip sonidoMostrar;
-    [Tooltip("Sonido al completar el objetivo o mostrar siguiente paso")]
+    [Tooltip("Sonido al aparecer el panel central de completado")]
     public AudioClip sonidoCompletar;
     [Range(0f, 1f)]
     public float volumenUI = 0.9f;
 
-    // AudioSource 2D propio — no depende de Camera.main ni de posición en el mundo
     AudioSource _audioSource;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -84,20 +83,18 @@ public class UIObjetivo : MonoBehaviour
 
         if (panelObjetivo != null) panelObjetivo.SetActive(false);
         if (canvasGroup != null) canvasGroup.alpha = 0f;
+        if (panelCompletado != null) panelCompletado.SetActive(false);
+        if (canvasGroupCompletado != null) canvasGroupCompletado.alpha = 0f;
 
-        // Crear AudioSource 2D en este mismo GameObject
         _audioSource = gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
         _audioSource.loop = false;
-        _audioSource.spatialBlend = 0f;   // 2D puro — suena siempre igual
+        _audioSource.spatialBlend = 0f;
         _audioSource.volume = volumenUI;
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Muestra el panel con fade in.
-    /// Llamar al inicio de cada puzzle.
-    /// </summary>
+    /// <summary>Muestra el panel esquina al inicio de un puzzle.</summary>
     public void MostrarObjetivo(string descripcion, int actual, int total)
     {
         StopAllCoroutines();
@@ -106,17 +103,12 @@ public class UIObjetivo : MonoBehaviour
         if (textoProgreso != null) textoProgreso.text = FormatearProgreso(actual, total);
 
         if (panelObjetivo != null) panelObjetivo.SetActive(true);
-        StartCoroutine(FadeCO(0f, 1f, duracionFade));
-
-        // ── Audio al mostrar ──────────────────────────────────────────────
+        StartCoroutine(FadeEsquinaCO(0f, 1f, duracionFade));
         ReproducirSonido(sonidoMostrar);
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Actualiza solo el contador sin rehacer el fade.
-    /// Llamar cada vez que se recoge una moneda o se activa una zona.
-    /// </summary>
+    /// <summary>Actualiza solo el contador sin rehacer el fade.</summary>
     public void ActualizarProgreso(int actual, int total)
     {
         if (textoProgreso != null)
@@ -125,42 +117,71 @@ public class UIObjetivo : MonoBehaviour
 
     // ─────────────────────────────────────────────────────────────────────
     /// <summary>
-    /// Marca como completado, espera delayAlCompletar y hace fade out.
+    /// Flujo completo al completar un puzzle:
+    ///   1. Oculta el panel esquina
+    ///   2. Muestra el panel central con imagen + sonido durante duracionCompletado seg
+    ///   3. Oculta el panel central
+    ///   4. Muestra el objetivo persistente mensajeSiguiente en la esquina
+    /// Llamar desde RecolectorMonedas y GestorZonas.
+    /// </summary>
+    public void MostrarPantallaCompletado(string mensajeSiguiente)
+    {
+        StopAllCoroutines();
+        StartCoroutine(FlujoPantallaCompletadoCO(mensajeSiguiente));
+    }
+
+    IEnumerator FlujoPantallaCompletadoCO(string mensajeSiguiente)
+    {
+        // 1. Ocultar panel esquina
+        float alphaEsquina = canvasGroup != null ? canvasGroup.alpha : 1f;
+        yield return FadeEsquinaCO(alphaEsquina, 0f, duracionFade * 0.5f);
+        if (panelObjetivo != null) panelObjetivo.SetActive(false);
+
+        // 2. Mostrar panel central
+        if (panelCompletado != null) panelCompletado.SetActive(true);
+        ReproducirSonido(sonidoCompletar);
+        yield return FadeCentralCO(0f, 1f, duracionFade);
+
+        // 3. Esperar
+        yield return new WaitForSeconds(duracionCompletado);
+
+        // 4. Ocultar panel central
+        yield return FadeCentralCO(1f, 0f, duracionFade);
+        if (panelCompletado != null) panelCompletado.SetActive(false);
+
+        // 5. Mostrar objetivo persistente en esquina
+        MostrarObjetivoPersistente(mensajeSiguiente);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Compatibilidad con código existente que llama CompletarObjetivo().
+    /// Muestra el panel central sin siguiente paso.
     /// </summary>
     public void CompletarObjetivo()
     {
         StopAllCoroutines();
-        if (textoProgreso != null) textoProgreso.text = "¡Completado!";
-        StartCoroutine(CompletarCO());
+        StartCoroutine(CompletarSimpleCO());
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Muestra el mensaje de siguiente paso (ej. "Vuelve a hablar con el NPC")
-    /// reemplazando el texto de misión, sin mostrar progreso.
-    /// Luego desaparece automáticamente.
-    /// </summary>
-    public void MostrarSiguientePaso(string mensaje)
+    IEnumerator CompletarSimpleCO()
     {
-        StopAllCoroutines();
+        float alphaEsquina = canvasGroup != null ? canvasGroup.alpha : 1f;
+        yield return FadeEsquinaCO(alphaEsquina, 0f, duracionFade * 0.5f);
+        if (panelObjetivo != null) panelObjetivo.SetActive(false);
 
-        if (textoMision != null) textoMision.text = mensaje;
-        if (textoProgreso != null) textoProgreso.text = "";
-
-        if (panelObjetivo != null) panelObjetivo.SetActive(true);
-
-        // ── Audio al completar/siguiente paso ─────────────────────────────
+        if (panelCompletado != null) panelCompletado.SetActive(true);
         ReproducirSonido(sonidoCompletar);
-
-        StartCoroutine(SiguientePasoCO());
+        yield return FadeCentralCO(0f, 1f, duracionFade);
+        yield return new WaitForSeconds(duracionCompletado);
+        yield return FadeCentralCO(1f, 0f, duracionFade);
+        if (panelCompletado != null) panelCompletado.SetActive(false);
     }
 
     // ─────────────────────────────────────────────────────────────────────
     /// <summary>
-    /// Muestra un objetivo FIJO que NO desaparece solo (sin temporizador).
-    /// Útil para "Habla con SamuVR" al inicio de cada día, donde debe
-    /// quedarse en pantalla hasta que el jugador realmente interactúe.
-    /// Llamar a OcultarObjetivo() para quitarlo manualmente (ej. al presionar E).
+    /// Objetivo persistente en esquina — NO desaparece solo.
+    /// Cerrar con OcultarObjetivo() cuando el jugador presione E.
     /// </summary>
     public void MostrarObjetivoPersistente(string mensaje)
     {
@@ -170,59 +191,49 @@ public class UIObjetivo : MonoBehaviour
         if (textoProgreso != null) textoProgreso.text = "";
 
         if (panelObjetivo != null) panelObjetivo.SetActive(true);
-
-        // ── Audio al mostrar ──────────────────────────────────────────────
         ReproducirSonido(sonidoMostrar);
-
-        StartCoroutine(FadeCO(canvasGroup != null ? canvasGroup.alpha : 0f, 1f, duracionFade));
+        StartCoroutine(FadeEsquinaCO(canvasGroup != null ? canvasGroup.alpha : 0f, 1f, duracionFade));
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    /// <summary>
-    /// Oculta el panel inmediatamente con fade out, sin esperar.
-    /// Pensado para cerrar un objetivo persistente (ej. al presionar E para hablar).
-    /// </summary>
+    /// <summary>Cierra el panel de esquina con fade. Llamar al presionar E.</summary>
     public void OcultarObjetivo()
     {
         StopAllCoroutines();
         StartCoroutine(OcultarCO());
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    IEnumerator CompletarCO()
+    IEnumerator OcultarCO()
     {
-        // ── Audio al completar ────────────────────────────────────────────
-        ReproducirSonido(sonidoCompletar);
-
-        // Asegurar que está visible
-        yield return FadeCO(canvasGroup != null ? canvasGroup.alpha : 1f, 1f, 0.1f);
-        yield return new WaitForSeconds(delayAlCompletar);
-        yield return FadeCO(1f, 0f, duracionFade);
+        yield return FadeEsquinaCO(canvasGroup != null ? canvasGroup.alpha : 1f, 0f, duracionFade);
         if (panelObjetivo != null) panelObjetivo.SetActive(false);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    /// <summary>Autooculta con temporizador (usos simples).</summary>
+    public void MostrarSiguientePaso(string mensaje)
+    {
+        StopAllCoroutines();
+
+        if (textoMision != null) textoMision.text = mensaje;
+        if (textoProgreso != null) textoProgreso.text = "";
+
+        if (panelObjetivo != null) panelObjetivo.SetActive(true);
+        ReproducirSonido(sonidoCompletar);
+        StartCoroutine(SiguientePasoCO());
     }
 
     IEnumerator SiguientePasoCO()
     {
-        // Fade in desde donde esté
         float alphaInicial = canvasGroup != null ? canvasGroup.alpha : 0f;
-        yield return FadeCO(alphaInicial, 1f, duracionFade);
-
-        // Espera un poco más para que sea legible
+        yield return FadeEsquinaCO(alphaInicial, 1f, duracionFade);
         yield return new WaitForSeconds(delayAlCompletar + 1f);
-
-        yield return FadeCO(1f, 0f, duracionFade);
+        yield return FadeEsquinaCO(1f, 0f, duracionFade);
         if (panelObjetivo != null) panelObjetivo.SetActive(false);
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    IEnumerator OcultarCO()
-    {
-        yield return FadeCO(canvasGroup != null ? canvasGroup.alpha : 1f, 0f, duracionFade);
-        if (panelObjetivo != null) panelObjetivo.SetActive(false);
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    IEnumerator FadeCO(float desde, float hasta, float duracion)
+    IEnumerator FadeEsquinaCO(float desde, float hasta, float duracion)
     {
         if (canvasGroup == null) yield break;
         float t = 0f;
@@ -235,6 +246,19 @@ public class UIObjetivo : MonoBehaviour
         canvasGroup.alpha = hasta;
     }
 
+    IEnumerator FadeCentralCO(float desde, float hasta, float duracion)
+    {
+        if (canvasGroupCompletado == null) yield break;
+        float t = 0f;
+        while (t < duracion)
+        {
+            t += Time.deltaTime;
+            canvasGroupCompletado.alpha = Mathf.Lerp(desde, hasta, t / duracion);
+            yield return null;
+        }
+        canvasGroupCompletado.alpha = hasta;
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     void ReproducirSonido(AudioClip clip)
     {
@@ -243,7 +267,5 @@ public class UIObjetivo : MonoBehaviour
         _audioSource.PlayOneShot(clip);
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    string FormatearProgreso(int actual, int total)
-        => $"{actual} / {total}";
+    string FormatearProgreso(int actual, int total) => $"{actual} / {total}";
 }

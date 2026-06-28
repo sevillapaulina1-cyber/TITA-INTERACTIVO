@@ -93,6 +93,10 @@ public class MenuInicio : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.DetenerMusicaMenu(0.3f);
 
+        // Ocultar cursor antes de cargar la cinemática
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         SceneManager.LoadScene(escenaCinematica);
     }
 

@@ -1330,7 +1330,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1075033965}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 71afec2a2e399d84496375db65635072, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: e3ac5b22817ec6e40a1914c59a7fbb3e, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -2043,6 +2043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapaDecisiones
   contenedor: {fileID: 0}
+  leyendaRaiz: {fileID: 0}
   prefabNodo: {fileID: 1421944718819925647, guid: 4b3d2a89f59576243a8308cc68f541ef, type: 3}
   prefabLinea: {fileID: 4884809417539377438, guid: 71510939207b5134882b4489095402ff, type: 3}
   colorVerde: {r: 0.11, g: 0.73, b: 0.33, a: 1}
@@ -2050,24 +2051,26 @@ MonoBehaviour:
   colorGris: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   colorLinea: {r: 1, g: 1, b: 1, a: 0.3}
   colorDia: {r: 0.14, g: 0.42, b: 0.48, a: 1}
-  separacionEntreDias: 640
-  separacionVerticalMomentos: 200
+  anchoBloquesDia: 420
+  gapEntreBloques: 20
   margenIzquierdo: 140
+  margenDerecho: 60
+  yHub: 85
+  yMomentos: -70
   grosorLinea: 4
-  anchoHubDia: 150
-  altoHubDia: 80
+  anchoHub: 110
+  altoHub: 48
   anchoTarjeta: 280
   altoTarjeta: 170
   anchoTarjetaFinal: 360
   altoTarjetaFinal: 230
-  mostrarTextoEleccion: 1
-  paddingInternoTarjeta: 20
-  alturaRelativaTitulo: 0.3
-  separacionTituloCuerpo: 0.06
-  tamanoFuenteTitulo: 17
-  tamanoFuenteEleccion: 11
-  colorTitulo: {r: 1, g: 1, b: 1, a: 1}
-  colorTextoEleccion: {r: 1, g: 1, b: 1, a: 0.85}
+  fsHub: 13
+  fsTitTarj: 11
+  fsCpoTarj: 10
+  fsTitFinal: 13
+  fsCpoFinal: 11
+  padTarjeta: 7
+  fraccionTitulo: 0.32
   nombresMomentos:
   - Contacto
   - Juego

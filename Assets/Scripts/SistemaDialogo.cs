@@ -310,6 +310,19 @@ public class SistemaDialogo : MonoBehaviour
         yield return null;
     }
 
+    // ─────────────────────────────────────────────────────────────────────
+    void OnApplicationFocus(bool tieneFoco)
+    {
+        // Al volver a la ventana (Alt+Tab, Win, clic fuera…) mientras el jugador
+        // tiene el control (no hay diálogo abierto), re-bloquea el cursor.
+        if (!tieneFoco) return;
+        if (_puedeInteractuar && firstPersonController != null && firstPersonController.enabled)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+    }
+
     // ── ▼ ENCADENAMIENTO ─────────────────────────────────────────────────
     /// <summary>
     /// Llamado por el momento anterior (encadenado) para iniciar este diálogo

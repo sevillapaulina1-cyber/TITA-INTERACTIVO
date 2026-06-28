@@ -18,9 +18,8 @@ public class TransicionDia : MonoBehaviour
              "Índice 0 = Día 1 (momento 1), 1 = Día 2 (momento 4), 2 = Día 3 (momento 7). " +
              "El índice 3 (Día 4) puede dejarse vacío — no muestra aviso.")]
     public SistemaDialogo[] dialogoInicioPorDia;
-    [Tooltip("Segundos de espera tras el fade del Día 1 antes de mostrar el aviso. " +
-             "Debe coincidir con el tiempo del tutorial (~20s). " +
-             "Si dejas el tutorial visible 15s y el fade es 0.6s, pon 16 aprox.")]
+    [Tooltip("Segundos de espera tras el fade del Día 1 antes de mostrar el aviso " +
+             "(debe coincidir aproximadamente con el tiempo visible del tutorial)")]
     public float delayAvisoDia1 = 20f;
     [Tooltip("Segundos de espera tras el fade de transición (días 2 y 3) antes de mostrar el aviso")]
     public float delayAvisoTransicion = 2f;
@@ -109,6 +108,22 @@ public class TransicionDia : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    void OnApplicationFocus(bool tieneFoco)
+    {
+        // Al volver a la ventana (Alt+Tab, Win, clic en barra de tareas…)
+        // re-bloquea el cursor si el juego está en modo exploración
+        // (es decir, no hay diálogo abierto ni menú de pausa).
+        if (!tieneFoco) return;
+
+        // Si el firstPersonController está activo = el jugador tiene control → bloquear cursor
+        if (firstPersonController != null && firstPersonController.enabled)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
     // Fade de entrada al Día 1
     // NOTA: No silenciamos el AudioManager aquí porque InicializadorAudio
     // todavía no arrancó la música — el fade de Día 1 ya ocurre "antes" de que
@@ -117,6 +132,10 @@ public class TransicionDia : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     IEnumerator IntroDia1CO()
     {
+        // Cursor bloqueado e invisible durante toda la intro
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         // Bloquear texto "Presiona E" durante toda la intro del Día 1
         SistemaDialogo.BloquearInteraccion = true;
 
@@ -140,7 +159,6 @@ public class TransicionDia : MonoBehaviour
         SistemaDialogo.BloquearInteraccion = false;
 
         // ── Aviso "Habla con SamuVR" — espera mientras dura el tutorial ──
-        // (el tutorial aparece ~3.8s después del fade y dura tiempoVisible seg)
         StartCoroutine(MostrarAvisoInicioDiaCO(0, delayAvisoDia1));
     }
 
@@ -153,6 +171,10 @@ public class TransicionDia : MonoBehaviour
     IEnumerator TransicionCO(int diaQueTermino)
     {
         int indiceSiguiente = diaQueTermino;
+
+        // Cursor bloqueado e invisible durante toda la transición
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         // Bloquear texto "Presiona E" durante toda la transición de día
         SistemaDialogo.BloquearInteraccion = true;
@@ -271,4 +293,3 @@ public class TransicionDia : MonoBehaviour
         panelNegro.color = c;
     }
 }
-
