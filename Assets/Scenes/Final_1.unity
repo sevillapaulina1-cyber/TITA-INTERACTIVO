@@ -2112,9 +2112,9 @@ MonoBehaviour:
   - Encuentro
   nombresDias:
   - "D\xEDa 1"
-  - "D\xEDa 6"
-  - "D\xEDa 17"
-  - "D\xEDa 82"
+  - "D\xEDa 7"
+  - "D\xEDa 18"
+  - "D\xEDa 115"
 --- !u!1 &1728957572
 GameObject:
   m_ObjectHideFlags: 0
@@ -2706,8 +2706,8 @@ MonoBehaviour:
   textoReflexion: {fileID: 640681465}
   canvasGroupReflexion: {fileID: 468093721}
   mensajesReflexion:
-  - Asi de facil los depredadores tienen acceso a tus hijos
-  - "Cuidalos, supervisa lo que juegan... \na veces las se\xF1ales no son obvias "
+  - "As\xED de fac\xEDl los depredadores tienen acceso a tus hijos"
+  - "Cu\xEDdalos, supervisa lo que juegan... \n\na veces las se\xF1ales no son obvias "
   duracionPorMensaje: 5
   duracionFadeReflexion: 0.8
   textoResumen: {fileID: 111067413}

@@ -104,6 +104,7 @@ public class SistemaDialogo : MonoBehaviour
     bool _puedeInteractuar = true;
     float _time = 0.05f;
     bool _avisoInicioMostrado = false;
+    bool _dialogoAbierto = false;  // true mientras talkPanel está visible
 
     // ─────────────────────────────────────────────────────────────────────
     /// <summary>
@@ -210,6 +211,7 @@ public class SistemaDialogo : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        _dialogoAbierto = true;
 
         talkPanel.SetActive(true);
         talkText.SetActive(true);
@@ -255,6 +257,7 @@ public class SistemaDialogo : MonoBehaviour
         talkPanel.SetActive(false);
         talkText.SetActive(false);
         subText.text = "";
+        _dialogoAbierto = false;
 
         // ── Animación de cámara (solo Momento 8) ──────────────────────────
         if (usarAnimacionMomento8 && animatorCamara != null)
@@ -313,11 +316,17 @@ public class SistemaDialogo : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     void OnApplicationFocus(bool tieneFoco)
     {
-        // Al volver a la ventana (Alt+Tab, Win, clic fuera…) mientras el jugador
-        // tiene el control (no hay diálogo abierto), re-bloquea el cursor.
         if (!tieneFoco) return;
-        if (_puedeInteractuar && firstPersonController != null && firstPersonController.enabled)
+
+        if (_dialogoAbierto)
         {
+            // Diálogo abierto → cursor debe seguir libre para hacer clic en opciones
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else if (_puedeInteractuar && firstPersonController != null && firstPersonController.enabled)
+        {
+            // Exploración normal → cursor bloqueado
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
