@@ -2551,7 +2551,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
-    m_FontSize: 20
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -2706,9 +2706,9 @@ MonoBehaviour:
   textoReflexion: {fileID: 640681465}
   canvasGroupReflexion: {fileID: 468093721}
   mensajesReflexion:
-  - "As\xED de fac\xEDl los depredadores tienen acceso a tus hijos"
-  - "Cu\xEDdalos, supervisa lo que juegan... \n\na veces las se\xF1ales no son obvias "
-  duracionPorMensaje: 5
+  - "AS\xCD DE F\xC1CIL LOS DEPREDADORES TIENEN ACCESO A TUS HIJOS"
+  - "CU\xCDDALOS, SUPERVISA LO QUE JUEGAN\n \nA VECES LAS SE\xD1ALES NO SON OBVIAS "
+  duracionPorMensaje: 4
   duracionFadeReflexion: 0.8
   textoResumen: {fileID: 111067413}
   textoConfianza: {fileID: 171824626}

@@ -281,7 +281,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -1488,7 +1488,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -2722,10 +2722,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -4294,8 +4294,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -220.85889, y: 0.00024414062}
-  m_SizeDelta: {x: 292.8828, y: 45.972}
+  m_AnchoredPosition: {x: -251.07428, y: 0.00036621094}
+  m_SizeDelta: {x: 353.3136, y: 64.628}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &228027470
 MonoBehaviour:
@@ -4319,11 +4319,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
-    m_FontSize: 40
+    m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
-    m_MaxSize: 40
+    m_MaxSize: 45
     m_Alignment: 5
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -13210,7 +13210,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -14556,7 +14556,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 137.8922}
+  m_SizeDelta: {x: 0, y: 184.9982}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &486378373
 MonoBehaviour:
@@ -14571,7 +14571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.044025064, g: 0.044025064, b: 0.044025064, a: 0.3529412}
+  m_Color: {r: 0.044025064, g: 0.044025064, b: 0.044025064, a: 0.6313726}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -20197,10 +20197,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -21169,7 +21169,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -21472,7 +21472,7 @@ MonoBehaviour:
   respuestaNPCChoice3: "Por eso siempre te veo conectado xd pero as\xED podemos jugar."
   recolectorPrevio: {fileID: 0}
   gestorZonasPrevio: {fileID: 0}
-  esInicioDeDia: 0
+  esInicioDeDia: 1
   textoAvisoInicioDia: Habla con SamuVR
   usarAnimacionMomento8: 0
   animatorCamara: {fileID: 0}
@@ -29069,7 +29069,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -30124,7 +30124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SonidoNPC
   fuenteVoz: {fileID: 878580066}
-  clipVozNPC: {fileID: 0}
+  clipVozNPC: {fileID: 8300000, guid: d9d7844a6c389da48ac752b6fcd8e6b7, type: 3}
   clipNotificacion: {fileID: 8300000, guid: a3fd526e2fc599a4eae7c4363480e5ce, type: 3}
   clipMensajeEnviado: {fileID: 0}
   intervaloVoz: 0.177
@@ -32072,7 +32072,7 @@ MonoBehaviour:
   duracionCompletado: 4
   sonidoMostrar: {fileID: 8300000, guid: 066782d977b15b640b0364288a913eff, type: 3}
   sonidoCompletar: {fileID: 8300000, guid: dde8e2f4b46aaf64a9d6e1548e9dec04, type: 3}
-  volumenUI: 0.3
+  volumenUI: 0.6
 --- !u!4 &967097074
 Transform:
   m_ObjectHideFlags: 0
@@ -32857,8 +32857,8 @@ MonoBehaviour:
   respNPC12_3: Dejame ver.
   pausaEntreMomentos: 1
   sonidoNPC: {fileID: 878580067}
-  fuenteAmbiente: {fileID: 0}
-  retrasoNotificacionAmbiental: 1.5
+  fuenteAmbiente: {fileID: 878580066}
+  retrasoNotificacionAmbiental: 1
   repeticionesNotificacion: 2
   intervaloRepeticion: 4
 --- !u!1 &982981254
@@ -33000,7 +33000,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -34551,7 +34551,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -43690,8 +43690,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 618, y: 0.000022888184}
-  m_SizeDelta: {x: 638.7501, y: 64.6277}
+  m_AnchoredPosition: {x: 910.3358, y: 0.00025177002}
+  m_SizeDelta: {x: 1135.7048, y: 64.6277}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1337897519
 MonoBehaviour:
@@ -43715,11 +43715,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
-    m_FontSize: 40
+    m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
-    m_MaxSize: 40
+    m_MaxSize: 45
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -43794,10 +43794,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -45097,7 +45097,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -54640,8 +54640,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 172.21957, y: 0}
-  m_SizeDelta: {x: 211.5717, y: 45.9725}
+  m_AnchoredPosition: {x: 204.46002, y: 0.0001373291}
+  m_SizeDelta: {x: 276.05, y: 64.628}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1651737193
 MonoBehaviour:
@@ -54665,11 +54665,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
-    m_FontSize: 40
+    m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
-    m_MaxSize: 40
+    m_MaxSize: 45
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -57734,7 +57734,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -62855,16 +62855,16 @@ RectTransform:
   m_GameObject: {fileID: 1771884716}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 845979178}
   m_Father: {fileID: 1667152568}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 19}
-  m_SizeDelta: {x: 104.9011, y: 72.3455}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1144.9011, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1771884718
 MonoBehaviour:
@@ -63092,7 +63092,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -64269,10 +64269,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -64301,7 +64301,7 @@ GameObject:
   - component: {fileID: 1854876069}
   - component: {fileID: 1854876071}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Audio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67106,7 +67106,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -72858,7 +72858,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
@@ -73657,7 +73657,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
     m_FontSize: 14
-    m_FontStyle: 1
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40

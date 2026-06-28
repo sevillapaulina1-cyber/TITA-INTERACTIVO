@@ -1108,9 +1108,9 @@ MonoBehaviour:
   textoReflexion: {fileID: 358343213}
   canvasGroupReflexion: {fileID: 1868286647}
   mensajesReflexion:
-  - "As\xED de fac\xEDl los depredadores tienen acceso a tus hijos"
-  - "Cu\xEDdalos, supervisa lo que juegan...\n \na veces las se\xF1ales no son obvias"
-  duracionPorMensaje: 5
+  - "AS\xCD DE F\xC1CIL LOS DEPREDADORES TIENEN ACCESO A TUS HIJOS"
+  - "CU\xCDDALOS, SUPERVISA LO QUE JUEGAN\n \nA VECES LAS SE\xD1ALES NO SON OBVIAS"
+  duracionPorMensaje: 4
   duracionFadeReflexion: 0.8
   textoResumen: {fileID: 305014305}
   textoConfianza: {fileID: 731561244}
@@ -1194,10 +1194,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1885decd6008edd4da8db4dd372cc696, type: 3}
-    m_FontSize: 20
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 2
+    m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -1205,7 +1205,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Reiniciar
+  m_Text: 'Salir
+
+'
 --- !u!222 &1049797771
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1499,7 +1501,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1049634088}
         m_TargetAssemblyTypeName: UIRetroalimentacion, Assembly-CSharp
         m_MethodName: ReiniciarExperiencia
         m_Mode: 1
