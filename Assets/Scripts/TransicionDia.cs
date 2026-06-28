@@ -13,6 +13,18 @@ public class TransicionDia : MonoBehaviour
     [Tooltip("4 NPCs duplicados. Índice 0 = Día 1, 1 = Día 2, etc.")]
     public GameObject[] npcsPorDia;
 
+    [Header("── Aviso \"Habla con SamuVR\" por día ─────")]
+    [Tooltip("SistemaDialogo del momento de inicio de cada día. " +
+             "Índice 0 = Día 1 (momento 1), 1 = Día 2 (momento 4), 2 = Día 3 (momento 7). " +
+             "El índice 3 (Día 4) puede dejarse vacío — no muestra aviso.")]
+    public SistemaDialogo[] dialogoInicioPorDia;
+    [Tooltip("Segundos de espera tras el fade del Día 1 antes de mostrar el aviso. " +
+             "Debe coincidir con el tiempo del tutorial (~20s). " +
+             "Si dejas el tutorial visible 15s y el fade es 0.6s, pon 16 aprox.")]
+    public float delayAvisoDia1 = 20f;
+    [Tooltip("Segundos de espera tras el fade de transición (días 2 y 3) antes de mostrar el aviso")]
+    public float delayAvisoTransicion = 2f;
+
     [Header("── Spawns del jugador (uno por día) ──────")]
     [Tooltip("4 GameObjects vacíos con la posición de inicio de cada día")]
     public Transform[] spawnsPorDia;
@@ -126,6 +138,10 @@ public class TransicionDia : MonoBehaviour
 
         // Desbloquear interacción al terminar la intro
         SistemaDialogo.BloquearInteraccion = false;
+
+        // ── Aviso "Habla con SamuVR" — espera mientras dura el tutorial ──
+        // (el tutorial aparece ~3.8s después del fade y dura tiempoVisible seg)
+        StartCoroutine(MostrarAvisoInicioDiaCO(0, delayAvisoDia1));
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -184,6 +200,34 @@ public class TransicionDia : MonoBehaviour
 
         // Desbloquear interacción al terminar la transición
         SistemaDialogo.BloquearInteraccion = false;
+
+        // ── Aviso "Habla con SamuVR" — solo días 2 y 3 (indiceSiguiente 1 y 2) ──
+        // indiceSiguiente 3 = Día 4 → no muestra aviso
+        if (indiceSiguiente < 3)
+            StartCoroutine(MostrarAvisoInicioDiaCO(indiceSiguiente, delayAvisoTransicion));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Espera 'delay' segundos y pide al SistemaDialogo de ese día
+    /// que muestre el aviso persistente "Habla con SamuVR".
+    /// indiceDia: 0 = Día 1, 1 = Día 2, 2 = Día 3 (el 3 no se llama).
+    /// </summary>
+    IEnumerator MostrarAvisoInicioDiaCO(int indiceDia, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (dialogoInicioPorDia != null &&
+            indiceDia >= 0 && indiceDia < dialogoInicioPorDia.Length &&
+            dialogoInicioPorDia[indiceDia] != null)
+        {
+            dialogoInicioPorDia[indiceDia].MostrarAvisoInicioDia();
+        }
+        else
+        {
+            Debug.LogWarning($"[TransicionDia] dialogoInicioPorDia[{indiceDia}] no está asignado. " +
+                             "Asigna el SistemaDialogo del momento de inicio de ese día en el Inspector.");
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────

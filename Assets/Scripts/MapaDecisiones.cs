@@ -2,393 +2,321 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Mapa CONCEPTUAL HORIZONTAL de decisiones para la pantalla de retroalimentación.
+/// Mapa de decisiones v3 — Layout COMPLETAMENTE HORIZONTAL.
 ///
-/// CAMBIOS v2:
-///   • La LEYENDA ya NO va dentro del ScrollRect/Contenedor.
-///     Se crea en un RectTransform fijo (leyendaRaiz) que debe ser hermano del
-///     ScrollRect dentro de PanelRetro, así no se mueve al hacer scroll.
-///   • Tamaños de tarjeta y separaciones reducidos para que quepan en pantalla.
-///   • Fuente más grande y legible para padres de familia.
-///   • Tarjeta final con mensaje del desenlace bien visible.
+/// PROBLEMA ANTERIOR: Las 3 tarjetas de cada día se apilaban verticalmente
+/// hacia abajo, haciendo el mapa altísimo e imposible de ver sin scroll vertical.
+///
+/// SOLUCIÓN v3: Las 3 decisiones de cada día se muestran en FILA HORIZONTAL.
+/// El hub del día queda arriba y sus 3 tarjetas se despliegan a continuación
+/// hacia abajo, pero las 3 al mismo nivel Y.
+///
+///   [Día 1]──────────────[Día 2]──────────────[Día 3]──────────────[Día 4]──[DESENLACE]
+///   [M1]  [M2]  [M3]     [M4]  [M5]  [M6]     [M7]  [M8]  [M9]   [M10][M11][M12]
 ///
 /// SETUP EN UNITY:
-///   Canvas
-///   └── PanelRetro
-///       ├── ZonaSuperior        (Puntos, título final, botón Reiniciar — NO es parte de este script)
-///       ├── LeyendaRaiz         ← RectTransform FIJO (esquina superior-derecha o inferior-izquierda)
-///       │                          Asígnalo al campo "leyendaRaiz" de este script.
-///       └── ScrollRect
-///           ├── Viewport
-///           └── Contenedor      ← Content del ScrollRect; asignarlo al campo "contenedor"
-///               └── MapaDecisionesGO  ← este script
-///
-///   ScrollRect: horizontal ✓ | vertical ✗
-///   Content Size Fitter en Contenedor: Horizontal = Preferred Size, Vertical = None
-///   Anchor/pivot del Contenedor: izquierda-centro, pivot (0, 0.5)
+///   - ScrollRect: horizontal ✓  |  vertical ✗
+///   - Contenedor (Content): pivot (0, 0.5), anchor left-stretch
+///   - Content Size Fitter en Contenedor: Horizontal = Preferred Size
+///   - La ALTURA del Contenedor debe ser FIJA (igual a la del Viewport)
+///   - LeyendaRaiz: RectTransform hermano del ScrollRect (FUERA de él)
 /// </summary>
 public class MapaDecisiones : MonoBehaviour
 {
-    // ── Contenedor (Content del ScrollRect) ──────────────────────────────
     [Header("── Contenedor (Content del ScrollRect) ──")]
-    [Tooltip("El RectTransform marcado como Content en el ScrollRect horizontal")]
     public RectTransform contenedor;
 
-    // ── Leyenda FIJA (fuera del ScrollRect) ──────────────────────────────
-    [Header("── Leyenda fija (FUERA del ScrollRect) ──")]
-    [Tooltip("RectTransform hermano del ScrollRect, dentro de PanelRetro. " +
-             "La leyenda se construye aquí y NO se mueve al hacer scroll.")]
+    [Header("── Leyenda fija (fuera del ScrollRect) ──")]
     public RectTransform leyendaRaiz;
 
-    // ── Prefabs ───────────────────────────────────────────────────────────
     [Header("── Prefabs ─────────────────────────────")]
-    public GameObject prefabNodo;   // Image (rectángulo redondeado) con Text hijo
-    public GameObject prefabLinea;  // Image como segmento de línea
+    public GameObject prefabNodo;
+    public GameObject prefabLinea;
 
-    // ── Colores ───────────────────────────────────────────────────────────
     [Header("── Colores ─────────────────────────────")]
     public Color colorVerde = new Color(0.11f, 0.73f, 0.33f);
     public Color colorRojo = new Color(0.85f, 0.15f, 0.15f);
-    public Color colorGris = new Color(0.55f, 0.55f, 0.55f);
-    public Color colorLinea = new Color(1f, 1f, 1f, 0.40f);
+    public Color colorGris = new Color(0.50f, 0.50f, 0.50f);
+    public Color colorLinea = new Color(1f, 1f, 1f, 0.35f);
     public Color colorDia = new Color(0.14f, 0.42f, 0.48f);
-    public Color colorFinal1 = new Color(0.11f, 0.73f, 0.33f); // Verde
-    public Color colorFinal2 = new Color(0.85f, 0.15f, 0.15f); // Rojo
 
-    // ── Layout horizontal ─────────────────────────────────────────────────
-    [Header("── Layout horizontal ───────────────────")]
-    [Tooltip("Distancia horizontal entre centros de día consecutivos")]
-    public float separacionEntreDias = 340f;
-    [Tooltip("Distancia vertical entre el hub de día y cada tarjeta de momento")]
-    public float separacionVerticalMomentos = 150f;
-    [Tooltip("Margen izquierdo antes del primer hub de día")]
-    public float margenIzquierdo = 120f;
-    [Tooltip("Grosor de las líneas conectoras")]
+    [Header("── Layout ───────────────────────────────")]
+    [Tooltip("Ancho de cada bloque de día (cubre sus 3 momentos en fila)")]
+    public float anchoBloquesDia = 420f;
+    [Tooltip("Espacio entre bloques de día")]
+    public float gapEntreBloques = 20f;
+    [Tooltip("Margen izquierdo")]
+    public float margenIzquierdo = 60f;
+    [Tooltip("Margen derecho después de la tarjeta final")]
+    public float margenDerecho = 60f;
+    [Tooltip("Posición Y del hub de día (positivo=arriba del centro del contenedor)")]
+    public float yHub = 85f;
+    [Tooltip("Posición Y de las tarjetas de momentos (negativo=abajo del centro)")]
+    public float yMomentos = -70f;
+    [Tooltip("Grosor de líneas")]
     public float grosorLinea = 3f;
 
-    // ── Tamaños de tarjetas ───────────────────────────────────────────────
-    [Header("── Tamaños de tarjetas ─────────────────")]
-    public float anchoHubDia = 110f;
-    public float altoHubDia = 55f;
-    public float anchoTarjeta = 185f;
-    public float altoTarjeta = 145f;
-    public float anchoTarjetaFinal = 240f;
-    public float altoTarjetaFinal = 200f;
+    [Header("── Tamaños ─────────────────────────────")]
+    public float anchoHub = 110f;
+    public float altoHub = 48f;
+    public float anchoTarjeta = 118f;
+    public float altoTarjeta = 120f;
+    public float anchoTarjetaFinal = 200f;
+    public float altoTarjetaFinal = 160f;
 
-    // ── Texto dentro de las tarjetas ──────────────────────────────────────
-    [Header("── Texto dentro de las tarjetas ─────────")]
-    [Tooltip("Muestra la opción exacta que eligió el jugador")]
-    public bool mostrarTextoEleccion = true;
-    [Tooltip("Padding interno de las tarjetas")]
-    public float paddingInternoTarjeta = 10f;
-    [Tooltip("Fracción de altura reservada para el título")]
+    [Header("── Texto ───────────────────────────────")]
+    public int fsHub = 13;
+    public int fsTitTarj = 11;
+    public int fsCpoTarj = 10;
+    public int fsTitFinal = 13;
+    public int fsCpoFinal = 11;
+    public float padTarjeta = 7f;
     [Range(0.2f, 0.5f)]
-    public float alturaRelativaTitulo = 0.30f;
-    [Tooltip("Separación extra entre título y cuerpo")]
-    [Range(0f, 0.1f)]
-    public float separacionTituloCuerpo = 0.04f;
-    public int tamanoFuenteHub = 15;
-    public int tamanoFuenteTitulo = 13;
-    public int tamanoFuenteEleccion = 11;
-    public int tamanoFuenteFinalTit = 14;
-    public int tamanoFuenteFinalCpo = 12;
-    public Color colorTitulo = Color.white;
-    public Color colorTextoEleccion = new Color(1f, 1f, 1f, 0.95f);
+    public float fraccionTitulo = 0.32f;
 
-    // ── Nombres ───────────────────────────────────────────────────────────
-    [Header("── Nombres de momentos ──────────────────")]
+    [Header("── Nombres ─────────────────────────────")]
     public string[] nombresMomentos = {
-        "Primer Contacto", "Juego",       "Volvemos a vernos",
+        "Primer Contacto", "Juego",       "Cierre",
         "Reencuentro",     "Emoción",     "Vínculo",
         "Rutina",          "Información", "Confianza",
         "Canal",           "Secreto",     "Encuentro"
     };
     public string[] nombresDias = { "Día 1", "Día 2", "Día 3", "Día 4" };
 
-    // ─────────────────────────────────────────────────────────────────────
     void Start()
     {
-        if (GameManager.Instance == null)
-        {
-            Debug.LogWarning("[MapaDecisiones] GameManager no encontrado.");
-            return;
-        }
+        if (GameManager.Instance == null) { Debug.LogWarning("[MapaDecisiones] No GameManager."); return; }
         GenerarMapa();
-        ConstruirLeyenda();   // ← leyenda fija, FUERA del ScrollRect
+        ConstruirLeyenda();
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     void GenerarMapa()
     {
         GameManager gm = GameManager.Instance;
-        TipoEleccion[] historial = gm.HistorialElecciones;
-        string[] textos = gm.HistorialTextos;
+        TipoEleccion[] his = gm.HistorialElecciones;
+        string[] txt = gm.HistorialTextos;
 
-        float yHub = 0f; // hub de cada día centrado en Y=0
+        float sepInterna = anchoBloquesDia / 3f; // ancho asignado a cada momento
 
         for (int d = 0; d < GameManager.TOTAL_DIAS; d++)
         {
-            float xDia = margenIzquierdo + d * separacionEntreDias;
+            float xBloqueCentro = margenIzquierdo
+                + d * (anchoBloquesDia + gapEntreBloques)
+                + anchoBloquesDia * 0.5f;
 
-            // ── Hub del día ────────────────────────────────────────────────
-            string nombreDia = (nombresDias != null && d < nombresDias.Length && !string.IsNullOrEmpty(nombresDias[d]))
-                ? nombresDias[d] : $"Día {d + 1}";
+            // Hub del día
+            string nomDia = (nombresDias != null && d < nombresDias.Length) ? nombresDias[d] : $"Día {d + 1}";
+            CrearTarjeta(new Vector2(xBloqueCentro, yHub),
+                anchoHub, altoHub, colorDia,
+                nomDia, null, fsHub, fsCpoTarj);
 
-            CrearTarjeta(new Vector2(xDia, yHub),
-                anchoHubDia, altoHubDia, colorDia,
-                nombreDia, null,
-                tamanoFuenteHub, tamanoFuenteEleccion);
-
-            // ── Línea entre hubs ───────────────────────────────────────────
+            // Línea entre hubs
             if (d > 0)
             {
-                float xPrev = margenIzquierdo + (d - 1) * separacionEntreDias;
-                CrearLinea(new Vector2(xPrev + anchoHubDia * 0.5f, yHub),
-                           new Vector2(xDia - anchoHubDia * 0.5f, yHub));
+                float xPrev = margenIzquierdo + (d - 1) * (anchoBloquesDia + gapEntreBloques) + anchoBloquesDia * 0.5f;
+                CrearLinea(new Vector2(xPrev + anchoHub * 0.5f, yHub),
+                           new Vector2(xBloqueCentro - anchoHub * 0.5f, yHub));
             }
 
-            // ── 3 tarjetas de momentos ramificadas hacia abajo ─────────────
+            // 3 tarjetas en fila horizontal
+            float xBloqueIzq = xBloqueCentro - anchoBloquesDia * 0.5f;
             for (int m = 0; m < GameManager.DECISIONES_POR_DIA; m++)
             {
                 int i = d * GameManager.DECISIONES_POR_DIA + m;
                 if (i >= GameManager.TOTAL_MOMENTOS) break;
 
-                float yMomento = yHub - altoHubDia * 0.5f - (m + 0.5f) * separacionVerticalMomentos;
-                Vector2 posMom = new Vector2(xDia, yMomento);
+                float xMom = xBloqueIzq + sepInterna * (m + 0.5f);
+                string nomMom = (nombresMomentos != null && i < nombresMomentos.Length) ? nombresMomentos[i] : $"M{i + 1}";
+                string textoEleg = (txt != null && i < txt.Length) ? txt[i] : "";
 
-                string nombreMom = (nombresMomentos != null && i < nombresMomentos.Length && !string.IsNullOrEmpty(nombresMomentos[i]))
-                    ? nombresMomentos[i] : $"Momento {i + 1}";
+                CrearTarjeta(new Vector2(xMom, yMomentos),
+                    anchoTarjeta, altoTarjeta,
+                    ColorSegunEleccion(his[i]),
+                    nomMom, textoEleg,
+                    fsTitTarj, fsCpoTarj);
 
-                string textoEleg = (textos != null && i < textos.Length) ? textos[i] : "";
-
-                CrearTarjeta(posMom, anchoTarjeta, altoTarjeta,
-                    ColorSegunEleccion(historial[i]),
-                    nombreMom,
-                    mostrarTextoEleccion ? textoEleg : null,
-                    tamanoFuenteTitulo, tamanoFuenteEleccion);
-
-                // Línea vertical desde hub hasta tarjeta
-                CrearLinea(new Vector2(xDia, yHub - altoHubDia * 0.5f),
-                           new Vector2(posMom.x, posMom.y + altoTarjeta * 0.5f));
+                // Línea desde hub hacia abajo hasta la tarjeta
+                CrearLinea(new Vector2(xMom, yHub - altoHub * 0.5f),
+                           new Vector2(xMom, yMomentos + altoTarjeta * 0.5f));
             }
         }
 
-        // ── Tarjeta final a la derecha ─────────────────────────────────────
-        float xFinal = margenIzquierdo + GameManager.TOTAL_DIAS * separacionEntreDias;
-        float xUltimoDia = margenIzquierdo + (GameManager.TOTAL_DIAS - 1) * separacionEntreDias;
-
-        CrearLinea(new Vector2(xUltimoDia + anchoHubDia * 0.5f, yHub),
+        // Tarjeta final
+        float xUltimoBloque = margenIzquierdo + (GameManager.TOTAL_DIAS - 1) * (anchoBloquesDia + gapEntreBloques) + anchoBloquesDia * 0.5f;
+        float xFinal = xUltimoBloque + anchoHub * 0.5f + gapEntreBloques + anchoTarjetaFinal * 0.5f;
+        CrearLinea(new Vector2(xUltimoBloque + anchoHub * 0.5f, yHub),
                    new Vector2(xFinal - anchoTarjetaFinal * 0.5f, yHub));
-
         CrearTarjetaFinal(new Vector2(xFinal, yHub));
 
-        // Ajustar ancho del Contenedor para que el ScrollRect funcione
-        float anchoTotal = xFinal + anchoTarjetaFinal * 0.5f + margenIzquierdo;
+        float anchoTotal = xFinal + anchoTarjetaFinal * 0.5f + margenDerecho;
         if (contenedor != null)
             contenedor.sizeDelta = new Vector2(anchoTotal, contenedor.sizeDelta.y);
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     void CrearTarjetaFinal(Vector2 pos)
     {
         GameManager gm = GameManager.Instance;
+        Color color = gm.EsFinal1 ? colorVerde : colorRojo;
         string titulo = gm.ObtenerTituloFinal();
-        string puntos = $"Confianza: {gm.PuntosConfianza} pts   Riesgo: {gm.PuntosRiesgo} pts";
-        string mensaje = gm.ObtenerMensajeFinal();
-        string cuerpo = $"{puntos}\n\n{mensaje}";
-        Color colorFondo = gm.EsFinal1 ? colorFinal1 : colorFinal2;
+        string cuerpo = $"Confianza: {gm.PuntosConfianza} pts\n"
+                        + $"Riesgo: {gm.PuntosRiesgo} pts\n\n"
+                        + gm.ObtenerMensajeFinal();
 
-        GameObject tarjeta = CrearTarjeta(pos,
-            anchoTarjetaFinal, altoTarjetaFinal,
-            colorFondo, titulo, cuerpo,
-            tamanoFuenteFinalTit, tamanoFuenteFinalCpo);
+        GameObject go = CrearTarjeta(pos, anchoTarjetaFinal, altoTarjetaFinal,
+            color, titulo, cuerpo, fsTitFinal, fsCpoFinal);
 
-        // Borde blanco para que destaque
-        Outline outline = tarjeta.AddComponent<Outline>();
-        outline.effectColor = new Color(1f, 1f, 1f, 0.8f);
-        outline.effectDistance = new Vector2(2f, -2f);
+        Outline ol = go.AddComponent<Outline>();
+        ol.effectColor = new Color(1f, 1f, 1f, 0.85f);
+        ol.effectDistance = new Vector2(2f, -2f);
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     GameObject CrearTarjeta(Vector2 pos, float ancho, float alto,
                              Color colorFondo, string titulo, string cuerpo,
-                             int fsTitulo, int fsCuerpo)
+                             int fsTit, int fsCpo)
     {
-        GameObject tarjeta = Instantiate(prefabNodo, contenedor);
-        RectTransform rt = tarjeta.GetComponent<RectTransform>();
+        GameObject go = Instantiate(prefabNodo, contenedor);
+        RectTransform rt = go.GetComponent<RectTransform>();
         rt.anchoredPosition = pos;
         rt.sizeDelta = new Vector2(ancho, alto);
 
-        Image img = tarjeta.GetComponent<Image>();
+        Image img = go.GetComponent<Image>();
         if (img != null) img.color = colorFondo;
 
-        // Desactivar el Text del prefab original
-        Text textoPrefab = tarjeta.GetComponentInChildren<Text>();
-        if (textoPrefab != null) textoPrefab.gameObject.SetActive(false);
+        Text tPrefab = go.GetComponentInChildren<Text>();
+        if (tPrefab != null) tPrefab.gameObject.SetActive(false);
 
         bool tieneCuerpo = !string.IsNullOrEmpty(cuerpo);
-
-        Vector2 anchorMinTitulo = tieneCuerpo
-            ? new Vector2(0f, 1f - alturaRelativaTitulo)
-            : Vector2.zero;
-
-        CrearTextoHijo(rt, "Titulo",
-            anchorMinTitulo, Vector2.one,
-            paddingInternoTarjeta, titulo,
-            fsTitulo, colorTitulo,
-            FontStyle.Bold, TextAnchor.MiddleCenter, false);
+        Vector2 aMinTit = tieneCuerpo ? new Vector2(0f, 1f - fraccionTitulo) : Vector2.zero;
+        AgregarTexto(rt, "Titulo", aMinTit, Vector2.one,
+            padTarjeta, titulo, fsTit, Color.white, FontStyle.Bold, TextAnchor.MiddleCenter, false);
 
         if (tieneCuerpo)
         {
-            float topCuerpo = 1f - alturaRelativaTitulo - separacionTituloCuerpo;
-            CrearTextoHijo(rt, "Cuerpo",
-                Vector2.zero, new Vector2(1f, topCuerpo),
-                paddingInternoTarjeta, cuerpo,
-                fsCuerpo, colorTextoEleccion,
-                FontStyle.Normal, TextAnchor.UpperCenter, true);
+            float topCpo = 1f - fraccionTitulo - 0.04f;
+            AgregarTexto(rt, "Cuerpo", Vector2.zero, new Vector2(1f, topCpo),
+                padTarjeta, cuerpo, fsCpo,
+                new Color(1f, 1f, 1f, 0.95f), FontStyle.Normal, TextAnchor.UpperCenter, true);
         }
-
-        return tarjeta;
+        return go;
     }
 
-    // ─────────────────────────────────────────────────────────────────────
-    void CrearTextoHijo(RectTransform padre, string nombre,
-                         Vector2 anchorMin, Vector2 anchorMax,
-                         float padding, string texto,
-                         int fontSize, Color color,
-                         FontStyle estilo, TextAnchor alineacion, bool wrap)
+    void AgregarTexto(RectTransform padre, string nombre,
+                      Vector2 aMin, Vector2 aMax,
+                      float pad, string texto, int fs, Color col,
+                      FontStyle estilo, TextAnchor align, bool wrap)
     {
         GameObject obj = new GameObject(nombre);
         obj.transform.SetParent(padre, false);
-
         RectTransform rt = obj.AddComponent<RectTransform>();
-        rt.anchorMin = anchorMin;
-        rt.anchorMax = anchorMax;
-        rt.offsetMin = new Vector2(padding, padding);
-        rt.offsetMax = new Vector2(-padding, -padding);
-
-        Text txt = obj.AddComponent<Text>();
-        txt.text = texto;
-        txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        txt.fontSize = fontSize;
-        txt.fontStyle = estilo;
-        txt.color = color;
-        txt.alignment = alineacion;
-        txt.horizontalOverflow = wrap ? HorizontalWrapMode.Wrap : HorizontalWrapMode.Overflow;
-        txt.verticalOverflow = VerticalWrapMode.Overflow;
+        rt.anchorMin = aMin; rt.anchorMax = aMax;
+        rt.offsetMin = new Vector2(pad, pad);
+        rt.offsetMax = new Vector2(-pad, -pad);
+        Text t = obj.AddComponent<Text>();
+        t.text = texto;
+        t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        t.fontSize = fs;
+        t.fontStyle = estilo;
+        t.color = col;
+        t.alignment = align;
+        t.horizontalOverflow = wrap ? HorizontalWrapMode.Wrap : HorizontalWrapMode.Overflow;
+        t.verticalOverflow = VerticalWrapMode.Overflow;
     }
 
-    // ─────────────────────────────────────────────────────────────────────
     void CrearLinea(Vector2 desde, Vector2 hasta)
     {
         if (prefabLinea == null) return;
-
-        GameObject linea = Instantiate(prefabLinea, contenedor);
-        RectTransform rt = linea.GetComponent<RectTransform>();
-
+        GameObject go = Instantiate(prefabLinea, contenedor);
+        RectTransform rt = go.GetComponent<RectTransform>();
         Vector2 dir = hasta - desde;
-        float distancia = dir.magnitude;
-        float angulo = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
+        float dist = dir.magnitude;
+        float ang = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         rt.anchoredPosition = desde + dir * 0.5f;
-        rt.sizeDelta = new Vector2(distancia, grosorLinea);
-        rt.localRotation = Quaternion.Euler(0, 0, angulo);
-
-        Image img = linea.GetComponent<Image>();
+        rt.sizeDelta = new Vector2(dist, grosorLinea);
+        rt.localRotation = Quaternion.Euler(0f, 0f, ang);
+        Image img = go.GetComponent<Image>();
         if (img != null) img.color = colorLinea;
-
-        linea.transform.SetAsFirstSibling(); // detrás de las tarjetas
+        go.transform.SetAsFirstSibling();
     }
 
-    // ═════════════════════════════════════════════════════════════════════
-    //  LEYENDA FIJA — se construye en leyendaRaiz, FUERA del ScrollRect
-    // ═════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════
+    //  LEYENDA FIJA
+    // ═══════════════════════════════════════════════════════════════════
     void ConstruirLeyenda()
     {
         if (leyendaRaiz == null)
         {
-            Debug.LogWarning("[MapaDecisiones] 'leyendaRaiz' no asignado. " +
-                             "La leyenda no se mostrará. " +
-                             "Crea un RectTransform hermano del ScrollRect y asígnalo.");
+            Debug.LogWarning("[MapaDecisiones] Asigna 'leyendaRaiz' (RectTransform fuera del ScrollRect).");
             return;
         }
 
-        // Datos de la leyenda
-        string[] etiquetas = {
-            "Decisión de confianza (verde)",
-            "Decisión neutra (gris)",
-            "Decisión riesgosa (roja)"
-        };
+        foreach (Transform h in leyendaRaiz) Destroy(h.gameObject);
+
+        string[] etiquetas = { "Decisión de confianza", "Decisión neutra", "Decisión riesgosa" };
         Color[] colores = { colorVerde, colorGris, colorRojo };
 
-        float alturaFila = 28f;
-        float cuadrado = 18f;
-        float margenX = 12f;
-        float margenY = 12f;
+        float cuad = 16f;
+        float filH = 24f;
+        float padX = 10f;
+        float padY = 8f;
+        float titH = 20f;
+        float totalH = padY + titH + 6f + etiquetas.Length * (filH + 4f) + padY;
+        leyendaRaiz.sizeDelta = new Vector2(leyendaRaiz.sizeDelta.x, totalH);
 
-        // Fondo semitransparente para la leyenda
-        GameObject fondo = new GameObject("LeyendaFondo");
-        fondo.transform.SetParent(leyendaRaiz, false);
-        RectTransform rtFondo = fondo.AddComponent<RectTransform>();
-        rtFondo.anchorMin = Vector2.zero;
-        rtFondo.anchorMax = Vector2.one;
-        rtFondo.offsetMin = Vector2.zero;
-        rtFondo.offsetMax = Vector2.zero;
-        Image imgFondo = fondo.AddComponent<Image>();
-        imgFondo.color = new Color(0f, 0f, 0f, 0.55f);
+        // Fondo
+        GameObject bg = new GameObject("Fondo");
+        bg.transform.SetParent(leyendaRaiz, false);
+        RectTransform rtBg = bg.AddComponent<RectTransform>();
+        rtBg.anchorMin = Vector2.zero; rtBg.anchorMax = Vector2.one;
+        rtBg.offsetMin = Vector2.zero; rtBg.offsetMax = Vector2.zero;
+        bg.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.65f);
 
-        // Título de la leyenda
-        GameObject tituloObj = new GameObject("LeyendaTitulo");
-        tituloObj.transform.SetParent(leyendaRaiz, false);
-        RectTransform rtTit = tituloObj.AddComponent<RectTransform>();
-        rtTit.anchorMin = new Vector2(0f, 1f);
-        rtTit.anchorMax = new Vector2(1f, 1f);
-        rtTit.pivot = new Vector2(0f, 1f);
-        rtTit.anchoredPosition = new Vector2(margenX, -margenY);
-        rtTit.sizeDelta = new Vector2(-margenX * 2f, alturaFila);
-        Text txtTit = tituloObj.AddComponent<Text>();
-        txtTit.text = "Tipos de decisión:";
-        txtTit.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        txtTit.fontSize = 15;
-        txtTit.fontStyle = FontStyle.Bold;
-        txtTit.color = Color.white;
-        txtTit.alignment = TextAnchor.MiddleLeft;
+        // Título
+        float yNow = -padY;
+        TexEn(leyendaRaiz, "Tit", new Vector2(padX, yNow), new Vector2(200f, titH),
+              "Tipos de decisión:", 14, FontStyle.Bold, Color.white);
+        yNow -= (titH + 6f);
 
-        // Filas de la leyenda
         for (int i = 0; i < etiquetas.Length; i++)
         {
-            float yOffset = -margenY - alturaFila - (i * (alturaFila + 4f));
-
-            // Cuadrado de color
-            GameObject sq = new GameObject($"LeyendaSq{i}");
+            GameObject sq = new GameObject($"Sq{i}");
             sq.transform.SetParent(leyendaRaiz, false);
             RectTransform rtSq = sq.AddComponent<RectTransform>();
-            rtSq.anchorMin = new Vector2(0f, 1f);
-            rtSq.anchorMax = new Vector2(0f, 1f);
-            rtSq.pivot = new Vector2(0f, 1f);
-            rtSq.anchoredPosition = new Vector2(margenX, yOffset);
-            rtSq.sizeDelta = new Vector2(cuadrado, cuadrado);
+            rtSq.anchorMin = new Vector2(0, 1); rtSq.anchorMax = new Vector2(0, 1);
+            rtSq.pivot = new Vector2(0, 1);
+            rtSq.anchoredPosition = new Vector2(padX, yNow);
+            rtSq.sizeDelta = new Vector2(cuad, cuad);
             sq.AddComponent<Image>().color = colores[i];
 
-            // Etiqueta de texto
-            GameObject lbl = new GameObject($"LeyendaLbl{i}");
-            lbl.transform.SetParent(leyendaRaiz, false);
-            RectTransform rtLbl = lbl.AddComponent<RectTransform>();
-            rtLbl.anchorMin = new Vector2(0f, 1f);
-            rtLbl.anchorMax = new Vector2(1f, 1f);
-            rtLbl.pivot = new Vector2(0f, 1f);
-            rtLbl.anchoredPosition = new Vector2(margenX + cuadrado + 8f, yOffset + 2f);
-            rtLbl.sizeDelta = new Vector2(-(margenX * 2f + cuadrado + 8f), cuadrado + 2f);
-            Text txtLbl = lbl.AddComponent<Text>();
-            txtLbl.text = etiquetas[i];
-            txtLbl.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            txtLbl.fontSize = 14;
-            txtLbl.color = Color.white;
-            txtLbl.alignment = TextAnchor.MiddleLeft;
+            TexEn(leyendaRaiz, $"Lbl{i}",
+                  new Vector2(padX + cuad + 6f, yNow + 1f),
+                  new Vector2(190f, cuad + 2f),
+                  etiquetas[i], 13, FontStyle.Normal, Color.white);
+
+            yNow -= (filH + 4f);
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────
+    void TexEn(RectTransform padre, string nom, Vector2 pos, Vector2 tam,
+               string texto, int fs, FontStyle estilo, Color col)
+    {
+        GameObject obj = new GameObject(nom);
+        obj.transform.SetParent(padre, false);
+        RectTransform rt = obj.AddComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0, 1); rt.anchorMax = new Vector2(0, 1);
+        rt.pivot = new Vector2(0, 1);
+        rt.anchoredPosition = pos;
+        rt.sizeDelta = tam;
+        Text t = obj.AddComponent<Text>();
+        t.text = texto;
+        t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        t.fontSize = fs;
+        t.fontStyle = estilo;
+        t.color = col;
+        t.alignment = TextAnchor.MiddleLeft;
+        t.horizontalOverflow = HorizontalWrapMode.Wrap;
+        t.verticalOverflow = VerticalWrapMode.Overflow;
+    }
+
     Color ColorSegunEleccion(TipoEleccion tipo)
     {
         switch (tipo)

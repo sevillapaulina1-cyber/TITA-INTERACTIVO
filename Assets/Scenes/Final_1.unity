@@ -998,8 +998,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -123.49, y: 219.03398}
-  m_SizeDelta: {x: 2156.1, y: 1343.4879}
+  m_AnchoredPosition: {x: -339, y: 234}
+  m_SizeDelta: {x: 3021.7407, y: 1343.4879}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &728181306
 MonoBehaviour:
@@ -2077,29 +2077,26 @@ MonoBehaviour:
   colorGris: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   colorLinea: {r: 1, g: 1, b: 1, a: 0.3}
   colorDia: {r: 0.14, g: 0.42, b: 0.48, a: 1}
-  colorFinal1: {r: 0.11, g: 0.73, b: 0.33, a: 1}
-  colorFinal2: {r: 0.85, g: 0.15, b: 0.15, a: 1}
-  separacionEntreDias: 580
-  separacionVerticalMomentos: 180
+  anchoBloquesDia: 420
+  gapEntreBloques: 20
   margenIzquierdo: 140
+  margenDerecho: 60
+  yHub: 85
+  yMomentos: -70
   grosorLinea: 4
-  anchoHubDia: 120
-  altoHubDia: 80
+  anchoHub: 110
+  altoHub: 48
   anchoTarjeta: 230
   altoTarjeta: 170
   anchoTarjetaFinal: 360
   altoTarjetaFinal: 230
-  mostrarTextoEleccion: 1
-  paddingInternoTarjeta: 15
-  alturaRelativaTitulo: 0.3
-  separacionTituloCuerpo: 0.06
-  tamanoFuenteHub: 15
-  tamanoFuenteTitulo: 17
-  tamanoFuenteEleccion: 11
-  tamanoFuenteFinalTit: 14
-  tamanoFuenteFinalCpo: 12
-  colorTitulo: {r: 1, g: 1, b: 1, a: 1}
-  colorTextoEleccion: {r: 1, g: 1, b: 1, a: 0.85}
+  fsHub: 13
+  fsTitTarj: 11
+  fsCpoTarj: 10
+  fsTitFinal: 13
+  fsCpoFinal: 11
+  padTarjeta: 7
+  fraccionTitulo: 0.32
   nombresMomentos:
   - Primer Contacto
   - Juego
