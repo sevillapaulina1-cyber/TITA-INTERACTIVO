@@ -33,6 +33,8 @@ public class MapaDecisiones : MonoBehaviour
     [Header("── Referencias ────────────────────────")]
     [Tooltip("Content del ScrollRect")]
     public RectTransform contenedor;
+    [Tooltip("El ScrollRect que contiene el mapa — se usa para centrar cuando el contenido es más angosto que la pantalla")]
+    public ScrollRect scrollRect;
     [Tooltip("RectTransform FUERA del ScrollRect (hermano de él dentro de PanelRetro)")]
     public RectTransform leyendaRaiz;
     public GameObject prefabNodo;
@@ -49,38 +51,38 @@ public class MapaDecisiones : MonoBehaviour
     // ── Layout ────────────────────────────────────────────────────────────
     [Header("── Layout ───────────────────────────────")]
     [Tooltip("Ancho de cada columna de día (hub + 3 momentos)")]
-    public float anchoColumna = 170f;
+    public float anchoColumna = 230f;
     [Tooltip("Espacio entre columnas de días")]
-    public float gapColumnas = 50f;
+    public float gapColumnas = 60f;
     [Tooltip("Margen izquierdo antes del primer día")]
     public float margenIzquierdo = 60f;
     [Tooltip("Margen derecho después de la tarjeta de desenlace")]
     public float margenDerecho = 60f;
     [Tooltip("Y del centro del hub de día desde el centro del contenedor (positivo = arriba)")]
-    public float yHub = 120f;
+    public float yHub = 150f;
     [Tooltip("Espacio vertical entre la base del hub y la cima del primer momento")]
-    public float gapHubMomentos = 18f;
+    public float gapHubMomentos = 22f;
     [Tooltip("Espacio vertical entre tarjetas de momento consecutivas")]
-    public float gapEntreMomentos = 12f;
+    public float gapEntreMomentos = 14f;
     public float grosorLinea = 3f;
 
     // ── Tamaños de tarjetas ───────────────────────────────────────────────
     [Header("── Tamaños ─────────────────────────────")]
-    public float anchoHub = 130f;
-    public float altoHub = 46f;
-    public float anchoMomento = 145f;
-    public float altoMomento = 100f;
-    public float anchoDesenlace = 190f;
-    public float altoDesenlace = 170f;
+    public float anchoHub = 170f;
+    public float altoHub = 56f;
+    public float anchoMomento = 190f;
+    public float altoMomento = 120f;
+    public float anchoDesenlace = 240f;
+    public float altoDesenlace = 200f;
 
     // ── Texto ─────────────────────────────────────────────────────────────
     [Header("── Texto ───────────────────────────────")]
-    public int fsHub = 14;
-    public int fsTitMom = 12;
-    public int fsCpoMom = 10;
-    public int fsTitDes = 13;
-    public int fsCpoDes = 11;
-    public float padTarjeta = 7f;
+    public int fsHub = 16;
+    public int fsTitMom = 14;
+    public int fsCpoMom = 12;
+    public int fsTitDes = 15;
+    public int fsCpoDes = 13;
+    public float padTarjeta = 8f;
     [Range(0.2f, 0.45f)]
     public float fraccionTitulo = 0.30f;
 
@@ -100,16 +102,50 @@ public class MapaDecisiones : MonoBehaviour
             return;
         }
 
-        // Forzar pivot del Contenedor por código para evitar problemas de setup
+        // Buscar ScrollRect automáticamente si no está asignado
+        if (scrollRect == null && contenedor != null)
+            scrollRect = contenedor.GetComponentInParent<ScrollRect>();
+
+        // Configurar el Contenedor para scroll horizontal correcto
         if (contenedor != null)
         {
             contenedor.pivot = new Vector2(0f, 0.5f);
             contenedor.anchorMin = new Vector2(0f, 0f);
             contenedor.anchorMax = new Vector2(0f, 1f);
+            contenedor.offsetMin = Vector2.zero;
+            contenedor.offsetMax = Vector2.zero;
         }
 
         GenerarMapa();
         ConstruirLeyenda();
+
+        // Centrar el mapa si cabe dentro del Viewport
+        StartCoroutine(CentrarSiCabeCO());
+    }
+
+    System.Collections.IEnumerator CentrarSiCabeCO()
+    {
+        // Esperar un frame para que Unity actualice los RectTransforms
+        yield return null;
+
+        if (contenedor == null || scrollRect == null) yield break;
+
+        float anchoViewport = scrollRect.viewport != null
+            ? scrollRect.viewport.rect.width
+            : ((RectTransform)scrollRect.transform).rect.width;
+        float anchoContenido = contenedor.sizeDelta.x;
+
+        if (anchoContenido < anchoViewport)
+        {
+            // El contenido cabe: centrarlo desplazando el margen izquierdo
+            float offset = (anchoViewport - anchoContenido) * 0.5f;
+            contenedor.anchoredPosition = new Vector2(offset, contenedor.anchoredPosition.y);
+        }
+        else
+        {
+            // El contenido no cabe: empezar desde la izquierda
+            contenedor.anchoredPosition = new Vector2(0f, contenedor.anchoredPosition.y);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -399,4 +435,3 @@ public class MapaDecisiones : MonoBehaviour
         }
     }
 }
-

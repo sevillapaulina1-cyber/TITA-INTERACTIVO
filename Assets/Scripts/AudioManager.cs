@@ -86,7 +86,6 @@ public class AudioManager : MonoBehaviour
     bool _musicaActiva = false;  // true solo en la escena de juego
     bool _modoRetro = false;  // true en escenas de final
     bool _enAnimacionM8 = false;  // true durante el paneo del M8
-    bool _modoMenu = false;  // true en MenuInicio
     Coroutine _coroutineCross;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -160,7 +159,6 @@ public class AudioManager : MonoBehaviour
         _enTension = false;
         _silenciado = false;
         _modoRetro = false;
-        _modoMenu = false;
         _musicaActiva = true;
         _enAnimacionM8 = false;
 
@@ -186,8 +184,6 @@ public class AudioManager : MonoBehaviour
     public void IniciarMusicaMenu()
     {
         if (fuenteMusica == null || musicaMenu == null) return;
-
-        _modoMenu = true;
         _musicaActiva = false;
         _modoRetro = false;
         _enTension = false;
@@ -207,7 +203,6 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     public void DetenerMusicaMenu(float duracion = 0.8f)
     {
-        _modoMenu = false;
         if (_coroutineCross != null) { StopCoroutine(_coroutineCross); _coroutineCross = null; }
         StartCoroutine(FadeVolumenCO(fuenteMusica, fuenteMusica != null ? fuenteMusica.volume : 0f, 0f, duracion));
         StartCoroutine(FadeVolumenCO(fuenteCrossfade, fuenteCrossfade != null ? fuenteCrossfade.volume : 0f, 0f, duracion));
