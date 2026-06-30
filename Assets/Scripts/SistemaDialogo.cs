@@ -161,10 +161,12 @@ public class SistemaDialogo : MonoBehaviour
         {
             if (hit.collider.CompareTag("Npc"))
             {
+                // Suprimir el texto de interacción mientras hay una misión activa
+                // (recoger monedas, pisar zonas) para no confundir al jugador
                 if (interactionText != null)
-                    interactionText.text = "Presiona E para hablar";
+                    interactionText.text = UIObjetivo.MisionActiva ? "" : "Presiona E para hablar";
 
-                if (Keyboard.current.eKey.wasPressedThisFrame)
+                if (Keyboard.current.eKey.wasPressedThisFrame && !UIObjetivo.MisionActiva)
                 {
                     if (recolectorPrevio != null && recolectorPrevio.TareaPendiente())
                     {

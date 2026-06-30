@@ -998,8 +998,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -452.67, y: 49}
-  m_SizeDelta: {x: 2361.8237, y: 1373.9337}
+  m_AnchoredPosition: {x: -618.65466, y: -51.045494}
+  m_SizeDelta: {x: 2679.1848, y: 1574.0248}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &728181306
 MonoBehaviour:
@@ -2069,6 +2069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapaDecisiones
   contenedor: {fileID: 803646176}
+  scrollRect: {fileID: 0}
   leyendaRaiz: {fileID: 1784253080}
   prefabNodo: {fileID: 1421944718819925647, guid: 4b3d2a89f59576243a8308cc68f541ef, type: 3}
   prefabLinea: {fileID: 4884809417539377438, guid: 71510939207b5134882b4489095402ff, type: 3}

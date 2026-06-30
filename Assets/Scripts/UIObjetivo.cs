@@ -43,6 +43,14 @@ public class UIObjetivo : MonoBehaviour
 {
     public static UIObjetivo Instance { get; private set; }
 
+    /// <summary>
+    /// True mientras hay una misión de puzzle activa (recoger monedas, pisar zonas).
+    /// SistemaDialogo lo consulta para suprimir el texto "Presiona E para hablar".
+    /// Se activa en MostrarObjetivo() y se desactiva en OcultarObjetivo() y al
+    /// mostrar el objetivo persistente de "Vuelve a hablar con SamuVR".
+    /// </summary>
+    public static bool MisionActiva { get; private set; } = false;
+
     [Header("── Panel esquina (objetivo) ─────────────")]
     public GameObject panelObjetivo;
     public CanvasGroup canvasGroup;
@@ -98,6 +106,7 @@ public class UIObjetivo : MonoBehaviour
     public void MostrarObjetivo(string descripcion, int actual, int total)
     {
         StopAllCoroutines();
+        MisionActiva = true;   // ← puzzle en curso, suprimir "Presiona E"
 
         if (textoMision != null) textoMision.text = descripcion;
         if (textoProgreso != null) textoProgreso.text = FormatearProgreso(actual, total);
@@ -186,6 +195,7 @@ public class UIObjetivo : MonoBehaviour
     public void MostrarObjetivoPersistente(string mensaje)
     {
         StopAllCoroutines();
+        MisionActiva = false;   // ← misión completada, ya puede presionar E
 
         if (textoMision != null) textoMision.text = mensaje;
         if (textoProgreso != null) textoProgreso.text = "";
@@ -200,6 +210,7 @@ public class UIObjetivo : MonoBehaviour
     public void OcultarObjetivo()
     {
         StopAllCoroutines();
+        MisionActiva = false;
         StartCoroutine(OcultarCO());
     }
 
