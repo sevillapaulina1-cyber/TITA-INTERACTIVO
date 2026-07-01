@@ -31938,7 +31938,7 @@ MonoBehaviour:
   panelOpciones: {fileID: 1989122601}
   prefabBurbujaNPC: {fileID: 7550904496664526930, guid: 2bc007b16b8e3f949ae965ea4d34af3d, type: 3}
   prefabBurbujaJugador: {fileID: 7550904496664526930, guid: 15143605e2bc51442bb349166ec1bb29, type: 3}
-  anchoBurbujaFijo: 900
+  anchoBurbujaFijo: 700
   boton1: {fileID: 186607545}
   boton2: {fileID: 2136245737}
   boton3: {fileID: 1801841466}
