@@ -6014,7 +6014,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 383, y: 16}
+  m_SizeDelta: {x: 400, y: 16}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &328924035
 MonoBehaviour:
@@ -28372,7 +28372,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: -17}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &833302235
 MonoBehaviour:
@@ -31967,7 +31967,7 @@ MonoBehaviour:
   pausaEntreMomentos: 1
   sonidoNPC: {fileID: 878580067}
   fuenteAmbiente: {fileID: 878580066}
-  retrasoNotificacionAmbiental: 1
+  retrasoNotificacionAmbiental: 0.5
   repeticionesNotificacion: 2
   intervaloRepeticion: 4
 --- !u!1 &987001427

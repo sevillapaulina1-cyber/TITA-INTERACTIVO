@@ -2063,7 +2063,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapaDecisiones
   contenedor: {fileID: 956326727}
-  scrollRect: {fileID: 0}
+  scrollRect: {fileID: 1253365609}
   leyendaRaiz: {fileID: 168722497}
   prefabNodo: {fileID: 1421944718819925647, guid: 4b3d2a89f59576243a8308cc68f541ef, type: 3}
   prefabLinea: {fileID: 4884809417539377438, guid: 71510939207b5134882b4489095402ff, type: 3}
@@ -2076,7 +2076,6 @@ MonoBehaviour:
   gapColumnas: 50
   margenIzquierdo: 140
   margenDerecho: 60
-  yHub: 85
   gapHubMomentos: 18
   gapEntreMomentos: 12
   grosorLinea: 4
@@ -2532,7 +2531,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 447499724}
   m_HandleRect: {fileID: 447499723}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
