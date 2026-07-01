@@ -13842,7 +13842,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -144, y: -355}
+  m_AnchoredPosition: {x: 350, y: -334}
   m_SizeDelta: {x: 483.5397, y: 69.132}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &479448145
@@ -30830,7 +30830,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -832, y: -355}
+  m_AnchoredPosition: {x: -354, y: -334}
   m_SizeDelta: {x: 432.3155, y: 69.1338}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &949707395
@@ -31938,6 +31938,7 @@ MonoBehaviour:
   panelOpciones: {fileID: 1989122601}
   prefabBurbujaNPC: {fileID: 7550904496664526930, guid: 2bc007b16b8e3f949ae965ea4d34af3d, type: 3}
   prefabBurbujaJugador: {fileID: 7550904496664526930, guid: 15143605e2bc51442bb349166ec1bb29, type: 3}
+  anchoBurbujaFijo: 900
   boton1: {fileID: 186607545}
   boton2: {fileID: 2136245737}
   boton3: {fileID: 1801841466}
@@ -40311,8 +40312,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 540, y: -25.00003}
-  m_SizeDelta: {x: -1329.4711, y: -430.5739}
+  m_AnchoredPosition: {x: 19, y: -49}
+  m_SizeDelta: {x: -367.1959, y: -309.0676}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1242752209
 GameObject:
@@ -54009,7 +54010,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!224 &1690341331
 RectTransform:
@@ -71047,7 +71048,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2131512093}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

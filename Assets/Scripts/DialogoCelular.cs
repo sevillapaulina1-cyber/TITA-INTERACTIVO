@@ -30,6 +30,11 @@ public class DialogoCelular : MonoBehaviour
     public GameObject prefabBurbujaNPC;
     public GameObject prefabBurbujaJugador;
 
+    [Header("── Tamaño de burbujas ──────────────────")]
+    [Tooltip("Ancho fijo (en píxeles) que tendrán TODAS las burbujas, sin importar el largo del texto. " +
+             "El texto hará salto de línea (wrap) dentro de este ancho.")]
+    public float anchoBurbujaFijo = 900f;
+
     [Header("── Botones ─────────────────────────────")]
     public Button boton1;
     public Button boton2;
@@ -334,6 +339,7 @@ public class DialogoCelular : MonoBehaviour
         GameObject burbuja = Instantiate(prefabBurbujaNPC, contenedorMensajes);
         Text textoUI = burbuja.GetComponentInChildren<Text>();
         if (textoUI == null) yield break;
+        AjustarAnchoBurbuja(burbuja, textoUI);
         textoUI.text = "";
         yield return new WaitForSeconds(0.15f);
 
@@ -354,10 +360,61 @@ public class DialogoCelular : MonoBehaviour
         if (prefabBurbujaJugador == null || contenedorMensajes == null) yield break;
         GameObject burbuja = Instantiate(prefabBurbujaJugador, contenedorMensajes);
         Text textoUI = burbuja.GetComponentInChildren<Text>();
-        if (textoUI != null) textoUI.text = mensaje;
+        if (textoUI != null)
+        {
+            AjustarAnchoBurbuja(burbuja, textoUI);
+            textoUI.text = mensaje;
+        }
         ScrollAlFinal();
         yield return new WaitForSeconds(0.1f);
         ScrollAlFinal();
+    }
+
+    /// <summary>
+    /// Fuerza que la burbuja tenga siempre el mismo ancho (anchoBurbujaFijo),
+    /// sin importar cuánto texto contenga. El texto hace salto de línea (wrap)
+    /// dentro de ese ancho, y la burbuja crece solo en altura (vertical).
+    /// </summary>
+    void AjustarAnchoBurbuja(GameObject burbuja, Text textoUI)
+    {
+        // Activar wrap horizontal en el texto para que no se salga del ancho fijo
+        textoUI.horizontalOverflow = HorizontalWrapMode.Wrap;
+        textoUI.verticalOverflow = VerticalWrapMode.Overflow;
+
+        // Si el prefab tiene un ContentSizeFitter, dejar que solo la altura
+        // se ajuste al contenido — el ancho queda fijo/manual
+        ContentSizeFitter fitterBurbuja = burbuja.GetComponent<ContentSizeFitter>();
+        if (fitterBurbuja != null)
+            fitterBurbuja.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+        ContentSizeFitter fitterTexto = textoUI.GetComponent<ContentSizeFitter>();
+        if (fitterTexto != null)
+            fitterTexto.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+        // Si hay un LayoutElement en la burbuja, fijar su ancho preferido
+        LayoutElement layoutBurbuja = burbuja.GetComponent<LayoutElement>();
+        if (layoutBurbuja == null) layoutBurbuja = burbuja.AddComponent<LayoutElement>();
+        layoutBurbuja.preferredWidth = anchoBurbujaFijo;
+        layoutBurbuja.flexibleWidth = 0f;
+
+        // Fijar el ancho directo del RectTransform de la burbuja (por si no usa LayoutElement)
+        RectTransform rectBurbuja = burbuja.GetComponent<RectTransform>();
+        if (rectBurbuja != null)
+        {
+            Vector2 size = rectBurbuja.sizeDelta;
+            size.x = anchoBurbujaFijo;
+            rectBurbuja.sizeDelta = size;
+        }
+
+        // También fijar el ancho del RectTransform del texto para que el wrap
+        // se calcule sobre el ancho correcto (dejando margen para padding)
+        RectTransform rectTexto = textoUI.GetComponent<RectTransform>();
+        if (rectTexto != null && rectTexto != rectBurbuja)
+        {
+            Vector2 sizeTexto = rectTexto.sizeDelta;
+            sizeTexto.x = anchoBurbujaFijo - 40f; // ajustá el -40 según el padding de tu burbuja
+            rectTexto.sizeDelta = sizeTexto;
+        }
     }
 
     void ScrollAlFinal()

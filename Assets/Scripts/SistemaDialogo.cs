@@ -372,7 +372,13 @@ public class SistemaDialogo : MonoBehaviour
 
     IEnumerator PresionarMouse()
     {
-        while (!Mouse.current.leftButton.wasPressedThisFrame)
+        while (true)
+        {
+            bool click = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+            bool teclaE = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
+            bool espacio = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+            if (click || teclaE || espacio) yield break;
             yield return null;
+        }
     }
 }
