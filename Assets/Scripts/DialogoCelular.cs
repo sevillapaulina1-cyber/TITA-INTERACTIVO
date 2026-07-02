@@ -113,14 +113,14 @@ public class DialogoCelular : MonoBehaviour
     Coroutine _coroutineAmbiental; // notificación ambiental antes de abrir el chat
 
     // ─────────────────────────────────────────────────────────────────────
-    void OnApplicationFocus(bool tieneFoco)
+    void OnDisable()
     {
-        // Al volver a la ventana mientras el chat está abierto,
-        // forzar el cursor a libre para que el jugador pueda hacer clic.
-        if (tieneFoco && _chatAbierto)
+        // Red de seguridad: si este script se desactiva a mitad del chat
+        // (cambio de escena, error, etc.) no debe dejar el pedido de cursor trabado.
+        if (_chatAbierto)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            _chatAbierto = false;
+            GestorCursor.Liberar(this);
         }
     }
 
@@ -175,6 +175,8 @@ public class DialogoCelular : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     void Update()
     {
+        if (_chatAbierto) return; // GestorCursor ya mantiene el cursor libre mientras el chat esté abierto
+
         if (!_puedeInteractuar) return;
         if (GameManager.Instance == null) return;
         if (GameManager.Instance.MomentoActual + 1 != momentoIndex) return;
@@ -214,8 +216,7 @@ public class DialogoCelular : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        GestorCursor.PedirLibre(this);
         _chatAbierto = true;
 
         LimpiarMensajes();
@@ -310,6 +311,7 @@ public class DialogoCelular : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         _chatAbierto = false;
+        GestorCursor.Liberar(this);
         if (panelCelular != null) panelCelular.SetActive(false);
 
         GameManager.Instance.RegistrarEleccion(tipo);

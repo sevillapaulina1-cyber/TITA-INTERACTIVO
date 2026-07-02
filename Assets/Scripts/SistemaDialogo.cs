@@ -104,7 +104,6 @@ public class SistemaDialogo : MonoBehaviour
     bool _puedeInteractuar = true;
     float _time = 0.05f;
     bool _avisoInicioMostrado = false;
-    bool _dialogoAbierto = false;  // true mientras talkPanel está visible
 
     // ─────────────────────────────────────────────────────────────────────
     /// <summary>
@@ -211,9 +210,7 @@ public class SistemaDialogo : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        _dialogoAbierto = true;
+        GestorCursor.PedirLibre(this);
 
         talkPanel.SetActive(true);
         talkText.SetActive(true);
@@ -259,7 +256,7 @@ public class SistemaDialogo : MonoBehaviour
         talkPanel.SetActive(false);
         talkText.SetActive(false);
         subText.text = "";
-        _dialogoAbierto = false;
+        GestorCursor.Liberar(this); // el diálogo ya no necesita el cursor libre
 
         // ── Animación de cámara (solo Momento 8) ──────────────────────────
         if (usarAnimacionMomento8 && animatorCamara != null)
@@ -267,8 +264,10 @@ public class SistemaDialogo : MonoBehaviour
             if (firstPersonController != null)
                 firstPersonController.enabled = false;
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            // Durante la animación de cámara sí queremos el cursor bloqueado
+            // (nadie más lo está pidiendo en este punto), así que no hace falta
+            // tocarlo manualmente: GestorCursor ya lo dejó bloqueado arriba
+            // si ningún otro sistema (pausa, celular) lo está pidiendo.
 
             animatorCamara.enabled = true;
             animatorCamara.SetTrigger(triggerAnimacion);
@@ -304,11 +303,11 @@ public class SistemaDialogo : MonoBehaviour
         }
         // ── ▲ ENCADENAMIENTO ─────────────────────────────────────────────
 
-        if (!esUltimo)
+        // Solo recuperar el control del jugador si ningún otro sistema
+        // (menú de pausa, celular, cinemática, etc.) sigue necesitando el cursor
+        if (!esUltimo && !GestorCursor.CursorRequeridoLibre)
         {
             firstPersonController.enabled = true;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
 
         this.enabled = false;
@@ -316,23 +315,9 @@ public class SistemaDialogo : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    void OnApplicationFocus(bool tieneFoco)
-    {
-        if (!tieneFoco) return;
-
-        if (_dialogoAbierto)
-        {
-            // Diálogo abierto → cursor debe seguir libre para hacer clic en opciones
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else if (_puedeInteractuar && firstPersonController != null && firstPersonController.enabled)
-        {
-            // Exploración normal → cursor bloqueado
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-    }
+    // NOTA: ya no se necesita OnApplicationFocus acá — GestorCursor maneja
+    // centralizadamente qué pasa con el cursor cuando la ventana recupera
+    // el foco, sin importar qué otro sistema (pausa, celular) esté activo.
 
     // ── ▼ ENCADENAMIENTO ─────────────────────────────────────────────────
     /// <summary>
