@@ -140,8 +140,8 @@ public class GameManager : MonoBehaviour
     public string ObtenerMensajeFinal()
     {
         return EsFinal1
-            ? "El niño confió mucho en ti y lograste que no avisara a nadie."
-            : "Tu lenguaje fue muy sospechoso, el niño avisó a sus padres.";
+            ? "Conseguiste la confianza plena del niño, por ello no avisó a sus padres y lograste encontrarlo.\n\nPsdt: La confianza no suele ser buena en ciertas situaciones."
+            : "Fuiste muy evidente, el niño no confió y sospechó, avisó a sus padres y te arrestaron.\n\nPsdt: Siempre hay que revisar las conductas, sean evidentes o no.";
     }
     // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 

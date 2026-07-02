@@ -65,6 +65,12 @@ public class UIRetroalimentacion : MonoBehaviour
     [Header("── Reinicio ────────────────────────────")]
     public string escenaInicio = "NIVEL1";
 
+    [Header("── Menú principal ───────────────────────")]
+    [Tooltip("Botón 'Ir al Menú'. Conéctalo en el Inspector (OnClick → IrAlMenu)")]
+    public Button botonMenu;
+    [Tooltip("Nombre exacto de la escena del menú de inicio")]
+    public string escenaMenu = "Menu";
+
     // ── ▼ AUDIO (NUEVO) ──────────────────────────────────────────────────
     [Header("── Audio UI ────────────────────────────")]
     [Tooltip("SonidoUI del Canvas (se busca automáticamente)")]
@@ -102,8 +108,13 @@ public class UIRetroalimentacion : MonoBehaviour
         {
             if (botonSaltarBtn != null) sonidoUI.RegistrarBoton(botonSaltarBtn, SonidoUI.TipoSonidoBtn.Skip);
             if (botonReiniciarBtn != null) sonidoUI.RegistrarBoton(botonReiniciarBtn, SonidoUI.TipoSonidoBtn.Reiniciar);
+            if (botonMenu != null) sonidoUI.RegistrarBoton(botonMenu, SonidoUI.TipoSonidoBtn.Skip);
         }
         // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
+        // Registrar listener del botón Menú
+        if (botonMenu != null)
+            botonMenu.onClick.AddListener(IrAlMenu);
 
         // Detener música de juego/tensión al entrar a la escena de final
         // (la música de retro empezará al terminar el video)
@@ -269,6 +280,22 @@ public class UIRetroalimentacion : MonoBehaviour
             GameManager.Instance.Reiniciar();
 
         SceneManager.LoadScene(escenaInicio);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Vuelve al menú principal sin reiniciar el GameManager.
+    /// Asigna al botón "Ir al Menú" en el Inspector (OnClick → IrAlMenu).
+    /// </summary>
+    public void IrAlMenu()
+    {
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.DetenerMusicaJuego();
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.Reiniciar();
+
+        SceneManager.LoadScene(escenaMenu);
     }
 }
 
