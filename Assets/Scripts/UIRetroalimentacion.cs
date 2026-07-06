@@ -124,6 +124,9 @@ public class UIRetroalimentacion : MonoBehaviour
         StartCoroutine(ReproducirVideoCO());
     }
 
+    // Flag interno: true mientras el video está reproduciéndose
+    bool _videoActivo = false;
+
     // ─────────────────────────────────────────────────────────────────────
     IEnumerator ReproducirVideoCO()
     {
@@ -135,6 +138,7 @@ public class UIRetroalimentacion : MonoBehaviour
         }
 
         videoScreen.gameObject.SetActive(true);
+        _videoActivo = true;
 
         videoPlayer.Prepare();
         yield return new WaitUntil(() => videoPlayer.isPrepared);
@@ -147,15 +151,23 @@ public class UIRetroalimentacion : MonoBehaviour
              videoPlayer.frame >= (long)videoPlayer.frameCount - 2)
         );
 
+        _videoActivo = false;
         yield return SecuenciaReflexionYRetroCO();
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Solo debe llamarse desde el botón Saltar.
+    /// El flag _videoActivo impide que cualquier otro código lo llame accidentalmente.
+    /// </summary>
     public void SaltarVideo()
     {
-        // ── ▼ AUDIO: sonido skip (NUEVO) ─────────────────────────────────
+        // Si el video ya terminó por sí solo, no hacer nada
+        if (!_videoActivo) return;
+
         SonidoUI.TocarSkip();
-        // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
+        _videoActivo = false;
 
         if (videoPlayer != null && videoPlayer.isPlaying)
             videoPlayer.Stop();
@@ -298,4 +310,3 @@ public class UIRetroalimentacion : MonoBehaviour
         SceneManager.LoadScene(escenaMenu);
     }
 }
-

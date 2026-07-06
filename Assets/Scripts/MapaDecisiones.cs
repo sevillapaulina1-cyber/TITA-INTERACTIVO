@@ -59,16 +59,16 @@ public class MapaDecisiones : MonoBehaviour
     public float altoHub = 52f;
     public float anchoMomento = 190f;
     public float altoMomento = 130f;
-    public float anchoDesenlace = 230f;
-    public float altoDesenlace = 210f;
+    public float anchoDesenlace = 310f;
+    public float altoDesenlace = 280f;
 
     // ── Texto BASE ────────────────────────────────────────────────────────
     [Header("── Texto base (se auto-escalan) ─────────")]
     public int fsHub = 16;
     public int fsTitMom = 14;
     public int fsCpoMom = 12;
-    public int fsTitDes = 15;
-    public int fsCpoDes = 13;
+    public int fsTitDes = 18;
+    public int fsCpoDes = 14;
     public float padTarjeta = 9f;
     [Range(0.2f, 0.45f)]
     public float fraccionTitulo = 0.28f;
@@ -77,6 +77,13 @@ public class MapaDecisiones : MonoBehaviour
     [Header("── Nombres (Inspector) ───────────────────")]
     public string[] nombresDias = new string[0];
     public string[] nombresMomentos = new string[0];
+
+    // ─────────────────────────────────────────────────────────────────────
+    [Header("── Override manual (usa si auto-escala falla) ──")]
+    [Tooltip("Si > 0, usa este ancho en lugar del Viewport real. Ponlo igual al ancho de tu ScrollRect en el Inspector.")]
+    public float overrideAnchoViewport = 0f;
+    [Tooltip("Si > 0, usa este alto en lugar del Viewport real. Ponlo igual al alto de tu ScrollRect en el Inspector.")]
+    public float overrideAltoViewport = 0f;
 
     // ─────────────────────────────────────────────────────────────────────
     void Start()
@@ -106,35 +113,59 @@ public class MapaDecisiones : MonoBehaviour
     // ─────────────────────────────────────────────────────────────────────
     IEnumerator GenerarConEscalaCO()
     {
-        // Esperar dos frames para que Unity calcule los tamaños reales
-        yield return null;
-        yield return null;
+        // Si hay override manual, úsalo directamente sin esperar
+        if (overrideAnchoViewport > 10f && overrideAltoViewport > 10f)
+        {
+            GenerarMapa(CalcularEscala(overrideAnchoViewport, overrideAltoViewport),
+                        overrideAnchoViewport, overrideAltoViewport);
+            yield break;
+        }
 
+        // Esperar hasta 60 frames a que el Viewport tenga tamaño real
         RectTransform viewport = scrollRect != null ? scrollRect.viewport : null;
-        float vpW = (viewport != null && viewport.rect.width > 10f) ? viewport.rect.width : 1200f;
-        float vpH = (viewport != null && viewport.rect.height > 10f) ? viewport.rect.height : 480f;
+        float vpW = 0f, vpH = 0f;
+        int intentos = 0;
+        while (intentos < 60)
+        {
+            yield return null;
+            intentos++;
+            if (viewport != null)
+            {
+                vpW = viewport.rect.width;
+                vpH = viewport.rect.height;
+            }
+            else if (scrollRect != null)
+            {
+                // Fallback: usar el RectTransform del propio ScrollRect
+                RectTransform rtSR = scrollRect.GetComponent<RectTransform>();
+                if (rtSR != null) { vpW = rtSR.rect.width; vpH = rtSR.rect.height; }
+            }
+            if (vpW > 50f && vpH > 50f) break;
+        }
 
-        // Ancho total del mapa en unidades base
+        // Si después de 60 frames sigue en 0, usar Screen como último recurso
+        if (vpW < 50f) vpW = Screen.width * 0.75f; // el ScrollRect suele ser ~75% del ancho
+        if (vpH < 50f) vpH = Screen.height * 0.55f; // y ~55% del alto
+
+        Debug.Log($"[MapaDecisiones] Viewport: {vpW}×{vpH} (intentos: {intentos})");
+        GenerarMapa(CalcularEscala(vpW, vpH), vpW, vpH);
+    }
+
+    float CalcularEscala(float vpW, float vpH)
+    {
         float mapaW = margenIzquierdo
                     + GameManager.TOTAL_DIAS * anchoColumna
                     + (GameManager.TOTAL_DIAS - 1) * gapColumnas
                     + gapColumnas + anchoDesenlace
                     + margenDerecho;
 
-        // Alto total del mapa en unidades base
         float mapaH = altoHub + gapHubMomentos
                     + GameManager.DECISIONES_POR_DIA * altoMomento
                     + (GameManager.DECISIONES_POR_DIA - 1) * gapEntreMomentos
-                    + 30f; // padding vertical
+                    + 30f;
 
-        float escalaH = vpW / mapaW;
-        float escalaV = vpH / mapaH;
-        // Usar la menor para que quepa en ambos ejes
-        float escala = Mathf.Min(escalaH, escalaV);
-        // No reducir más de la mitad, no ampliar más del doble
-        escala = Mathf.Clamp(escala, 0.5f, 2.5f);
-
-        GenerarMapa(escala, vpW, vpH);
+        float escala = Mathf.Min(vpW / mapaW, vpH / mapaH);
+        return Mathf.Clamp(escala, 0.4f, 3.0f);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -243,9 +274,8 @@ public class MapaDecisiones : MonoBehaviour
         GameManager gm = GameManager.Instance;
         Color color = gm.EsFinal1 ? colorVerde : colorRojo;
         string titulo = gm.ObtenerTituloFinal();
-        string cuerpo = $"Confianza: {gm.PuntosConfianza} pts\n"
-                           + $"Riesgo:    {gm.PuntosRiesgo} pts\n\n"
-                           + gm.ObtenerMensajeFinal();
+        // Sin puntos — solo el mensaje de reflexión
+        string cuerpo = gm.ObtenerMensajeFinal();
 
         GameObject go = CrearTarjeta(pos, ancho, alto, color, titulo, cuerpo, fsTit, fsCpo, pad);
         Outline ol = go.AddComponent<Outline>();
