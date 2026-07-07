@@ -213,7 +213,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &164450133
 RectTransform:
   m_ObjectHideFlags: 0
@@ -296,7 +296,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!1 &168722496
 GameObject:
@@ -1211,11 +1211,8 @@ MonoBehaviour:
   textoReflexion: {fileID: 358343213}
   canvasGroupReflexion: {fileID: 1868286647}
   mensajesReflexion:
-  - "AS\xCD DE F\xC1CIL LOS DEPREDADORES TIENEN ACCESO A TUS HIJOS\n\nCU\xCDDALOS,
-    SUPERVISA LO QUE JUEGAN"
-  - 'PORQUE TODO ESTA A UN SOLO CLICK
-
-'
+  - "AS\xCD DE F\xC1CIL LOS DEPREDADORES TIENEN ACCESO A TUS HIJOS"
+  - "CU\xCDDALOS, SUPERVISA LO QUE JUEGAN\n\nPORQUE TODO ESTA A UN SOLO CLICK\n"
   duracionPorMensaje: 4
   duracionFadeReflexion: 0.8
   textoResumen: {fileID: 305014305}
@@ -1888,7 +1885,7 @@ RectTransform:
   m_GameObject: {fileID: 1253365607}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1094368178}
@@ -1897,7 +1894,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -618.6547, y: -51.04549}
+  m_AnchoredPosition: {x: -265, y: -0.000019073}
   m_SizeDelta: {x: 2679.185, y: 1574.025}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1253365609
@@ -2685,8 +2682,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0001, y: -5.4402}
-  m_SizeDelta: {x: 757.1677, y: 352.4221}
+  m_AnchoredPosition: {x: 0.00002207, y: -3.4814}
+  m_SizeDelta: {x: 757.1677, y: 390.0215}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2064005952
 MonoBehaviour:
