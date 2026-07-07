@@ -1194,7 +1194,7 @@ RectTransform:
   m_GameObject: {fileID: 728181304}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.34, y: 1.34, z: 1.34}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 658153796}
@@ -1720,7 +1720,6 @@ RectTransform:
   - {fileID: 111067412}
   - {fileID: 171824625}
   - {fileID: 1728957573}
-  - {fileID: 1377663230}
   - {fileID: 728181305}
   m_Father: {fileID: 813482453}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2162,85 +2161,6 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!1 &1377663229
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1377663230}
-  - component: {fileID: 1377663231}
-  - component: {fileID: 1377663232}
-  m_Layer: 5
-  m_Name: etapas del grooming
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1377663230
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377663229}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 966542224}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -595.8165, y: -331}
-  m_SizeDelta: {x: 414.4469, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &1377663231
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377663229}
-  m_CullTransparentMesh: 1
---- !u!114 &1377663232
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377663229}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.8117647, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 12800000, guid: c7c3b705abe2f304f9bf2adce8915f07, type: 3}
-    m_FontSize: 24
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 2
-    m_MaxSize: 40
-    m_Alignment: 3
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: New Text
 --- !u!1 &1494384960
 GameObject:
   m_ObjectHideFlags: 0
@@ -2342,7 +2262,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_TargetDisplay: 0
 --- !u!1 &1524146054
 GameObject:
@@ -2633,7 +2553,7 @@ VideoPlayer:
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
   m_ControlledAudioTrackCount: 1
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_SkipOnDrop: 1
   m_Looping: 0
   m_WaitForFirstFrame: 1
@@ -3251,13 +3171,13 @@ MonoBehaviour:
   - "AS\xCD DE F\xC1CIL LOS DEPREDADORES TIENEN ACCESO A TUS HIJOS\n\nCU\xCDDALOS,
     SUPERVISA LO QUE JUEGAN"
   - PORQUE TODO ESTA A UN SOLO CLICK
-  duracionPorMensaje: 4
+  duracionPorMensaje: 5
   duracionFadeReflexion: 0.8
   textoResumen: {fileID: 111067413}
   textoConfianza: {fileID: 171824626}
   textoRiesgo: {fileID: 1728957574}
   textoFinal: {fileID: 111067413}
-  textoEtapasGrooming: {fileID: 1377663232}
+  textoEtapasGrooming: {fileID: 0}
   etapasGrooming:
   - nombreFase: Fase de amistad
     diaReferencia: "D\xEDa 1"
@@ -3297,5 +3217,5 @@ SceneRoots:
   - {fileID: 1689196184}
   - {fileID: 2073850043}
   - {fileID: 1074180403}
-  - {fileID: 146140262}
   - {fileID: 1761812334}
+  - {fileID: 146140262}
