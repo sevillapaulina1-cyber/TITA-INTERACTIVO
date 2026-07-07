@@ -118,14 +118,19 @@ public class MapaDecisiones : MonoBehaviour
         {
             GenerarMapa(CalcularEscala(overrideAnchoViewport, overrideAltoViewport),
                         overrideAnchoViewport, overrideAltoViewport);
+            yield return CentrarScrollCO();
             yield break;
         }
 
-        // Esperar hasta 60 frames a que el Viewport tenga tamaño real
+        // Esperar hasta que el Viewport tenga un tamaño real Y ESTABLE
+        // (evita medir a mitad de un rebuild de layout, que causaba que el
+        // mapa terminara descentrado / pegado a la derecha)
         RectTransform viewport = scrollRect != null ? scrollRect.viewport : null;
         float vpW = 0f, vpH = 0f;
+        float prevW = -1f, prevH = -1f;
+        int framesEstable = 0;
         int intentos = 0;
-        while (intentos < 60)
+        while (intentos < 90)
         {
             yield return null;
             intentos++;
@@ -140,16 +145,49 @@ public class MapaDecisiones : MonoBehaviour
                 RectTransform rtSR = scrollRect.GetComponent<RectTransform>();
                 if (rtSR != null) { vpW = rtSR.rect.width; vpH = rtSR.rect.height; }
             }
-            if (vpW > 50f && vpH > 50f) break;
+
+            if (vpW > 50f && vpH > 50f)
+            {
+                if (Mathf.Approximately(vpW, prevW) && Mathf.Approximately(vpH, prevH))
+                {
+                    framesEstable++;
+                    if (framesEstable >= 3) break; // 3 frames iguales seguidos → medida confiable
+                }
+                else
+                {
+                    framesEstable = 0;
+                }
+                prevW = vpW; prevH = vpH;
+            }
         }
 
-        // Si después de 60 frames sigue en 0, usar Screen como último recurso
+        // Si después de todos los intentos sigue en 0, usar Screen como último recurso
         if (vpW < 50f) vpW = Screen.width * 0.75f; // el ScrollRect suele ser ~75% del ancho
         if (vpH < 50f) vpH = Screen.height * 0.55f; // y ~55% del alto
 
         Debug.Log($"[MapaDecisiones] Viewport: {vpW}×{vpH} (intentos: {intentos})");
         GenerarMapa(CalcularEscala(vpW, vpH), vpW, vpH);
+
+        yield return CentrarScrollCO();
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ NUEVO: fija la posición de scroll DESPUÉS de que el Contenedor ya
+    //     tiene su tamaño y posición finales, para que el mapa siempre
+    //     aparezca centrado (o desde el Día 1 si no cabe entero) de forma
+    //     confiable, sin depender de resets externos hechos antes de tiempo ──
+    IEnumerator CentrarScrollCO()
+    {
+        // Esperar un par de frames a que Unity reconstruya el layout con el
+        // nuevo tamaño del Contenedor antes de tocar la posición de scroll.
+        yield return null;
+        yield return null;
+        Canvas.ForceUpdateCanvases();
+
+        if (scrollRect != null)
+            scrollRect.horizontalNormalizedPosition = 0.5f;
+    }
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
     float CalcularEscala(float vpW, float vpH)
     {

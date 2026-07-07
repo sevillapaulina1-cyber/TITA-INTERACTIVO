@@ -58,50 +58,6 @@ public class UIRetroalimentacion : MonoBehaviour
     public Text textoRiesgo;
     public Text textoFinal;
 
-    // ── ▼ NUEVO: apartado de etapas del grooming ─────────────────────────
-    [System.Serializable]
-    public class EtapaGrooming
-    {
-        [Tooltip("Nombre de la fase")]
-        public string nombreFase;
-        [Tooltip("Día aproximado del PROCESO REAL de grooming (no es el día del juego)")]
-        public string diaReferencia;
-        [TextArea(2, 4)]
-        [Tooltip("Resumen breve de lo que ocurre en esta fase")]
-        public string descripcion;
-    }
-
-    [Header("── Etapas del grooming (educativo) ─────")]
-    [Tooltip("Texto donde se muestra el resumen de las etapas de grooming recorridas por el jugador durante los días del juego")]
-    public Text textoEtapasGrooming;
-
-    [Tooltip("Las 4 etapas reales del grooming, en el mismo orden que los 4 días del juego " +
-             "(Día 1 del juego = etapa 1, Día 2 del juego = etapa 2, etc.)")]
-    public EtapaGrooming[] etapasGrooming = new EtapaGrooming[]
-    {
-        new EtapaGrooming {
-            nombreFase = "Fase de amistad",
-            diaReferencia = "Día 1",
-            descripcion = "Crean perfiles falsos o varios perfiles para acercarse, conversar, conocer gustos y generar confianza."
-        },
-        new EtapaGrooming {
-            nombreFase = "Fase emocional",
-            diaReferencia = "Día 7",
-            descripcion = "Comparten secretos y crean un vínculo más íntimo, haciéndose pasar por alguien de la misma edad."
-        },
-        new EtapaGrooming {
-            nombreFase = "Fase de evaluación",
-            diaReferencia = "Día 18",
-            descripcion = "Ofrecen regalos o atención emocional para analizar la vulnerabilidad del menor y el riesgo de ser descubiertos."
-        },
-        new EtapaGrooming {
-            nombreFase = "Fase de exclusividad",
-            diaReferencia = "Día 115",
-            descripcion = "Introducen temas sexuales y buscan contenido íntimo, sugieren cambiar de red social para obtener fotos y encuentros presenciales."
-        },
-    };
-    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
-
     // ── ▼ NUEVO: video adicional entre la reflexión y la retroalimentación ──
     [Header("── Video final (entre reflexión y retro) ─")]
     [Tooltip("VideoPlayer opcional que se reproduce DESPUÉS de los mensajes de reflexión " +
@@ -375,13 +331,13 @@ public class UIRetroalimentacion : MonoBehaviour
         if (panelRetro != null)
             panelRetro.SetActive(true);
 
-        // ── Configurar y reiniciar el ScrollRect del mapa ─────────────────
+        // ── Configurar el ScrollRect del mapa ─────────────────────────────
+        // (el centrado/posición de scroll ahora lo maneja MapaDecisiones por su
+        //  cuenta, DESPUÉS de generar el layout, para que sea siempre confiable)
         if (scrollRectMapa != null)
         {
             scrollRectMapa.horizontal = scrollHorizontal;
             scrollRectMapa.vertical = false;
-            // Reiniciar al extremo izquierdo para que el jugador vea desde el Día 1
-            scrollRectMapa.normalizedPosition = new Vector2(0f, 0.5f);
         }
 
         // ── ▼ AUDIO: iniciar música de retroalimentación (NUEVO) ─────────
@@ -409,38 +365,7 @@ public class UIRetroalimentacion : MonoBehaviour
 
         if (textoFinal != null)
             textoFinal.text = $"{gm.ObtenerTituloFinal()}\n{gm.ObtenerMensajeFinal()}";
-
-        // ── ▼ NUEVO: rellenar el apartado de etapas del grooming ─────────
-        RellenarEtapasGrooming();
-        // ── ▲ NUEVO ──────────────────────────────────────────────────────
     }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // ── ▼ NUEVO: arma el texto con las etapas de grooming recorridas,
-    //     un renglón por cada día del juego (Día 1 del juego → etapa 1, etc.) ──
-    void RellenarEtapasGrooming()
-    {
-        if (textoEtapasGrooming == null || etapasGrooming == null || etapasGrooming.Length == 0)
-            return;
-
-        int diasDelJuego = GameManager.TOTAL_DIAS;
-
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        sb.AppendLine("=== Etapas del grooming recorridas ===");
-        sb.AppendLine();
-
-        int totalARecorrer = Mathf.Min(etapasGrooming.Length, diasDelJuego);
-        for (int i = 0; i < totalARecorrer; i++)
-        {
-            EtapaGrooming etapa = etapasGrooming[i];
-            sb.AppendLine($"Día {i + 1} del juego  →  {etapa.nombreFase}  ({etapa.diaReferencia} del proceso real)");
-            sb.AppendLine(etapa.descripcion);
-            if (i < totalARecorrer - 1) sb.AppendLine();
-        }
-
-        textoEtapasGrooming.text = sb.ToString().TrimEnd();
-    }
-    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
     // ─────────────────────────────────────────────────────────────────────
     public void ReiniciarExperiencia()

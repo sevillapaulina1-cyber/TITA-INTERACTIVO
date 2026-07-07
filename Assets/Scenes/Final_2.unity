@@ -263,10 +263,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -2290,10 +2290,10 @@ MonoBehaviour:
   padTarjeta: 7
   fraccionTitulo: 0.32
   nombresDias:
-  - "D\xEDa 1"
-  - "D\xEDa 7"
-  - "D\xEDa 18"
-  - "D\xEDa 115"
+  - "D\xEDa 1 Fase de amistad"
+  - "D\xEDa 7 Fase emocional"
+  - "D\xEDa 18 Fase de evaluaci\xF3n"
+  - "D\xEDa 115 Fase de exclusividad"
   nombresMomentos:
   - Contacto
   - Juego

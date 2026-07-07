@@ -51,6 +51,11 @@ public class MenuInicio : MonoBehaviour
         if (textoTitulo != null) textoTitulo.text = titulo;
         if (textoSubtitulo != null) textoSubtitulo.text = subtitulo;
 
+        // ── ▼ NUEVO: el cursor SIEMPRE debe estar libre en el menú principal,
+        //     sin importar desde dónde se haya vuelto (retroalimentación, etc.) ──
+        GestorCursor.PedirLibre(this);
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
+
         if (sonidoUI == null)
             sonidoUI = FindAnyObjectByType<SonidoUI>();
 
@@ -163,9 +168,9 @@ public class MenuInicio : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.DetenerMusicaMenu(0.3f);
 
-        // Ocultar cursor antes de cargar la cinemática
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // Liberar el pedido de cursor libre del menú; si nadie más lo pide,
+        // GestorCursor lo bloqueará automáticamente para el gameplay.
+        GestorCursor.Liberar(this);
 
         SceneManager.LoadScene(escenaCinematica);
     }
@@ -211,4 +216,13 @@ public class MenuInicio : MonoBehaviour
         c.a = a;
         panelFade.color = c;
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ NUEVO: red de seguridad — libera el pedido de cursor si el menú
+    //     se destruye por cualquier otro motivo (recarga de escena, etc.) ──
+    void OnDestroy()
+    {
+        GestorCursor.Liberar(this);
+    }
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 }
