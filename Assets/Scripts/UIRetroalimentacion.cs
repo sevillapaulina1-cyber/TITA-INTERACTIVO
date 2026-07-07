@@ -58,6 +58,63 @@ public class UIRetroalimentacion : MonoBehaviour
     public Text textoRiesgo;
     public Text textoFinal;
 
+    // ── ▼ NUEVO: apartado de etapas del grooming ─────────────────────────
+    [System.Serializable]
+    public class EtapaGrooming
+    {
+        [Tooltip("Nombre de la fase")]
+        public string nombreFase;
+        [Tooltip("Día aproximado del PROCESO REAL de grooming (no es el día del juego)")]
+        public string diaReferencia;
+        [TextArea(2, 4)]
+        [Tooltip("Resumen breve de lo que ocurre en esta fase")]
+        public string descripcion;
+    }
+
+    [Header("── Etapas del grooming (educativo) ─────")]
+    [Tooltip("Texto donde se muestra el resumen de las etapas de grooming recorridas por el jugador durante los días del juego")]
+    public Text textoEtapasGrooming;
+
+    [Tooltip("Las 4 etapas reales del grooming, en el mismo orden que los 4 días del juego " +
+             "(Día 1 del juego = etapa 1, Día 2 del juego = etapa 2, etc.)")]
+    public EtapaGrooming[] etapasGrooming = new EtapaGrooming[]
+    {
+        new EtapaGrooming {
+            nombreFase = "Fase de amistad",
+            diaReferencia = "Día 1",
+            descripcion = "Crean perfiles falsos o varios perfiles para acercarse, conversar, conocer gustos y generar confianza."
+        },
+        new EtapaGrooming {
+            nombreFase = "Fase emocional",
+            diaReferencia = "Día 7",
+            descripcion = "Comparten secretos y crean un vínculo más íntimo, haciéndose pasar por alguien de la misma edad."
+        },
+        new EtapaGrooming {
+            nombreFase = "Fase de evaluación",
+            diaReferencia = "Día 18",
+            descripcion = "Ofrecen regalos o atención emocional para analizar la vulnerabilidad del menor y el riesgo de ser descubiertos."
+        },
+        new EtapaGrooming {
+            nombreFase = "Fase de exclusividad",
+            diaReferencia = "Día 115",
+            descripcion = "Introducen temas sexuales y buscan contenido íntimo, sugieren cambiar de red social para obtener fotos y encuentros presenciales."
+        },
+    };
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
+
+    // ── ▼ NUEVO: video adicional entre la reflexión y la retroalimentación ──
+    [Header("── Video final (entre reflexión y retro) ─")]
+    [Tooltip("VideoPlayer opcional que se reproduce DESPUÉS de los mensajes de reflexión " +
+             "y ANTES de mostrar la retroalimentación final. Déjalo vacío si no se usa.")]
+    public VideoPlayer videoPlayerFinal;
+    public RawImage videoScreenFinal;
+    [Tooltip("Botón para saltar este video (opcional)")]
+    public Button botonSaltarFinal;
+    [Tooltip("Text (UI) del botón Saltar de este video. Se le pone el texto por código en Start().")]
+    public Text textoBotonSaltarFinal;
+    public string textoSaltarFinal = "Saltar";
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
+
     [Header("── Botones ─────────────────────────────")]
     public Button botonSaltarBtn;
     public Button botonReiniciarBtn;
@@ -99,6 +156,26 @@ public class UIRetroalimentacion : MonoBehaviour
             textoBotonSaltar.text = textoSaltar;
         // ── ▲ NUEVO ──────────────────────────────────────────────────────
 
+        // ── ▼ NUEVO: preparar el botón Saltar del video final (opcional) ──
+        if (botonSaltarFinal != null)
+        {
+            botonSaltarFinal.gameObject.SetActive(false);
+            botonSaltarFinal.onClick.RemoveAllListeners();
+            botonSaltarFinal.onClick.AddListener(SaltarVideoFinal);
+        }
+
+        if (textoBotonSaltarFinal == null && botonSaltarFinal != null)
+            textoBotonSaltarFinal = botonSaltarFinal.GetComponentInChildren<Text>(true);
+
+        if (textoBotonSaltarFinal != null)
+            textoBotonSaltarFinal.text = textoSaltarFinal;
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
+
+        // ── ▼ NUEVO: el cursor debe estar libre durante toda esta escena
+        //     (cinemática de finales, reflexión, video final y retroalimentación) ──
+        GestorCursor.PedirLibre(this);
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
+
         // Buscar SonidoUI
         if (sonidoUI == null)
             sonidoUI = FindAnyObjectByType<SonidoUI>();
@@ -109,6 +186,7 @@ public class UIRetroalimentacion : MonoBehaviour
             if (botonSaltarBtn != null) sonidoUI.RegistrarBoton(botonSaltarBtn, SonidoUI.TipoSonidoBtn.Skip);
             if (botonReiniciarBtn != null) sonidoUI.RegistrarBoton(botonReiniciarBtn, SonidoUI.TipoSonidoBtn.Reiniciar);
             if (botonMenu != null) sonidoUI.RegistrarBoton(botonMenu, SonidoUI.TipoSonidoBtn.Skip);
+            if (botonSaltarFinal != null) sonidoUI.RegistrarBoton(botonSaltarFinal, SonidoUI.TipoSonidoBtn.Skip);
         }
         // ── ▲ AUDIO ──────────────────────────────────────────────────────
 
@@ -189,8 +267,60 @@ public class UIRetroalimentacion : MonoBehaviour
 
         yield return MostrarReflexionCO();
 
+        // ── ▼ NUEVO: espacio para un segundo video, justo después del mensaje
+        //     de reflexión y ANTES de mostrar la retroalimentación final.
+        //     Si no se asigna videoPlayerFinal, este paso se salta solo. ──
+        yield return ReproducirVideoFinalCO();
+        // ── ▲ NUEVO ─────────────────────────────────────────────────────────
+
         MostrarPantallaRetro();
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ NUEVO: video opcional entre la reflexión y la retroalimentación ──
+    bool _videoFinalActivo = false;
+
+    IEnumerator ReproducirVideoFinalCO()
+    {
+        if (videoPlayerFinal == null || videoScreenFinal == null)
+            yield break; // No hay video final configurado, se pasa directo a la retro
+
+        videoScreenFinal.gameObject.SetActive(true);
+        if (botonSaltarFinal != null) botonSaltarFinal.gameObject.SetActive(true);
+        _videoFinalActivo = true;
+
+        videoPlayerFinal.Prepare();
+        yield return new WaitUntil(() => videoPlayerFinal.isPrepared);
+
+        videoPlayerFinal.Play();
+
+        yield return new WaitUntil(() =>
+            !_videoFinalActivo ||
+            !videoPlayerFinal.isPlaying ||
+            (videoPlayerFinal.frameCount > 0 &&
+             videoPlayerFinal.frame >= (long)videoPlayerFinal.frameCount - 2)
+        );
+
+        _videoFinalActivo = false;
+
+        if (videoPlayerFinal.isPlaying)
+            videoPlayerFinal.Stop();
+
+        videoScreenFinal.gameObject.SetActive(false);
+        if (botonSaltarFinal != null) botonSaltarFinal.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Solo debe llamarse desde el botón Saltar del video final.
+    /// El flag _videoFinalActivo impide que se llame accidentalmente cuando no aplica.
+    /// </summary>
+    public void SaltarVideoFinal()
+    {
+        if (!_videoFinalActivo) return;
+        SonidoUI.TocarSkip();
+        _videoFinalActivo = false;
+    }
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
     // ─────────────────────────────────────────────────────────────────────
     IEnumerator MostrarReflexionCO()
@@ -279,7 +409,38 @@ public class UIRetroalimentacion : MonoBehaviour
 
         if (textoFinal != null)
             textoFinal.text = $"{gm.ObtenerTituloFinal()}\n{gm.ObtenerMensajeFinal()}";
+
+        // ── ▼ NUEVO: rellenar el apartado de etapas del grooming ─────────
+        RellenarEtapasGrooming();
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ NUEVO: arma el texto con las etapas de grooming recorridas,
+    //     un renglón por cada día del juego (Día 1 del juego → etapa 1, etc.) ──
+    void RellenarEtapasGrooming()
+    {
+        if (textoEtapasGrooming == null || etapasGrooming == null || etapasGrooming.Length == 0)
+            return;
+
+        int diasDelJuego = GameManager.TOTAL_DIAS;
+
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.AppendLine("=== Etapas del grooming recorridas ===");
+        sb.AppendLine();
+
+        int totalARecorrer = Mathf.Min(etapasGrooming.Length, diasDelJuego);
+        for (int i = 0; i < totalARecorrer; i++)
+        {
+            EtapaGrooming etapa = etapasGrooming[i];
+            sb.AppendLine($"Día {i + 1} del juego  →  {etapa.nombreFase}  ({etapa.diaReferencia} del proceso real)");
+            sb.AppendLine(etapa.descripcion);
+            if (i < totalARecorrer - 1) sb.AppendLine();
+        }
+
+        textoEtapasGrooming.text = sb.ToString().TrimEnd();
+    }
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
     // ─────────────────────────────────────────────────────────────────────
     public void ReiniciarExperiencia()
@@ -287,6 +448,10 @@ public class UIRetroalimentacion : MonoBehaviour
         // ── ▼ AUDIO: sonido reiniciar (NUEVO) ────────────────────────────
         SonidoUI.TocarReiniciar();
         // ── ▲ AUDIO ──────────────────────────────────────────────────────
+
+        // ── ▼ NUEVO: liberar el pedido de cursor libre antes de salir ────
+        GestorCursor.Liberar(this);
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
 
         if (GameManager.Instance != null)
             GameManager.Instance.Reiniciar();
@@ -304,9 +469,24 @@ public class UIRetroalimentacion : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.DetenerMusicaJuego();
 
+        // ── ▼ NUEVO: liberar el pedido de cursor libre antes de salir ────
+        GestorCursor.Liberar(this);
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
+
         if (GameManager.Instance != null)
             GameManager.Instance.Reiniciar();
 
         SceneManager.LoadScene(escenaMenu);
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ NUEVO: red de seguridad — si el objeto se destruye por cualquier
+    //     otro motivo (recarga de escena, etc.), liberar el pedido de cursor
+    //     para que no quede "atascado" pidiéndolo desde una instancia muerta ──
+    void OnDestroy()
+    {
+        GestorCursor.Liberar(this);
+    }
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 }
+

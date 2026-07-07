@@ -65,8 +65,8 @@ public class PanelCreditos : MonoBehaviour
 
     IEnumerator RegresarCO()
     {
-        if (botonRegresar != null) botonRegresar.interactable = false;
-
+        // NOTA: el botón "Regresar" ya NO se desactiva en ningún momento,
+        // se mantiene siempre interactuable.
         yield return Fade(0f, 1f, duracionFade);
 
         // Ocultar este panel y mostrar el menú
@@ -76,8 +76,6 @@ public class PanelCreditos : MonoBehaviour
             menuInicio.MostrarMenuDesdeCreditos();
 
         yield return Fade(1f, 0f, duracionFade);
-
-        if (botonRegresar != null) botonRegresar.interactable = true;
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -109,3 +107,4 @@ public class PanelCreditos : MonoBehaviour
         panelFade.color = c;
     }
 }
+

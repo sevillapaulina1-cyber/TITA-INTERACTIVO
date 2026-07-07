@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
 using System.Collections;
 
 /// <summary>
@@ -64,15 +63,11 @@ public class ReproductorIntro : MonoBehaviour
         // Mostrar botón saltar
         if (botonSaltar != null) botonSaltar.gameObject.SetActive(true);
 
-        // Esperar a que termine el video o el jugador salte con click/tap
-        var mouse  = Mouse.current;
-        var touchs = Touchscreen.current;
-
+        // Esperar a que termine el video o el jugador presione el botón "Saltar".
+        // NOTA: ya NO se puede saltar haciendo click/tap en cualquier parte de la
+        // pantalla — solo el botón explícito (botonSaltar → Saltar()) funciona.
         while (videoPlayer.isPlaying && !_saltar)
         {
-            bool click = mouse  != null && mouse.leftButton.wasPressedThisFrame;
-            bool tap   = touchs != null && touchs.primaryTouch.press.wasPressedThisFrame;
-            if (click || tap) _saltar = true;
             yield return null;
         }
 

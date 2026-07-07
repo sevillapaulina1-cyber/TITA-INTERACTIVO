@@ -1,13 +1,27 @@
 using System.Collections;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TransicionDia : MonoBehaviour
 {
-    [Header("── UI ──────────────────────────────────")]
-    public Image panelNegro;
-    public Text textoDia;
+    [Header("── UI: partes que RUEDAN (número día, número fecha, mes) ──")]
+    [Tooltip("Solo el número de \"Día X\" (ej: \"1\", \"2\"...). Rueda hacia abajo al cambiar.")]
     public Text textoDiaNumero;
+    [Tooltip("Solo el número de día del mes de la fecha (ej: \"20\", \"4\"...). Rueda al cambiar.")]
+    public Text textoFechaNumero;
+    [Tooltip("Solo el nombre del mes (ej: \"marzo\", \"abril\"...). Rueda al cambiar.")]
+    public Text textoFechaMes;
+
+    [Header("── UI: partes ESTÁTICAS (no ruedan, solo aparecen/desaparecen) ──")]
+    [Tooltip("La palabra \"Día\" (se autocompleta con el prefijo detectado en nombreDia1 / nombresDias)")]
+    public Text textoDiaEtiqueta;
+    [Tooltip("La palabra \"de\" entre el número y el mes")]
+    public Text textoFechaConector;
+    [Tooltip("El resto de la fecha: \", 2026\" (coma + año)")]
+    public Text textoFechaSufijo;
+
+    public Image panelNegro;
 
     [Header("── NPCs (uno por día, en orden) ─────────")]
     [Tooltip("4 NPCs duplicados. Índice 0 = Día 1, 1 = Día 2, etc.")]
@@ -66,12 +80,35 @@ public class TransicionDia : MonoBehaviour
     public float duracionTexto = 2.0f;
     public float duracionFadeOut = 1.0f;
 
+    [Header("── Animación tipo \"odómetro\" (solo números y mes) ──")]
+    [Tooltip("Distancia en píxeles que recorre cada pieza al rodar")]
+    public float distanciaDeslizamiento = 40f;
+    [Tooltip("Duración del rodado")]
+    public float duracionAnimacionTexto = 0.5f;
+
+    // ── Piezas que ruedan: guardan su RectTransform, posición original y último valor mostrado ──
+    class ParteRodante
+    {
+        public Text texto;
+        public RectTransform rect;
+        public Vector2 posOriginal;
+        public string ultimoValor = "";
+    }
+
+    readonly ParteRodante parteDiaNumero = new ParteRodante();
+    readonly ParteRodante parteFechaNumero = new ParteRodante();
+    readonly ParteRodante parteFechaMes = new ParteRodante();
+
     // ─────────────────────────────────────────────────────────────────────
     void Awake()
     {
         SetAlpha(mostrarIntroDia1 ? 1f : 0f);
-        if (textoDia != null) textoDia.enabled = false;
-        if (textoDiaNumero != null) textoDiaNumero.enabled = false;
+
+        PrepararParte(parteDiaNumero, textoDiaNumero);
+        PrepararParte(parteFechaNumero, textoFechaNumero);
+        PrepararParte(parteFechaMes, textoFechaMes);
+
+        DesactivarTodosLosTextos();
 
         for (int i = 0; i < npcsPorDia.Length; i++)
             if (npcsPorDia[i] != null)
@@ -84,6 +121,14 @@ public class TransicionDia : MonoBehaviour
             fuenteTransicion.loop = false;
             fuenteTransicion.spatialBlend = 0f;
         }
+    }
+
+    void PrepararParte(ParteRodante parte, Text texto)
+    {
+        if (texto == null) return;
+        parte.texto = texto;
+        parte.rect = texto.GetComponent<RectTransform>();
+        parte.posOriginal = parte.rect.anchoredPosition;
     }
 
     void Start()
@@ -253,16 +298,120 @@ public class TransicionDia : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    void MostrarTextos(string nombreDia, string fecha)
+    /// <summary>
+    /// Recibe el texto completo de siempre (ej: "Día 2", "4 de abril, 2026")
+    /// y lo separa en partes: solo el número del día y solo el número+mes de
+    /// la fecha ruedan (efecto odómetro); "Día", "de" y ", año" quedan fijos.
+    /// No hace falta cambiar cómo cargás nombresDias[] / fechas[] — se parsean solos.
+    /// </summary>
+    void MostrarTextos(string nombreDiaCompleto, string fechaCompleta)
     {
-        if (textoDiaNumero != null) { textoDiaNumero.text = nombreDia; textoDiaNumero.enabled = true; }
-        if (textoDia != null) { textoDia.text = fecha; textoDia.enabled = true; }
+        var (prefijoDia, numeroDia) = ParsearDia(nombreDiaCompleto);
+        var (numeroFecha, mesFecha, sufijoFecha) = ParsearFecha(fechaCompleta);
+
+        // Partes estáticas: se muestran directo, sin animación
+        if (textoDiaEtiqueta != null) { textoDiaEtiqueta.text = prefijoDia; textoDiaEtiqueta.enabled = true; }
+        if (textoFechaConector != null) { textoFechaConector.text = "de"; textoFechaConector.enabled = true; }
+        if (textoFechaSufijo != null) { textoFechaSufijo.text = ", " + sufijoFecha; textoFechaSufijo.enabled = true; }
+
+        // Partes que ruedan
+        StartCoroutine(RodarTextoCO(parteDiaNumero, numeroDia));
+        StartCoroutine(RodarTextoCO(parteFechaNumero, numeroFecha));
+        StartCoroutine(RodarTextoCO(parteFechaMes, mesFecha));
+    }
+
+    /// <summary>Separa "Día 2" en prefijo="Día" y numero="2".</summary>
+    (string prefijo, string numero) ParsearDia(string texto)
+    {
+        Match m = Regex.Match(texto, @"^(.*?)(\d+)\s*$");
+        if (m.Success) return (m.Groups[1].Value.Trim(), m.Groups[2].Value);
+        return ("", texto);
+    }
+
+    /// <summary>Separa "4 de abril, 2026" en numero="4", mes="abril", sufijo="2026".</summary>
+    (string numero, string mes, string sufijo) ParsearFecha(string texto)
+    {
+        Match m = Regex.Match(texto, @"^(\d+)\s+de\s+([^,]+),\s*(.+)$");
+        if (m.Success) return (m.Groups[1].Value, m.Groups[2].Value.Trim(), m.Groups[3].Value.Trim());
+        return (texto, "", "");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Efecto "odómetro" para UNA pieza de texto (un número o el mes):
+    /// el valor anterior se clona y rueda hacia abajo desapareciendo,
+    /// mientras el valor nuevo entra rodando desde arriba hasta su lugar.
+    /// Si no había valor anterior (primera vez), solo entra el nuevo.
+    /// </summary>
+    IEnumerator RodarTextoCO(ParteRodante parte, string nuevoValor)
+    {
+        if (parte.texto == null || parte.rect == null) yield break;
+
+        Text clonSaliente = null;
+        if (!string.IsNullOrEmpty(parte.ultimoValor))
+        {
+            clonSaliente = Instantiate(parte.texto, parte.texto.transform.parent);
+            clonSaliente.text = parte.ultimoValor;
+            clonSaliente.enabled = true;
+            clonSaliente.rectTransform.anchoredPosition = parte.posOriginal;
+            SetAlphaTexto(clonSaliente, 1f);
+        }
+
+        Vector2 entrada = parte.posOriginal + Vector2.up * distanciaDeslizamiento;
+        Vector2 salida = parte.posOriginal - Vector2.up * distanciaDeslizamiento;
+
+        parte.texto.text = nuevoValor;
+        parte.texto.enabled = true;
+        parte.rect.anchoredPosition = entrada;
+        SetAlphaTexto(parte.texto, 0f);
+
+        float t = 0f;
+        while (t < duracionAnimacionTexto)
+        {
+            t += Time.deltaTime;
+            float p = Mathf.Clamp01(t / duracionAnimacionTexto);
+            float suavizado = 1f - Mathf.Pow(1f - p, 3f); // ease-out cúbico
+
+            parte.rect.anchoredPosition = Vector2.Lerp(entrada, parte.posOriginal, suavizado);
+            SetAlphaTexto(parte.texto, suavizado);
+
+            if (clonSaliente != null)
+            {
+                clonSaliente.rectTransform.anchoredPosition = Vector2.Lerp(parte.posOriginal, salida, suavizado);
+                SetAlphaTexto(clonSaliente, 1f - suavizado);
+            }
+
+            yield return null;
+        }
+
+        parte.rect.anchoredPosition = parte.posOriginal;
+        SetAlphaTexto(parte.texto, 1f);
+        if (clonSaliente != null) Destroy(clonSaliente.gameObject);
+
+        parte.ultimoValor = nuevoValor;
+    }
+
+    void SetAlphaTexto(Text texto, float a)
+    {
+        if (texto == null) return;
+        Color c = texto.color;
+        c.a = a;
+        texto.color = c;
     }
 
     void OcultarTextos()
     {
-        if (textoDia != null) textoDia.enabled = false;
+        DesactivarTodosLosTextos();
+    }
+
+    void DesactivarTodosLosTextos()
+    {
+        if (textoDiaEtiqueta != null) textoDiaEtiqueta.enabled = false;
         if (textoDiaNumero != null) textoDiaNumero.enabled = false;
+        if (textoFechaNumero != null) textoFechaNumero.enabled = false;
+        if (textoFechaConector != null) textoFechaConector.enabled = false;
+        if (textoFechaMes != null) textoFechaMes.enabled = false;
+        if (textoFechaSufijo != null) textoFechaSufijo.enabled = false;
     }
 
     void SwapNPC(int indiceActivo)
