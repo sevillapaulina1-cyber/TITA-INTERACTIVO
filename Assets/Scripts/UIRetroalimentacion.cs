@@ -69,6 +69,25 @@ public class UIRetroalimentacion : MonoBehaviour
     [Tooltip("Text (UI) del botón Saltar de este video. Se le pone el texto por código en Start().")]
     public Text textoBotonSaltarFinal;
     public string textoSaltarFinal = "Saltar";
+
+    [Header("── Texto sobre el video final ────────────")]
+    [Tooltip("Texto opcional que aparece SOBRE el segundo video (justo después de los mensajes " +
+             "de reflexión) y se desvanece antes de pasar a la retroalimentación. " +
+             "Déjalo sin asignar o vacío si no lo necesitas.")]
+    public Text textoVideoFinal;
+    [TextArea(2, 4)]
+    public string mensajeVideoFinal = "";
+    [Tooltip("Duración del fundido de entrada/salida de este texto")]
+    public float duracionFadeTextoVideoFinal = 0.6f;
+    [Tooltip("CanvasGroup del texto, usado para el fundido. Se busca/crea automáticamente si está vacío.")]
+    public CanvasGroup canvasGroupTextoVideoFinal;
+
+    [Header("── Fundido de salida (video final → retro) ─")]
+    [Tooltip("Panel negro a pantalla completa (por encima del video) para no cortar abruptamente " +
+             "del video final a la retroalimentación. Opcional: si no se asigna, se pasa directo sin fundido.")]
+    public Image panelFadeSalida;
+    [Tooltip("Duración del fundido a negro y de regreso")]
+    public float duracionFadeSalida = 0.8f;
     // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
     [Header("── Botones ─────────────────────────────")]
@@ -125,6 +144,11 @@ public class UIRetroalimentacion : MonoBehaviour
 
         if (textoBotonSaltarFinal != null)
             textoBotonSaltarFinal.text = textoSaltarFinal;
+        // ── ▲ NUEVO ──────────────────────────────────────────────────────
+
+        // ── ▼ NUEVO: el texto sobre el video final empieza oculto ────────
+        if (textoVideoFinal != null)
+            textoVideoFinal.gameObject.SetActive(false);
         // ── ▲ NUEVO ──────────────────────────────────────────────────────
 
         // ── ▼ NUEVO: el cursor debe estar libre durante toda esta escena
@@ -230,6 +254,11 @@ public class UIRetroalimentacion : MonoBehaviour
         // ── ▲ NUEVO ─────────────────────────────────────────────────────────
 
         MostrarPantallaRetro();
+
+        // ── ▼ NUEVO: si hubo fundido a negro, regresar de negro ya con la
+        //     retroalimentación visible, para que la transición sea suave ──
+        yield return FundirImagenCO(panelFadeSalida, 1f, 0f, duracionFadeSalida);
+        // ── ▲ NUEVO ─────────────────────────────────────────────────────────
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -250,6 +279,20 @@ public class UIRetroalimentacion : MonoBehaviour
 
         videoPlayerFinal.Play();
 
+        // ── NUEVO: mostrar el texto sobre el video, con su propio fundido ──
+        CanvasGroup cgTexto = null;
+        if (textoVideoFinal != null && !string.IsNullOrEmpty(mensajeVideoFinal))
+        {
+            textoVideoFinal.text = mensajeVideoFinal;
+            textoVideoFinal.gameObject.SetActive(true);
+
+            cgTexto = canvasGroupTextoVideoFinal;
+            if (cgTexto == null) cgTexto = textoVideoFinal.GetComponent<CanvasGroup>();
+            if (cgTexto == null) cgTexto = textoVideoFinal.gameObject.AddComponent<CanvasGroup>();
+
+            yield return FundirCanvasGroupCO(cgTexto, 0f, 1f, duracionFadeTextoVideoFinal);
+        }
+
         yield return new WaitUntil(() =>
             !_videoFinalActivo ||
             !videoPlayerFinal.isPlaying ||
@@ -259,11 +302,22 @@ public class UIRetroalimentacion : MonoBehaviour
 
         _videoFinalActivo = false;
 
+        // ── NUEVO: ocultar el texto ANTES de cortar a la retroalimentación ──
+        if (cgTexto != null)
+        {
+            yield return FundirCanvasGroupCO(cgTexto, 1f, 0f, duracionFadeTextoVideoFinal);
+            textoVideoFinal.gameObject.SetActive(false);
+        }
+
+        if (botonSaltarFinal != null) botonSaltarFinal.gameObject.SetActive(false);
+
+        // ── NUEVO: fundido a negro para no cortar abruptamente a la retro ──
+        yield return FundirImagenCO(panelFadeSalida, 0f, 1f, duracionFadeSalida);
+
         if (videoPlayerFinal.isPlaying)
             videoPlayerFinal.Stop();
 
         videoScreenFinal.gameObject.SetActive(false);
-        if (botonSaltarFinal != null) botonSaltarFinal.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -275,6 +329,28 @@ public class UIRetroalimentacion : MonoBehaviour
         if (!_videoFinalActivo) return;
         SonidoUI.TocarSkip();
         _videoFinalActivo = false;
+    }
+
+    // ── NUEVO: fundido a negro de un Image a pantalla completa (opcional) ──
+    IEnumerator FundirImagenCO(Image img, float desde, float hasta, float duracion)
+    {
+        if (img == null) yield break;
+
+        float t = 0f;
+        Color c = img.color;
+        c.a = desde;
+        img.color = c;
+
+        while (t < duracion)
+        {
+            t += Time.deltaTime;
+            c.a = Mathf.Lerp(desde, hasta, t / duracion);
+            img.color = c;
+            yield return null;
+        }
+
+        c.a = hasta;
+        img.color = c;
     }
     // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
@@ -414,4 +490,3 @@ public class UIRetroalimentacion : MonoBehaviour
     }
     // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 }
-

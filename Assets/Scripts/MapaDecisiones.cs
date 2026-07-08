@@ -3,19 +3,21 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// MapaDecisiones v5 — Auto-escala para llenar el espacio disponible del Viewport.
+/// MapaDecisiones v6 — Auto-escala para caber SIEMPRE entero y ESTÁTICO en el Viewport.
 ///
-/// LAYOUT: columnas verticales por día, scroll horizontal.
+/// LAYOUT: columnas verticales por día (ancho variable, se ajusta al texto del título).
 ///   [Día X]   [Día X]   [Día X]   [Día X]   [DESENLACE]
 ///    [M1]      [M4]      [M7]      [M10]
 ///    [M2]      [M5]      [M8]      [M11]
 ///    [M3]      [M6]      [M9]      [M12]
 ///
 /// El mapa calcula automáticamente una escala para llenar el ancho Y el alto
-/// del Viewport del ScrollRect, sin necesidad de ajustar valores manualmente.
+/// del Viewport, tomando en cuenta el largo real de los títulos de cada día
+/// (p.ej. "Día 115 Fase de exclusividad"), y queda fijo — sin scroll — ya que
+/// siempre se auto-ajusta para caber completo.
 ///
 /// SETUP EN UNITY:
-///   ScrollRect: horizontal=true, vertical=false
+///   ScrollRect: se desactiva por código una vez generado el mapa (queda estático).
 ///   Contenedor (Content): pivot(0,0.5), anchor left-stretch — el script lo fuerza por código.
 ///   NO pongas Content Size Fitter en el Contenedor.
 ///   LeyendaRaiz: RectTransform hermano del ScrollRect (fuera de él).
@@ -118,7 +120,7 @@ public class MapaDecisiones : MonoBehaviour
         {
             GenerarMapa(CalcularEscala(overrideAnchoViewport, overrideAltoViewport),
                         overrideAnchoViewport, overrideAltoViewport);
-            yield return CentrarScrollCO();
+            yield return FinalizarLayoutCO();
             yield break;
         }
 
@@ -168,15 +170,15 @@ public class MapaDecisiones : MonoBehaviour
         Debug.Log($"[MapaDecisiones] Viewport: {vpW}×{vpH} (intentos: {intentos})");
         GenerarMapa(CalcularEscala(vpW, vpH), vpW, vpH);
 
-        yield return CentrarScrollCO();
+        yield return FinalizarLayoutCO();
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // ── ▼ NUEVO: fija la posición de scroll DESPUÉS de que el Contenedor ya
-    //     tiene su tamaño y posición finales, para que el mapa siempre
-    //     aparezca centrado (o desde el Día 1 si no cabe entero) de forma
-    //     confiable, sin depender de resets externos hechos antes de tiempo ──
-    IEnumerator CentrarScrollCO()
+    // ── ▼ NUEVO: fija la posición final del mapa y lo deja ESTÁTICO (sin
+    //     scroll) — como el mapa ahora siempre se auto-escala para caber
+    //     completo en el Viewport (títulos de día incluidos), no hace falta
+    //     poder arrastrarlo; así evitamos que el usuario lo deje "descuadrado" ──
+    IEnumerator FinalizarLayoutCO()
     {
         // Esperar un par de frames a que Unity reconstruya el layout con el
         // nuevo tamaño del Contenedor antes de tocar la posición de scroll.
@@ -185,16 +187,50 @@ public class MapaDecisiones : MonoBehaviour
         Canvas.ForceUpdateCanvases();
 
         if (scrollRect != null)
+        {
             scrollRect.horizontalNormalizedPosition = 0.5f;
+            scrollRect.verticalNormalizedPosition = 0.5f;
+            scrollRect.horizontal = false;
+            scrollRect.vertical = false;
+            scrollRect.enabled = false; // estático: ya no se puede arrastrar
+        }
+    }
+    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ── ▼ NUEVO: el ancho del hub de cada día se ajusta al texto real del
+    //     título (p.ej. "Día 115 Fase de exclusividad" necesita más espacio
+    //     que "Día 1"), para que nunca se corte ni se superponga ──────────
+    string NombreDia(int d)
+    {
+        return (nombresDias != null && d < nombresDias.Length && !string.IsNullOrEmpty(nombresDias[d]))
+            ? nombresDias[d] : $"Día {d + 1}";
+    }
+
+    float EstimarAnchoTexto(string texto, int fontSize)
+    {
+        if (string.IsNullOrEmpty(texto)) return 0f;
+        // Estimación aproximada (funciona bien para LegacyRuntime.ttf en negrita)
+        return texto.Length * fontSize * 0.62f;
+    }
+
+    float AnchoHubBaseParaDia(string nomDia)
+    {
+        float anchoTexto = EstimarAnchoTexto(nomDia, fsHub) + padTarjeta * 2f;
+        return Mathf.Max(anchoHub, anchoTexto);
     }
     // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
     float CalcularEscala(float vpW, float vpH)
     {
+        float sumaColumnas = 0f;
+        for (int d = 0; d < GameManager.TOTAL_DIAS; d++)
+            sumaColumnas += Mathf.Max(anchoColumna, AnchoHubBaseParaDia(NombreDia(d)));
+
         float mapaW = margenIzquierdo
-                    + GameManager.TOTAL_DIAS * anchoColumna
-                    + (GameManager.TOTAL_DIAS - 1) * gapColumnas
-                    + gapColumnas + anchoDesenlace
+                    + sumaColumnas
+                    + GameManager.TOTAL_DIAS * gapColumnas
+                    + anchoDesenlace
                     + margenDerecho;
 
         float mapaH = altoHub + gapHubMomentos
@@ -203,7 +239,7 @@ public class MapaDecisiones : MonoBehaviour
                     + 30f;
 
         float escala = Mathf.Min(vpW / mapaW, vpH / mapaH);
-        return Mathf.Clamp(escala, 0.4f, 3.0f);
+        return Mathf.Clamp(escala, 0.22f, 3.0f);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -218,7 +254,6 @@ public class MapaDecisiones : MonoBehaviour
         float _gapCol = gapColumnas * e;
         float _margenIzq = margenIzquierdo * e;
         float _margenDer = margenDerecho * e;
-        float _anchoHub = anchoHub * e;
         float _altoHub = altoHub * e;
         float _anchoMom = anchoMomento * e;
         float _altoMom = altoMomento * e;
@@ -235,6 +270,24 @@ public class MapaDecisiones : MonoBehaviour
         int _fsTDes = Mathf.Max(10, Mathf.RoundToInt(fsTitDes * e));
         int _fsCDes = Mathf.Max(9, Mathf.RoundToInt(fsCpoDes * e));
 
+        // ── ▼ NUEVO: ancho del hub y de la columna, por día, ajustado al texto ──
+        float[] _anchoHubs = new float[GameManager.TOTAL_DIAS];
+        float[] _colWidth = new float[GameManager.TOTAL_DIAS];
+        float[] _xCols = new float[GameManager.TOTAL_DIAS];
+        for (int d = 0; d < GameManager.TOTAL_DIAS; d++)
+        {
+            _anchoHubs[d] = AnchoHubBaseParaDia(NombreDia(d)) * e;
+            _colWidth[d] = Mathf.Max(_anchoCol, _anchoHubs[d]);
+        }
+
+        float xCursor = _margenIzq;
+        for (int d = 0; d < GameManager.TOTAL_DIAS; d++)
+        {
+            _xCols[d] = xCursor + _colWidth[d] * 0.5f;
+            xCursor += _colWidth[d] + _gapCol;
+        }
+        // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
+
         // Centrado vertical: el bloque (hub + 3 momentos) centrado en el viewport
         float bloqueH = _altoHub + _gapHubMom
                       + GameManager.DECISIONES_POR_DIA * _altoMom
@@ -245,20 +298,17 @@ public class MapaDecisiones : MonoBehaviour
 
         for (int d = 0; d < GameManager.TOTAL_DIAS; d++)
         {
-            float xCol = _margenIzq + d * (_anchoCol + _gapCol) + _anchoCol * 0.5f;
-
-            string nomDia = (nombresDias != null && d < nombresDias.Length && !string.IsNullOrEmpty(nombresDias[d]))
-                ? nombresDias[d] : $"Día {d + 1}";
+            float xCol = _xCols[d];
+            string nomDia = NombreDia(d);
 
             CrearTarjeta(new Vector2(xCol, _yHub),
-                _anchoHub, _altoHub, colorDia,
+                _anchoHubs[d], _altoHub, colorDia,
                 nomDia, null, _fsHub, _fsCpo, _pad);
 
             if (d > 0)
             {
-                float xPrev = _margenIzq + (d - 1) * (_anchoCol + _gapCol) + _anchoCol * 0.5f;
-                CrearLinea(new Vector2(xPrev + _anchoHub * 0.5f, _yHub),
-                           new Vector2(xCol - _anchoHub * 0.5f, _yHub), _grosor);
+                CrearLinea(new Vector2(_xCols[d - 1] + _anchoHubs[d - 1] * 0.5f, _yHub),
+                           new Vector2(xCol - _anchoHubs[d] * 0.5f, _yHub), _grosor);
             }
 
             for (int m = 0; m < GameManager.DECISIONES_POR_DIA; m++)
@@ -287,11 +337,11 @@ public class MapaDecisiones : MonoBehaviour
             }
         }
 
-        // Tarjeta de desenlace
-        float xUlt = _margenIzq + (GameManager.TOTAL_DIAS - 1) * (_anchoCol + _gapCol) + _anchoCol * 0.5f;
-        float xDes = xUlt + _anchoCol * 0.5f + _gapCol + _anchoDes * 0.5f;
+        // Tarjeta de desenlace — justo después de la última columna (xCursor ya
+        // incluye el hueco/gap tras la última columna)
+        float xDes = xCursor + _anchoDes * 0.5f;
 
-        CrearLinea(new Vector2(xUlt + _anchoHub * 0.5f, _yHub),
+        CrearLinea(new Vector2(_xCols[GameManager.TOTAL_DIAS - 1] + _anchoHubs[GameManager.TOTAL_DIAS - 1] * 0.5f, _yHub),
                    new Vector2(xDes - _anchoDes * 0.5f, _yHub), _grosor);
         CrearTarjetaDesenlace(new Vector2(xDes, _yHub), _anchoDes, _altoDes, _fsTDes, _fsCDes, _pad);
 

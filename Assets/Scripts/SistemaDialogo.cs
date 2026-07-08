@@ -24,6 +24,11 @@ public class SistemaDialogo : MonoBehaviour
     public GameObject choicePack;
     public GameObject talkText;
     public Text subText;
+    [Tooltip("Text opcional que aparece al mostrarse los botones. Solo se usa en el momento 1. " +
+             "Arrástralo aquí; si está vacío no pasa nada.")]
+    public Text textoHintEleccion;
+    [Tooltip("Texto del hint. Solo se muestra en el momento 1 al aparecer las opciones.")]
+    public string textoHint = "Selecciona una respuesta";
 
     [Header("── Botones ─────────────────────────────")]
     public Button boton1;
@@ -227,6 +232,13 @@ public class SistemaDialogo : MonoBehaviour
 
         AsignarBotones();
         choicePack.SetActive(true);
+
+        // Hint "Selecciona una respuesta" solo en el momento 1
+        if (momentoIndex == 1 && textoHintEleccion != null)
+        {
+            textoHintEleccion.text = textoHint;
+            textoHintEleccion.enabled = true;
+        }
     }
 
     // ─── Botones ──────────────────────────────────────────────────────────
@@ -238,6 +250,9 @@ public class SistemaDialogo : MonoBehaviour
     IEnumerator EleccionCO(TipoEleccion tipo, string textoRespuesta, string respuestaNPC)
     {
         choicePack.SetActive(false);
+
+        // Ocultar hint al elegir
+        if (textoHintEleccion != null) textoHintEleccion.enabled = false;
 
         yield return EscribirTexto("Yo: ", textoRespuesta, false);
         yield return new WaitForSeconds(0.5f);
