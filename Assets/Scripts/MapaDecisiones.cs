@@ -43,7 +43,7 @@ public class MapaDecisiones : MonoBehaviour
     // ── Layout BASE (se escalan automáticamente para llenar el Viewport) ──
     [Header("── Layout base (se auto-escalan) ────────")]
     [Tooltip("Ancho de cada columna de día")]
-    public float anchoColumna = 220f;
+    public float anchoColumna = 100f;
     [Tooltip("Espacio horizontal entre columnas")]
     public float gapColumnas = 55f;
     [Tooltip("Margen izquierdo y derecho")]
