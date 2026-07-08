@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// MapaDecisiones v6 — Auto-escala para caber SIEMPRE entero y ESTÁTICO en el Viewport.
+/// MapaDecisiones v9 — SIN ScrollRect. Panel fijo y centrado, con Mask de
+/// seguridad para que el contenido JAMÁS se dibuje fuera de sus límites.
 ///
 /// LAYOUT: columnas verticales por día (ancho variable, se ajusta al texto del título).
 ///   [Día X]   [Día X]   [Día X]   [Día X]   [DESENLACE]
@@ -12,21 +13,34 @@ using UnityEngine.UI;
 ///    [M3]      [M6]      [M9]      [M12]
 ///
 /// El mapa calcula automáticamente una escala para llenar el ancho Y el alto
-/// del Viewport, tomando en cuenta el largo real de los títulos de cada día
-/// (p.ej. "Día 115 Fase de exclusividad"), y queda fijo — sin scroll — ya que
-/// siempre se auto-ajusta para caber completo.
+/// del panel, tomando en cuenta el largo real de los títulos de cada día
+/// (p.ej. "Día 115 Fase de exclusividad").
 ///
-/// SETUP EN UNITY:
-///   ScrollRect: se desactiva por código una vez generado el mapa (queda estático).
-///   Contenedor (Content): pivot(0,0.5), anchor left-stretch — el script lo fuerza por código.
-///   NO pongas Content Size Fitter en el Contenedor.
-///   LeyendaRaiz: RectTransform hermano del ScrollRect (fuera de él).
+/// SETUP EN UNITY (nuevo, sin ScrollRect):
+///   PanelMapa: un simple RectTransform (con Image o sin ella) del tamaño y
+///              posición donde quieres que se vea el mapa. Es el PADRE directo
+///              del Contenedor. El script le agrega un RectMask2D automáticamente
+///              (si no tiene uno) para recortar cualquier desborde.
+///   Contenedor (Content): pivot(0,0.5), anchor left-stretch — el script lo
+///              fuerza por código. NO le pongas Content Size Fitter.
+///   LeyendaRaiz: RectTransform aparte, donde sea (no depende del PanelMapa).
+///
+///   Si en tu jerarquía todavía queda un ScrollRect (de una versión anterior),
+///   el script lo detecta y lo apaga por completo por las dudas, pero ya NO es
+///   necesario para que esto funcione.
 /// </summary>
 public class MapaDecisiones : MonoBehaviour
 {
     // ── Referencias ───────────────────────────────────────────────────────
     [Header("── Referencias ────────────────────────")]
+    [Tooltip("Panel FIJO (sin ScrollRect) donde se dibuja el mapa. Debe ser el " +
+             "padre directo de 'contenedor'. Si lo dejas vacío, se usa el padre " +
+             "actual de 'contenedor' automáticamente.")]
+    public RectTransform panelMapa;
     public RectTransform contenedor;
+    [Tooltip("Opcional / legado: si tu jerarquía todavía tiene un ScrollRect, " +
+             "asígnalo aquí (o se busca solo) y el script lo apaga por completo. " +
+             "Ya NO se necesita para que el mapa funcione.")]
     public ScrollRect scrollRect;
     public RectTransform leyendaRaiz;
     public GameObject prefabNodo;
@@ -82,9 +96,9 @@ public class MapaDecisiones : MonoBehaviour
 
     // ─────────────────────────────────────────────────────────────────────
     [Header("── Override manual (usa si auto-escala falla) ──")]
-    [Tooltip("Si > 0, usa este ancho en lugar del Viewport real. Ponlo igual al ancho de tu ScrollRect en el Inspector.")]
+    [Tooltip("Si > 0, usa este ancho en lugar del tamaño real del panel. Ponlo igual al ancho de 'panelMapa' en el Inspector.")]
     public float overrideAnchoViewport = 0f;
-    [Tooltip("Si > 0, usa este alto en lugar del Viewport real. Ponlo igual al alto de tu ScrollRect en el Inspector.")]
+    [Tooltip("Si > 0, usa este alto en lugar del tamaño real del panel. Ponlo igual al alto de 'panelMapa' en el Inspector.")]
     public float overrideAltoViewport = 0f;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -96,8 +110,30 @@ public class MapaDecisiones : MonoBehaviour
             return;
         }
 
+        // ── ▼ NUEVO: ya NO usamos ScrollRect. El panel fijo es el padre
+        //     directo de 'contenedor' (o el que se haya asignado a mano). ──
+        if (panelMapa == null && contenedor != null)
+            panelMapa = contenedor.parent as RectTransform;
+
+        // Seguro definitivo: pase lo que pase con el cálculo de escala, el
+        // contenido JAMÁS se dibuja fuera del panel — se recorta ahí mismo.
+        // Esto es justo lo que faltaba: antes, si el mapa quedaba un poco más
+        // grande de lo esperado (o mal medido), se seguía dibujando libremente
+        // sobre el resto del Canvas hasta el borde de la pantalla.
+        if (panelMapa != null && panelMapa.GetComponent<RectMask2D>() == null)
+            panelMapa.gameObject.AddComponent<RectMask2D>();
+
+        // Por si queda un ScrollRect de una versión anterior en la jerarquía:
+        // apagarlo del todo, ya no se necesita ni se usa.
         if (scrollRect == null && contenedor != null)
             scrollRect = contenedor.GetComponentInParent<ScrollRect>();
+        if (scrollRect != null)
+        {
+            scrollRect.horizontal = false;
+            scrollRect.vertical = false;
+            scrollRect.enabled = false;
+        }
+        // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
         if (contenedor != null)
         {
@@ -124,10 +160,9 @@ public class MapaDecisiones : MonoBehaviour
             yield break;
         }
 
-        // Esperar hasta que el Viewport tenga un tamaño real Y ESTABLE
-        // (evita medir a mitad de un rebuild de layout, que causaba que el
-        // mapa terminara descentrado / pegado a la derecha)
-        RectTransform viewport = scrollRect != null ? scrollRect.viewport : null;
+        // ── ▼ NUEVO: medir 'panelMapa' directamente (ya no hay Viewport de
+        //     ScrollRect de por medio). Se espera a que tenga un tamaño real
+        //     Y ESTABLE, para no medir a mitad de un rebuild de layout. ──
         float vpW = 0f, vpH = 0f;
         float prevW = -1f, prevH = -1f;
         int framesEstable = 0;
@@ -136,16 +171,10 @@ public class MapaDecisiones : MonoBehaviour
         {
             yield return null;
             intentos++;
-            if (viewport != null)
+            if (panelMapa != null)
             {
-                vpW = viewport.rect.width;
-                vpH = viewport.rect.height;
-            }
-            else if (scrollRect != null)
-            {
-                // Fallback: usar el RectTransform del propio ScrollRect
-                RectTransform rtSR = scrollRect.GetComponent<RectTransform>();
-                if (rtSR != null) { vpW = rtSR.rect.width; vpH = rtSR.rect.height; }
+                vpW = panelMapa.rect.width;
+                vpH = panelMapa.rect.height;
             }
 
             if (vpW > 50f && vpH > 50f)
@@ -163,37 +192,27 @@ public class MapaDecisiones : MonoBehaviour
             }
         }
 
-        // Si después de todos los intentos sigue en 0, usar Screen como último recurso
-        if (vpW < 50f) vpW = Screen.width * 0.75f; // el ScrollRect suele ser ~75% del ancho
-        if (vpH < 50f) vpH = Screen.height * 0.55f; // y ~55% del alto
+        // Si después de todos los intentos sigue en 0 (p.ej. panelMapa no
+        // asignado), usar Screen como último recurso
+        if (vpW < 50f) vpW = Screen.width * 0.75f;
+        if (vpH < 50f) vpH = Screen.height * 0.55f;
+        // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
-        Debug.Log($"[MapaDecisiones] Viewport: {vpW}×{vpH} (intentos: {intentos})");
+        Debug.Log($"[MapaDecisiones] Panel: {vpW}×{vpH} (intentos: {intentos})");
         GenerarMapa(CalcularEscala(vpW, vpH), vpW, vpH);
 
         yield return FinalizarLayoutCO();
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // ── ▼ NUEVO: fija la posición final del mapa y lo deja ESTÁTICO (sin
-    //     scroll) — como el mapa ahora siempre se auto-escala para caber
-    //     completo en el Viewport (títulos de día incluidos), no hace falta
-    //     poder arrastrarlo; así evitamos que el usuario lo deje "descuadrado" ──
+    // ── ▼ NUEVO: ya no hay ScrollRect que apagar (se apaga en Start, por si
+    //     quedó uno legado) — aquí solo falta forzar que Unity reconstruya
+    //     el layout con el nuevo tamaño/posición del Contenedor.
     IEnumerator FinalizarLayoutCO()
     {
-        // Esperar un par de frames a que Unity reconstruya el layout con el
-        // nuevo tamaño del Contenedor antes de tocar la posición de scroll.
         yield return null;
         yield return null;
         Canvas.ForceUpdateCanvases();
-
-        if (scrollRect != null)
-        {
-            scrollRect.horizontalNormalizedPosition = 0.5f;
-            scrollRect.verticalNormalizedPosition = 0.5f;
-            scrollRect.horizontal = false;
-            scrollRect.vertical = false;
-            scrollRect.enabled = false; // estático: ya no se puede arrastrar
-        }
     }
     // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
@@ -238,7 +257,11 @@ public class MapaDecisiones : MonoBehaviour
                     + (GameManager.DECISIONES_POR_DIA - 1) * gapEntreMomentos
                     + 30f;
 
-        float escala = Mathf.Min(vpW / mapaW, vpH / mapaH);
+        // ── ▼ NUEVO: margen de seguridad (2%) para que la estimación de ancho
+        //     de texto (aproximada) nunca deje el mapa un pelo más grande que
+        //     el Viewport real — eso era lo que lo hacía "asomar" a la derecha ──
+        float escala = Mathf.Min(vpW / mapaW, vpH / mapaH) * 0.98f;
+        // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
         return Mathf.Clamp(escala, 0.22f, 3.0f);
     }
 
@@ -345,9 +368,15 @@ public class MapaDecisiones : MonoBehaviour
                    new Vector2(xDes - _anchoDes * 0.5f, _yHub), _grosor);
         CrearTarjetaDesenlace(new Vector2(xDes, _yHub), _anchoDes, _altoDes, _fsTDes, _fsCDes, _pad);
 
-        // Ajustar el Contenedor y centrar si cabe
+        // ── ▼ MODIFICADO: centrar SIEMPRE, no solo "si cabe". Antes, cuando
+        //     el mapa calculado resultaba un poco más ancho que el Viewport
+        //     (por redondeos o estimación de texto), offsetX quedaba en 0 y
+        //     el mapa se pegaba a la izquierda, cortándose a la derecha —
+        //     que es justo lo que se veía en pantalla. Ahora, aunque sobre
+        //     margen de error, el excedente se reparte igual a ambos lados. ──
         float anchoTotal = xDes + _anchoDes * 0.5f + _margenDer;
-        float offsetX = anchoTotal < vpW ? (vpW - anchoTotal) * 0.5f : 0f;
+        float offsetX = (vpW - anchoTotal) * 0.5f;
+        // ── ▲ MODIFICADO ────────────────────────────────────────────────────────
 
         if (contenedor != null)
         {

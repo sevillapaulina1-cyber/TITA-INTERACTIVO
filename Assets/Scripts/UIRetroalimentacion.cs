@@ -29,11 +29,16 @@ public class UIRetroalimentacion : MonoBehaviour
     public GameObject panelRetro;
 
     [Header("── ScrollRect del mapa (opcional) ───────")]
-    [Tooltip("Si el mapa está dentro de un ScrollRect, asígnalo aquí para que se reinicie " +
-             "al inicio (scroll al extremo izquierdo) cada vez que se muestre la pantalla.")]
+    [Tooltip("Si el mapa vive dentro de un ScrollRect, asígnalo aquí: este script se " +
+             "asegurará de que quede SIEMPRE desactivado (el mapa es estático, sin " +
+             "scroll ni arrastre — MapaDecisiones lo centra y escala por código).")]
     public ScrollRect scrollRectMapa;
-    [Tooltip("Si está activado, el ScrollRect permite scroll horizontal (para el mapa de días)")]
-    public bool scrollHorizontal = true;
+    // ── ▼ MODIFICADO: ya no se usa — el mapa nunca tiene scroll horizontal.
+    //     Se deja el campo (marcado [HideInInspector]) solo para no romper
+    //     referencias existentes en el Inspector de otras escenas/prefabs.
+    [HideInInspector]
+    public bool scrollHorizontal = false;
+    // ── ▲ MODIFICADO ────────────────────────────────────────────────────────
 
     // ── ▼ NUEVO: pantalla de reflexión, aparece ANTES de la retroalimentación ──
     [Header("── Reflexión (entre cinemática y retro) ─")]
@@ -407,14 +412,21 @@ public class UIRetroalimentacion : MonoBehaviour
         if (panelRetro != null)
             panelRetro.SetActive(true);
 
-        // ── Configurar el ScrollRect del mapa ─────────────────────────────
-        // (el centrado/posición de scroll ahora lo maneja MapaDecisiones por su
-        //  cuenta, DESPUÉS de generar el layout, para que sea siempre confiable)
+        // ── ▼ MODIFICADO: el mapa ahora es 100% estático (sin scroll ni
+        //     arrastre) y se centra/escala solo, por código, en
+        //     MapaDecisiones. ANTES, esta línea volvía a poner
+        //     "horizontal = true" justo al mostrar el panel, lo que
+        //     re-habilitaba el arrastre por unos frames antes de que
+        //     MapaDecisiones lo apagara de nuevo — por eso a veces "se movía
+        //     solo" o quedaba descuadrado. Ahora simplemente lo forzamos
+        //     apagado, sin excepción. ──
         if (scrollRectMapa != null)
         {
-            scrollRectMapa.horizontal = scrollHorizontal;
+            scrollRectMapa.horizontal = false;
             scrollRectMapa.vertical = false;
+            scrollRectMapa.enabled = false;
         }
+        // ── ▲ MODIFICADO ────────────────────────────────────────────────────────
 
         // ── ▼ AUDIO: iniciar música de retroalimentación (NUEVO) ─────────
         if (AudioManager.Instance != null)
