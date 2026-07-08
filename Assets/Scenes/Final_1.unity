@@ -1203,7 +1203,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -278, y: -19}
+  m_AnchoredPosition: {x: -181, y: -0.000011444}
   m_SizeDelta: {x: 2679.1848, y: 1574.0248}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &728181306
@@ -1591,7 +1591,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 0.000015258789, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &803646177
@@ -1606,8 +1606,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
-  m_HorizontalFit: 0
-  m_VerticalFit: 0
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!1 &813482452
 GameObject:
   m_ObjectHideFlags: 0
@@ -3332,7 +3332,7 @@ MonoBehaviour:
   textoSaltar: Saltar
   panelRetro: {fileID: 813482452}
   scrollRectMapa: {fileID: 728181306}
-  scrollHorizontal: 1
+  scrollHorizontal: 0
   panelReflexion: {fileID: 778019802}
   textoReflexion: {fileID: 640681465}
   canvasGroupReflexion: {fileID: 468093721}
