@@ -959,8 +959,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0001, y: -5.4402}
-  m_SizeDelta: {x: 757.1677, y: 352.4221}
+  m_AnchoredPosition: {x: -2.7582, y: -18.3109}
+  m_SizeDelta: {x: 1200, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &626181739
 MonoBehaviour:
@@ -3176,24 +3176,6 @@ MonoBehaviour:
   textoConfianza: {fileID: 171824626}
   textoRiesgo: {fileID: 1728957574}
   textoFinal: {fileID: 111067413}
-  textoEtapasGrooming: {fileID: 0}
-  etapasGrooming:
-  - nombreFase: Fase de amistad
-    diaReferencia: "D\xEDa 1"
-    descripcion: Crean perfiles falsos o varios perfiles para acercarse, conversar,
-      conocer gustos y generar confianza.
-  - nombreFase: Fase emocional
-    diaReferencia: "D\xEDa 7"
-    descripcion: "Comparten secretos y crean un v\xEDnculo m\xE1s \xEDntimo, haci\xE9ndose
-      pasar por alguien de la misma edad."
-  - nombreFase: "Fase de evaluaci\xF3n"
-    diaReferencia: "D\xEDa 18"
-    descripcion: "Ofrecen regalos o atenci\xF3n emocional para analizar la vulnerabilidad
-      del menor y el riesgo de ser descubiertos."
-  - nombreFase: Fase de exclusividad
-    diaReferencia: "D\xEDa 115"
-    descripcion: "Introducen temas sexuales y buscan contenido \xEDntimo, sugieren
-      cambiar de red social para obtener fotos y encuentros presenciales."
   videoPlayerFinal: {fileID: 1761812333}
   videoScreenFinal: {fileID: 626181739}
   botonSaltarFinal: {fileID: 0}

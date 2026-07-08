@@ -1212,31 +1212,13 @@ MonoBehaviour:
   canvasGroupReflexion: {fileID: 1868286647}
   mensajesReflexion:
   - "AS\xCD DE F\xC1CIL LOS DEPREDADORES TIENEN ACCESO A TUS HIJOS"
-  - "CU\xCDDALOS, SUPERVISA LO QUE JUEGAN\n\nPORQUE TODO ESTA A UN SOLO CLICK\n"
+  - "CU\xCDDALOS, SUPERVISA LO QUE JUEGAN\n\nTODO ESTA A UN SOLO CLICK\n"
   duracionPorMensaje: 4
   duracionFadeReflexion: 0.8
   textoResumen: {fileID: 305014305}
   textoConfianza: {fileID: 731561244}
   textoRiesgo: {fileID: 259381375}
   textoFinal: {fileID: 305014305}
-  textoEtapasGrooming: {fileID: 0}
-  etapasGrooming:
-  - nombreFase: Fase de amistad
-    diaReferencia: "D\xEDa 1"
-    descripcion: Crean perfiles falsos o varios perfiles para acercarse, conversar,
-      conocer gustos y generar confianza.
-  - nombreFase: Fase emocional
-    diaReferencia: "D\xEDa 7"
-    descripcion: "Comparten secretos y crean un v\xEDnculo m\xE1s \xEDntimo, haci\xE9ndose
-      pasar por alguien de la misma edad."
-  - nombreFase: "Fase de evaluaci\xF3n"
-    diaReferencia: "D\xEDa 18"
-    descripcion: "Ofrecen regalos o atenci\xF3n emocional para analizar la vulnerabilidad
-      del menor y el riesgo de ser descubiertos."
-  - nombreFase: Fase de exclusividad
-    diaReferencia: "D\xEDa 115"
-    descripcion: "Introducen temas sexuales y buscan contenido \xEDntimo, sugieren
-      cambiar de red social para obtener fotos y encuentros presenciales."
   videoPlayerFinal: {fileID: 1478332322}
   videoScreenFinal: {fileID: 2064005952}
   botonSaltarFinal: {fileID: 0}
@@ -2271,12 +2253,12 @@ MonoBehaviour:
   colorDia: {r: 0.14, g: 0.42, b: 0.48, a: 1}
   anchoColumna: 170
   gapColumnas: 50
-  margenIzquierdo: 140
+  margenIzquierdo: 100
   margenDerecho: 60
   gapHubMomentos: 18
   gapEntreMomentos: 12
   grosorLinea: 4
-  anchoHub: 110
+  anchoHub: 130
   altoHub: 48
   anchoMomento: 145
   altoMomento: 100
@@ -2683,7 +2665,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.00002207, y: -3.4814}
-  m_SizeDelta: {x: 757.1677, y: 390.0215}
+  m_SizeDelta: {x: 1200, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2064005952
 MonoBehaviour:
