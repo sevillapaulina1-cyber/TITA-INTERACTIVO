@@ -1806,8 +1806,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -195, y: -922}
-  m_SizeDelta: {x: 206.3197, y: 57.0818}
+  m_AnchoredPosition: {x: -223, y: -975}
+  m_SizeDelta: {x: 187.8166, y: 46.2883}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1080955287
 MonoBehaviour:
@@ -2331,7 +2331,7 @@ MonoBehaviour:
   colorGris: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   colorLinea: {r: 1, g: 1, b: 1, a: 0.3}
   colorDia: {r: 0.14, g: 0.42, b: 0.48, a: 1}
-  escalaGlobal: 1
+  escalaGlobal: 1.4
   anchoColumna: 60
   gapColumnas: 50
   margenIzquierdo: 40

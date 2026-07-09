@@ -4983,9 +4983,9 @@ MonoBehaviour:
   nombreDia1: "D\xEDa 1"
   fechaDia1: 28 de mayo
   fechas:
-  - "Una semana despu\xE9s"
-  - "Dos semanas despu\xE9s"
-  - "Tres meses despu\xE9s"
+  - "Una semana despu\xC9s"
+  - "Dos semanas despu\xC9s"
+  - "Tres meses despu\xC9s"
   nombresDias:
   - "D\xEDa 7"
   - "D\xEDa 18"
