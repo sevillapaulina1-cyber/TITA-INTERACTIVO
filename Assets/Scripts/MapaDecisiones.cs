@@ -115,6 +115,15 @@ public class MapaDecisiones : MonoBehaviour
     [Header("── Debug ────────────────────────────────")]
     public bool mostrarDebugEnPantalla = false;
 
+    // ── Posición del mapa dentro de su panel ────────────────────────────────
+    [Header("── Posición ─────────────────────────────")]
+    [Tooltip("Mueve el mapa completo hacia abajo (negativo) o hacia arriba " +
+             "(positivo) sin descentrarlo horizontalmente. Ajusta a mano.")]
+    public float desplazamientoY = 0f;
+    [Tooltip("Igual, pero horizontal: mueve el mapa a la izquierda (negativo) " +
+             "o derecha (positivo).")]
+    public float desplazamientoX = 0f;
+
     // ─────────────────────────────────────────────────────────────────────
     void Start()
     {
@@ -127,12 +136,13 @@ public class MapaDecisiones : MonoBehaviour
         // ── Contenedor: centrado en su panel, igual que el script viejo ──
         // Nada de medir Viewport ni esperar frames — esto es instantáneo y
         // matemáticamente exacto, sin importar la resolución de pantalla.
+        // 'desplazamientoX/Y' permiten correr el mapa sin descentrarlo.
         if (contenedor != null)
         {
             contenedor.pivot = new Vector2(0.5f, 0.5f);
             contenedor.anchorMin = new Vector2(0.5f, 0.5f);
             contenedor.anchorMax = new Vector2(0.5f, 0.5f);
-            contenedor.anchoredPosition = Vector2.zero;
+            contenedor.anchoredPosition = new Vector2(desplazamientoX, desplazamientoY);
         }
 
         // Seguro opcional: si asignaste 'panelMapa', que nada se salga de ahí.
