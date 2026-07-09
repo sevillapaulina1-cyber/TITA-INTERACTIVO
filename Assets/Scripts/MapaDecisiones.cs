@@ -1,10 +1,15 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// MapaDecisiones v9 — SIN ScrollRect. Panel fijo y centrado, con Mask de
-/// seguridad para que el contenido JAMÁS se dibuje fuera de sus límites.
+/// MapaDecisiones v10 — MISMA LÓGICA DE POSICIONAMIENTO que la versión simple
+/// original (la de la "onda" que sí funcionaba): todo se construye alrededor
+/// de (0,0) y el Contenedor queda anclado y centrado en su panel por código,
+/// SIN medir ningún Viewport en tiempo real, SIN ScrollRect, SIN coroutines
+/// esperando frames. Eso era la fuente de todos los bugs de centrado.
+///
+/// Se conserva el diseño actual (columnas por día, tarjetas grandes con
+/// título + cuerpo, leyenda, tarjeta de desenlace, colores según elección).
 ///
 /// LAYOUT: columnas verticales por día (ancho variable, se ajusta al texto del título).
 ///   [Día X]   [Día X]   [Día X]   [Día X]   [DESENLACE]
@@ -12,36 +17,41 @@ using UnityEngine.UI;
 ///    [M2]      [M5]      [M8]      [M11]
 ///    [M3]      [M6]      [M9]      [M12]
 ///
-/// El mapa calcula automáticamente una escala para llenar el ancho Y el alto
-/// del panel, tomando en cuenta el largo real de los títulos de cada día
-/// (p.ej. "Día 115 Fase de exclusividad").
+/// CÓMO SE CENTRA (igual que el script viejo):
+///   1. Primero se calculan TODAS las posiciones X de las columnas (sin crear
+///      nada todavía), lo que da el ancho total real del mapa (anchoTotal).
+///   2. Se le resta anchoTotal/2 a cada posición, para que el mapa quede
+///      construido simétrico alrededor de x=0 (idéntico a como el script
+///      viejo hacía "startX = -(separacionHorizontal * 5.5f)").
+///   3. El Contenedor se fuerza por código a pivot=(0.5,0.5), anchor
+///      centrado en su panel, anchoredPosition=(0,0) — así su centro SIEMPRE
+///      coincide con el centro del panel, sin importar tamaño de pantalla.
+///   4. Cada tarjeta y línea se crea con pivot/anchor (0.5,0.5) también
+///      forzado por código (no depende de cómo esté armado el prefab).
 ///
-/// SETUP EN UNITY (nuevo, sin ScrollRect):
-///   PanelMapa: un simple RectTransform (con Image o sin ella) del tamaño y
-///              posición donde quieres que se vea el mapa. Es el PADRE directo
-///              del Contenedor. El script le agrega un RectMask2D automáticamente
-///              (si no tiene uno) para recortar cualquier desborde.
-///   Contenedor (Content): pivot(0,0.5), anchor left-stretch — el script lo
-///              fuerza por código. NO le pongas Content Size Fitter.
-///   LeyendaRaiz: RectTransform aparte, donde sea (no depende del PanelMapa).
+/// ESCALA: como ya no se mide ningún Viewport en tiempo real (eso causaba
+///   los bugs), el tamaño del mapa se controla con 'escalaGlobal', un
+///   número fijo que ajustas a mano en el Inspector para tu resolución
+///   objetivo (por ejemplo 0.6 si el mapa se ve muy grande). Es exactamente
+///   el mismo enfoque que usaba el script viejo con sus constantes fijas
+///   (separacionHorizontal, tamanoNodo, etc.).
 ///
-///   Si en tu jerarquía todavía queda un ScrollRect (de una versión anterior),
-///   el script lo detecta y lo apaga por completo por las dudas, pero ya NO es
-///   necesario para que esto funcione.
+/// SETUP EN UNITY:
+///   PanelMapa (opcional): el panel visual donde vive el mapa. Si lo asignas,
+///              se le agrega un Mask/RectMask2D de seguridad para que nada se
+///              salga de sus límites, pase lo que pase con 'escalaGlobal'.
+///   Contenedor: hijo directo de PanelMapa (o de donde sea). El script lo
+///              centra por código, no hace falta configurarlo a mano.
+///   LeyendaRaiz: RectTransform aparte (no depende del mapa ni del panel).
 /// </summary>
 public class MapaDecisiones : MonoBehaviour
 {
     // ── Referencias ───────────────────────────────────────────────────────
     [Header("── Referencias ────────────────────────")]
-    [Tooltip("Panel FIJO (sin ScrollRect) donde se dibuja el mapa. Debe ser el " +
-             "padre directo de 'contenedor'. Si lo dejas vacío, se usa el padre " +
-             "actual de 'contenedor' automáticamente.")]
-    public RectTransform panelMapa;
     public RectTransform contenedor;
-    [Tooltip("Opcional / legado: si tu jerarquía todavía tiene un ScrollRect, " +
-             "asígnalo aquí (o se busca solo) y el script lo apaga por completo. " +
-             "Ya NO se necesita para que el mapa funcione.")]
-    public ScrollRect scrollRect;
+    [Tooltip("Opcional: el panel visual donde vive el mapa. Si lo asignas, se " +
+             "le agrega un Mask/RectMask2D de seguridad (nada se sale de ahí).")]
+    public RectTransform panelMapa;
     public RectTransform leyendaRaiz;
     public GameObject prefabNodo;
     public GameObject prefabLinea;
@@ -54,13 +64,20 @@ public class MapaDecisiones : MonoBehaviour
     public Color colorLinea = new Color(1f, 1f, 1f, 0.30f);
     public Color colorDia = new Color(0.14f, 0.42f, 0.48f);
 
-    // ── Layout BASE (se escalan automáticamente para llenar el Viewport) ──
-    [Header("── Layout base (se auto-escalan) ────────")]
+    // ── Escala manual (reemplaza el auto-ajuste al Viewport) ───────────────
+    [Header("── Escala manual ────────────────────────")]
+    [Tooltip("Multiplica TODOS los tamaños base de una sola vez. Ajústalo a " +
+             "mano según tu resolución (igual que hacía el script viejo con " +
+             "constantes fijas). 1 = tamaño base tal cual está abajo.")]
+    public float escalaGlobal = 1f;
+
+    // ── Layout BASE (se multiplican por escalaGlobal) ──────────────────────
+    [Header("── Layout base (× escalaGlobal) ─────────")]
     [Tooltip("Ancho de cada columna de día")]
     public float anchoColumna = 100f;
     [Tooltip("Espacio horizontal entre columnas")]
     public float gapColumnas = 55f;
-    [Tooltip("Margen izquierdo y derecho")]
+    [Tooltip("Margen izquierdo y derecho del mapa completo")]
     public float margenIzquierdo = 50f;
     public float margenDerecho = 50f;
     [Tooltip("Espacio entre la base del hub y la cima del primer momento")]
@@ -69,8 +86,8 @@ public class MapaDecisiones : MonoBehaviour
     public float gapEntreMomentos = 14f;
     public float grosorLinea = 3f;
 
-    // ── Tamaños BASE de tarjetas ──────────────────────────────────────────
-    [Header("── Tamaños base (se auto-escalan) ────────")]
+    // ── Tamaños BASE de tarjetas (× escalaGlobal) ───────────────────────────
+    [Header("── Tamaños base (× escalaGlobal) ─────────")]
     public float anchoHub = 160f;
     public float altoHub = 52f;
     public float anchoMomento = 190f;
@@ -78,8 +95,8 @@ public class MapaDecisiones : MonoBehaviour
     public float anchoDesenlace = 310f;
     public float altoDesenlace = 280f;
 
-    // ── Texto BASE ────────────────────────────────────────────────────────
-    [Header("── Texto base (se auto-escalan) ─────────")]
+    // ── Texto BASE (× escalaGlobal) ─────────────────────────────────────────
+    [Header("── Texto base (× escalaGlobal) ──────────")]
     public int fsHub = 16;
     public int fsTitMom = 14;
     public int fsCpoMom = 12;
@@ -94,12 +111,9 @@ public class MapaDecisiones : MonoBehaviour
     public string[] nombresDias = new string[0];
     public string[] nombresMomentos = new string[0];
 
-    // ─────────────────────────────────────────────────────────────────────
-    [Header("── Override manual (usa si auto-escala falla) ──")]
-    [Tooltip("Si > 0, usa este ancho en lugar del tamaño real del panel. Ponlo igual al ancho de 'panelMapa' en el Inspector.")]
-    public float overrideAnchoViewport = 0f;
-    [Tooltip("Si > 0, usa este alto en lugar del tamaño real del panel. Ponlo igual al alto de 'panelMapa' en el Inspector.")]
-    public float overrideAltoViewport = 0f;
+    // ── Debug (borrar/desactivar cuando ya no haga falta) ──────────────────
+    [Header("── Debug ────────────────────────────────")]
+    public bool mostrarDebugEnPantalla = false;
 
     // ─────────────────────────────────────────────────────────────────────
     void Start()
@@ -110,116 +124,39 @@ public class MapaDecisiones : MonoBehaviour
             return;
         }
 
-        // ── ▼ NUEVO: ya NO usamos ScrollRect. El panel fijo es el padre
-        //     directo de 'contenedor' (o el que se haya asignado a mano). ──
-        if (panelMapa == null && contenedor != null)
-            panelMapa = contenedor.parent as RectTransform;
+        // ── Contenedor: centrado en su panel, igual que el script viejo ──
+        // Nada de medir Viewport ni esperar frames — esto es instantáneo y
+        // matemáticamente exacto, sin importar la resolución de pantalla.
+        if (contenedor != null)
+        {
+            contenedor.pivot = new Vector2(0.5f, 0.5f);
+            contenedor.anchorMin = new Vector2(0.5f, 0.5f);
+            contenedor.anchorMax = new Vector2(0.5f, 0.5f);
+            contenedor.anchoredPosition = Vector2.zero;
+        }
 
-        // Seguro definitivo: pase lo que pase con el cálculo de escala, el
-        // contenido JAMÁS se dibuja fuera del panel — se recorta ahí mismo.
-        // Esto es justo lo que faltaba: antes, si el mapa quedaba un poco más
-        // grande de lo esperado (o mal medido), se seguía dibujando libremente
-        // sobre el resto del Canvas hasta el borde de la pantalla.
+        // Seguro opcional: si asignaste 'panelMapa', que nada se salga de ahí.
         if (panelMapa != null && panelMapa.GetComponent<RectMask2D>() == null)
             panelMapa.gameObject.AddComponent<RectMask2D>();
 
         // Por si queda un ScrollRect de una versión anterior en la jerarquía:
-        // apagarlo del todo, ya no se necesita ni se usa.
-        if (scrollRect == null && contenedor != null)
-            scrollRect = contenedor.GetComponentInParent<ScrollRect>();
-        if (scrollRect != null)
+        // apagarlo del todo. Ya no se necesita para nada.
+        ScrollRect srLegado = contenedor != null ? contenedor.GetComponentInParent<ScrollRect>() : null;
+        if (srLegado != null)
         {
-            scrollRect.horizontal = false;
-            scrollRect.vertical = false;
-            scrollRect.enabled = false;
-        }
-        // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
-
-        if (contenedor != null)
-        {
-            contenedor.pivot = new Vector2(0f, 0.5f);
-            contenedor.anchorMin = new Vector2(0f, 0f);
-            contenedor.anchorMax = new Vector2(0f, 1f);
-            contenedor.offsetMin = Vector2.zero;
-            contenedor.offsetMax = Vector2.zero;
+            srLegado.horizontal = false;
+            srLegado.vertical = false;
+            srLegado.enabled = false;
         }
 
-        StartCoroutine(GenerarConEscalaCO());
+        GenerarMapa();
         ConstruirLeyenda();
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    IEnumerator GenerarConEscalaCO()
-    {
-        // Si hay override manual, úsalo directamente sin esperar
-        if (overrideAnchoViewport > 10f && overrideAltoViewport > 10f)
-        {
-            GenerarMapa(CalcularEscala(overrideAnchoViewport, overrideAltoViewport),
-                        overrideAnchoViewport, overrideAltoViewport);
-            yield return FinalizarLayoutCO();
-            yield break;
-        }
-
-        // ── ▼ NUEVO: medir 'panelMapa' directamente (ya no hay Viewport de
-        //     ScrollRect de por medio). Se espera a que tenga un tamaño real
-        //     Y ESTABLE, para no medir a mitad de un rebuild de layout. ──
-        float vpW = 0f, vpH = 0f;
-        float prevW = -1f, prevH = -1f;
-        int framesEstable = 0;
-        int intentos = 0;
-        while (intentos < 90)
-        {
-            yield return null;
-            intentos++;
-            if (panelMapa != null)
-            {
-                vpW = panelMapa.rect.width;
-                vpH = panelMapa.rect.height;
-            }
-
-            if (vpW > 50f && vpH > 50f)
-            {
-                if (Mathf.Approximately(vpW, prevW) && Mathf.Approximately(vpH, prevH))
-                {
-                    framesEstable++;
-                    if (framesEstable >= 3) break; // 3 frames iguales seguidos → medida confiable
-                }
-                else
-                {
-                    framesEstable = 0;
-                }
-                prevW = vpW; prevH = vpH;
-            }
-        }
-
-        // Si después de todos los intentos sigue en 0 (p.ej. panelMapa no
-        // asignado), usar Screen como último recurso
-        if (vpW < 50f) vpW = Screen.width * 0.75f;
-        if (vpH < 50f) vpH = Screen.height * 0.55f;
-        // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
-
-        Debug.Log($"[MapaDecisiones] Panel: {vpW}×{vpH} (intentos: {intentos})");
-        GenerarMapa(CalcularEscala(vpW, vpH), vpW, vpH);
-
-        yield return FinalizarLayoutCO();
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // ── ▼ NUEVO: ya no hay ScrollRect que apagar (se apaga en Start, por si
-    //     quedó uno legado) — aquí solo falta forzar que Unity reconstruya
-    //     el layout con el nuevo tamaño/posición del Contenedor.
-    IEnumerator FinalizarLayoutCO()
-    {
-        yield return null;
-        yield return null;
-        Canvas.ForceUpdateCanvases();
-    }
-    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
-
-    // ─────────────────────────────────────────────────────────────────────
-    // ── ▼ NUEVO: el ancho del hub de cada día se ajusta al texto real del
-    //     título (p.ej. "Día 115 Fase de exclusividad" necesita más espacio
-    //     que "Día 1"), para que nunca se corte ni se superponga ──────────
+    // ── el ancho del hub de cada día se ajusta al texto real del título
+    //     (p.ej. "Día 115 Fase de exclusividad" necesita más espacio que
+    //     "Día 1"), para que nunca se corte ni se superponga ──────────────
     string NombreDia(int d)
     {
         return (nombresDias != null && d < nombresDias.Length && !string.IsNullOrEmpty(nombresDias[d]))
@@ -229,7 +166,6 @@ public class MapaDecisiones : MonoBehaviour
     float EstimarAnchoTexto(string texto, int fontSize)
     {
         if (string.IsNullOrEmpty(texto)) return 0f;
-        // Estimación aproximada (funciona bien para LegacyRuntime.ttf en negrita)
         return texto.Length * fontSize * 0.62f;
     }
 
@@ -238,42 +174,17 @@ public class MapaDecisiones : MonoBehaviour
         float anchoTexto = EstimarAnchoTexto(nomDia, fsHub) + padTarjeta * 2f;
         return Mathf.Max(anchoHub, anchoTexto);
     }
-    // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
-
-    float CalcularEscala(float vpW, float vpH)
-    {
-        float sumaColumnas = 0f;
-        for (int d = 0; d < GameManager.TOTAL_DIAS; d++)
-            sumaColumnas += Mathf.Max(anchoColumna, AnchoHubBaseParaDia(NombreDia(d)));
-
-        float mapaW = margenIzquierdo
-                    + sumaColumnas
-                    + GameManager.TOTAL_DIAS * gapColumnas
-                    + anchoDesenlace
-                    + margenDerecho;
-
-        float mapaH = altoHub + gapHubMomentos
-                    + GameManager.DECISIONES_POR_DIA * altoMomento
-                    + (GameManager.DECISIONES_POR_DIA - 1) * gapEntreMomentos
-                    + 30f;
-
-        // ── ▼ NUEVO: margen de seguridad (2%) para que la estimación de ancho
-        //     de texto (aproximada) nunca deje el mapa un pelo más grande que
-        //     el Viewport real — eso era lo que lo hacía "asomar" a la derecha ──
-        float escala = Mathf.Min(vpW / mapaW, vpH / mapaH) * 0.98f;
-        // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
-        return Mathf.Clamp(escala, 0.22f, 3.0f);
-    }
 
     // ─────────────────────────────────────────────────────────────────────
-    void GenerarMapa(float e, float vpW, float vpH)
+    void GenerarMapa()
     {
         GameManager gm = GameManager.Instance;
         TipoEleccion[] his = gm.HistorialElecciones;
         string[] txt = gm.HistorialTextos;
 
+        float e = Mathf.Max(0.05f, escalaGlobal);
+
         // Todas las medidas escaladas
-        float _anchoCol = anchoColumna * e;
         float _gapCol = gapColumnas * e;
         float _margenIzq = margenIzquierdo * e;
         float _margenDer = margenDerecho * e;
@@ -286,6 +197,7 @@ public class MapaDecisiones : MonoBehaviour
         float _gapMom = gapEntreMomentos * e;
         float _grosor = Mathf.Max(2f, grosorLinea * e);
         float _pad = padTarjeta * e;
+        float _anchoCol = anchoColumna * e;
 
         int _fsHub = Mathf.Max(10, Mathf.RoundToInt(fsHub * e));
         int _fsTit = Mathf.Max(9, Mathf.RoundToInt(fsTitMom * e));
@@ -293,7 +205,7 @@ public class MapaDecisiones : MonoBehaviour
         int _fsTDes = Mathf.Max(10, Mathf.RoundToInt(fsTitDes * e));
         int _fsCDes = Mathf.Max(9, Mathf.RoundToInt(fsCpoDes * e));
 
-        // ── ▼ NUEVO: ancho del hub y de la columna, por día, ajustado al texto ──
+        // ── PASO 1: calcular TODAS las posiciones X (sin crear nada aún) ──
         float[] _anchoHubs = new float[GameManager.TOTAL_DIAS];
         float[] _colWidth = new float[GameManager.TOTAL_DIAS];
         float[] _xCols = new float[GameManager.TOTAL_DIAS];
@@ -309,16 +221,28 @@ public class MapaDecisiones : MonoBehaviour
             _xCols[d] = xCursor + _colWidth[d] * 0.5f;
             xCursor += _colWidth[d] + _gapCol;
         }
-        // ── ▲ NUEVO ─────────────────────────────────────────────────────────────
 
-        // Centrado vertical: el bloque (hub + 3 momentos) centrado en el viewport
+        float xDesRaw = xCursor + _anchoDes * 0.5f;
+        float anchoTotal = xDesRaw + _anchoDes * 0.5f + _margenDer;
+
+        // ── PASO 2: centrar — restar la mitad del ancho total a cada X ────
+        // (esto es lo mismo que "startX = -(separacionHorizontal * 5.5f)"
+        //  del script viejo: todo el mapa queda construido simétrico
+        //  alrededor de x=0, así el Contenedor (centrado en su panel) lo
+        //  muestra siempre centrado, sin importar la resolución) ──────────
+        float mitad = anchoTotal * 0.5f;
+        for (int d = 0; d < GameManager.TOTAL_DIAS; d++)
+            _xCols[d] -= mitad;
+        float xDes = xDesRaw - mitad;
+
+        // Centrado vertical: el bloque (hub + 3 momentos) centrado en 0
         float bloqueH = _altoHub + _gapHubMom
                       + GameManager.DECISIONES_POR_DIA * _altoMom
                       + (GameManager.DECISIONES_POR_DIA - 1) * _gapMom;
-        // yHub: posición Y del centro del hub medido desde el centro del contenedor
         float _yHub = bloqueH * 0.5f - _altoHub * 0.5f;
         float _yPrimMom = _yHub - _altoHub * 0.5f - _gapHubMom - _altoMom * 0.5f;
 
+        // ── PASO 3: recién ahora se crean las tarjetas y líneas ───────────
         for (int d = 0; d < GameManager.TOTAL_DIAS; d++)
         {
             float xCol = _xCols[d];
@@ -360,28 +284,18 @@ public class MapaDecisiones : MonoBehaviour
             }
         }
 
-        // Tarjeta de desenlace — justo después de la última columna (xCursor ya
-        // incluye el hueco/gap tras la última columna)
-        float xDes = xCursor + _anchoDes * 0.5f;
-
         CrearLinea(new Vector2(_xCols[GameManager.TOTAL_DIAS - 1] + _anchoHubs[GameManager.TOTAL_DIAS - 1] * 0.5f, _yHub),
                    new Vector2(xDes - _anchoDes * 0.5f, _yHub), _grosor);
         CrearTarjetaDesenlace(new Vector2(xDes, _yHub), _anchoDes, _altoDes, _fsTDes, _fsCDes, _pad);
 
-        // ── ▼ MODIFICADO: centrar SIEMPRE, no solo "si cabe". Antes, cuando
-        //     el mapa calculado resultaba un poco más ancho que el Viewport
-        //     (por redondeos o estimación de texto), offsetX quedaba en 0 y
-        //     el mapa se pegaba a la izquierda, cortándose a la derecha —
-        //     que es justo lo que se veía en pantalla. Ahora, aunque sobre
-        //     margen de error, el excedente se reparte igual a ambos lados. ──
-        float anchoTotal = xDes + _anchoDes * 0.5f + _margenDer;
-        float offsetX = (vpW - anchoTotal) * 0.5f;
-        // ── ▲ MODIFICADO ────────────────────────────────────────────────────────
-
-        if (contenedor != null)
+        if (mostrarDebugEnPantalla)
         {
-            contenedor.sizeDelta = new Vector2(Mathf.Max(anchoTotal, vpW), contenedor.sizeDelta.y);
-            contenedor.anchoredPosition = new Vector2(offsetX, 0f);
+            MostrarDebugEnPantalla(
+                $"escalaGlobal: {e:F3}\n" +
+                $"anchoTotal (mapa): {anchoTotal:F0}\n" +
+                $"contenedor: pivot/anchor centrado, anchoredPosition {contenedor.anchoredPosition}\n" +
+                $"Screen: {Screen.width} × {Screen.height}"
+            );
         }
     }
 
@@ -391,7 +305,6 @@ public class MapaDecisiones : MonoBehaviour
         GameManager gm = GameManager.Instance;
         Color color = gm.EsFinal1 ? colorVerde : colorRojo;
         string titulo = gm.ObtenerTituloFinal();
-        // Sin puntos — solo el mensaje de reflexión
         string cuerpo = gm.ObtenerMensajeFinal();
 
         GameObject go = CrearTarjeta(pos, ancho, alto, color, titulo, cuerpo, fsTit, fsCpo, pad);
@@ -407,6 +320,13 @@ public class MapaDecisiones : MonoBehaviour
     {
         GameObject go = Instantiate(prefabNodo, contenedor);
         RectTransform rt = go.GetComponent<RectTransform>();
+
+        // Forzamos el anchor/pivot al centro, sin depender de cómo venga
+        // armado el prefab — así 'pos' siempre se mide desde el centro
+        // del Contenedor, igual que en el script viejo.
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
         rt.anchoredPosition = pos;
         rt.sizeDelta = new Vector2(ancho, alto);
 
@@ -460,6 +380,11 @@ public class MapaDecisiones : MonoBehaviour
         if (prefabLinea == null) return;
         GameObject go = Instantiate(prefabLinea, contenedor);
         RectTransform rt = go.GetComponent<RectTransform>();
+
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+
         Vector2 dir = hasta - desde;
         float dist = dir.magnitude;
         float ang = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
@@ -496,7 +421,6 @@ public class MapaDecisiones : MonoBehaviour
         float totalH = pY + titH + 8f + labels.Length * (rowH + 5f) + pY;
         leyendaRaiz.sizeDelta = new Vector2(leyendaRaiz.sizeDelta.x, totalH);
 
-        // Fondo
         GameObject bg = new GameObject("Bg");
         bg.transform.SetParent(leyendaRaiz, false);
         RectTransform rtBg = bg.AddComponent<RectTransform>();
@@ -556,5 +480,49 @@ public class MapaDecisiones : MonoBehaviour
             case TipoEleccion.Rojo: return colorRojo;
             default: return colorGris;
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ── overlay de texto simple, arriba a la izquierda, para leer valores
+    //     de diagnóstico directamente en un BUILD (sin consola) ───────────
+    void MostrarDebugEnPantalla(string info)
+    {
+        Canvas canvasRaiz = contenedor != null ? contenedor.GetComponentInParent<Canvas>() : null;
+        if (canvasRaiz == null) { Debug.Log("[MapaDecisiones][Debug] " + info); return; }
+
+        Transform existente = canvasRaiz.transform.Find("__DebugMapaDecisiones");
+        GameObject go = existente != null ? existente.gameObject : new GameObject("__DebugMapaDecisiones");
+        go.transform.SetParent(canvasRaiz.transform, false);
+        go.transform.SetAsLastSibling();
+
+        RectTransform rt = go.GetComponent<RectTransform>();
+        if (rt == null) rt = go.AddComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0f, 1f);
+        rt.anchorMax = new Vector2(0f, 1f);
+        rt.pivot = new Vector2(0f, 1f);
+        rt.anchoredPosition = new Vector2(10f, -10f);
+        rt.sizeDelta = new Vector2(700f, 160f);
+
+        Image bg = go.GetComponent<Image>();
+        if (bg == null) bg = go.AddComponent<Image>();
+        bg.color = new Color(0f, 0f, 0f, 0.75f);
+
+        Text t = go.GetComponentInChildren<Text>();
+        if (t == null)
+        {
+            GameObject txtGo = new GameObject("Texto");
+            txtGo.transform.SetParent(go.transform, false);
+            RectTransform trt = txtGo.AddComponent<RectTransform>();
+            trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
+            trt.offsetMin = new Vector2(8f, 8f); trt.offsetMax = new Vector2(-8f, -8f);
+            t = txtGo.AddComponent<Text>();
+            t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            t.fontSize = 18;
+            t.color = Color.yellow;
+            t.alignment = TextAnchor.UpperLeft;
+            t.horizontalOverflow = HorizontalWrapMode.Overflow;
+            t.verticalOverflow = VerticalWrapMode.Overflow;
+        }
+        t.text = info;
     }
 }
